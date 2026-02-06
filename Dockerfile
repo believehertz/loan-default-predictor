@@ -16,10 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy backend code
 COPY backend/ ./
 
-# Set working directory to where the app runs
+# Set working directory to where main.py is
 WORKDIR /app
 
 EXPOSE 8000
 
-# Run from the correct location
+# CORRECT: Just 'main:app' because we're in /app where main.py lives
 CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
