@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: loan_db
+    environment:
+      POSTGRES_USER: loanuser
+      POSTGRES_PASSWORD: loanpass123
+      POSTGRES_DB: loan_default_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
