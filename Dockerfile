@@ -2,14 +2,24 @@ FROM python:3.11.9-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y gcc g++ libpq-dev && rm -rf /var/lib/apt/lists/*
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
 
+# Copy and install requirements
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir fastapi uvicorn[standard] xgboost pandas scikit-learn sqlalchemy psycopg2-binary pydantic joblib numpy python-multipart
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend/ ./backend/
+# Copy backend code
+COPY backend/ ./
+
+# Set working directory to where the app runs
+WORKDIR /app
 
 EXPOSE 8000
 
-# Use hardcoded port 8000 (Railway maps it automatically)
-CMD python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000
+# Run from the correct location
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
