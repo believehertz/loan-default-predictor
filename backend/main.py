@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from app.routers import predict
@@ -12,10 +12,12 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Enable CORS - UPDATED FOR RAILWAY DEPLOYMENT
+# Enable CORS - ONLY your actual domains
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins (Vercel, Railway, etc.)
+    allow_origins=[
+        "https://loan-default-predictor-one.vercel.app",  # Your actual Vercel URL from screenshot
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
