@@ -11,7 +11,7 @@ const HistoryList: React.FC = () => {
 
   const fetchHistory = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/history');
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
       setHistory(response.data);
     } catch (error) {
       console.error('Failed to fetch history');
