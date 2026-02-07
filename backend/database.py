@@ -4,10 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 # Use environment variable for production, fallback to local
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", 
-    "postgresql://loanuser:loanpass123@localhost:5432/loan_default_db"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Fix for Railway's postgres:// vs postgresql:// format
 if DATABASE_URL.startswith("postgres://"):
