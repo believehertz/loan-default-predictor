@@ -36,23 +36,41 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
     setLoading(true);
     
     try {
-      const response = await axios.post(`${API_URL}/predict`, {
-        annual_income: parseFloat(formData.annual_income),
-        debt_to_income_ratio: parseFloat(formData.debt_to_income_ratio),
-        credit_score: parseInt(formData.credit_score),
-        loan_amount: parseFloat(formData.loan_amount),
-        interest_rate: parseFloat(formData.interest_rate),
-        gender: formData.gender,
-        marital_status: formData.marital_status,
-        education_level: formData.education_level,
-        employment_status: formData.employment_status,
-        loan_purpose: formData.loan_purpose,
-        grade_subgrade: formData.grade_subgrade
-      });
+      // Get auth token from localStorage
+      const token = localStorage.getItem('token');
+      
+      const response = await axios.post(
+        `${API_URL}/predict`, 
+        {
+          annual_income: parseFloat(formData.annual_income),
+          debt_to_income_ratio: parseFloat(formData.debt_to_income_ratio),
+          credit_score: parseInt(formData.credit_score),
+          loan_amount: parseFloat(formData.loan_amount),
+          interest_rate: parseFloat(formData.interest_rate),
+          gender: formData.gender,
+          marital_status: formData.marital_status,
+          education_level: formData.education_level,
+          employment_status: formData.employment_status,
+          loan_purpose: formData.loan_purpose,
+          grade_subgrade: formData.grade_subgrade
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
       
       onResult(response.data);
     } catch (error: any) {
-      alert('Prediction failed: ' + (error.response?.data?.detail || error.message));
+      if (error.response?.status === 401) {
+        alert('Session expired. Please login again.');
+        localStorage.removeItem('token');
+        window.location.reload();
+      } else {
+        alert('Prediction failed: ' + (error.response?.data?.detail || error.message));
+      }
       console.error(error);
     } finally {
       setLoading(false);
@@ -62,16 +80,15 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
   return (
     <Paper elevation={3} sx={{ p: 4, maxWidth: 900, mx: 'auto', mt: 4 }}>
       <Typography variant="h4" gutterBottom align="center" color="primary">
-        Loan Payback Predictor (XGBoost 95%+)
+        Loan Payback Predictor (XGBoost 90%+)
       </Typography>
       <Typography variant="body2" color="textSecondary" align="center" gutterBottom>
-        Trained on 593,995 real loan records
+        Trained on 593,995 real loan records | Secured with JWT Auth
       </Typography>
       
       <Box component="form" onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           {/* Numeric Fields */}
-
           <Grid size={{ xs: 12, sm: 6, md: 4 }}>
             <TextField fullWidth label="Annual Income ($)" name="annual_income" 
               type="number" value={formData.annual_income} onChange={handleChange} required />
@@ -177,7 +194,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         
         <Button type="submit" variant="contained" fullWidth size="large" 
           sx={{ mt: 3, py: 1.5 }} disabled={loading}>
-          {loading ? <CircularProgress size={24} /> : 'Predict Loan Payback (95%+ Accurate)'}
+          {loading ? <CircularProgress size={24} /> : 'Predict Loan Payback (Secured)'}
         </Button>
       </Box>
     </Paper>

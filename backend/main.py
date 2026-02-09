@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
-from app.routers import predict
+from app.routers import predict, auth
+
 
 # Create tables in PostgreSQL
 Base.metadata.create_all(bind=engine)
@@ -24,6 +25,7 @@ app.add_middleware(
 )
 
 # Include routers
+app.include_router(auth.router, prefix="/api", tags=["auth"])
 app.include_router(predict.router, prefix="/api", tags=["predictions"])
 
 @app.get("/")
