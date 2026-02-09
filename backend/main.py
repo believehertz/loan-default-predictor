@@ -17,7 +17,8 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://loan-default-predictor-one.vercel.app",  # Your actual Vercel URL from screenshot
+        "https://loan-default-predictor-one.vercel.app", # Your actual Vercel URL from screenshot
+        "http://localhost:5173", #For local hosting  
     ],
     allow_credentials=True,
     allow_methods=["*"],
