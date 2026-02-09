@@ -14,18 +14,15 @@ SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Use Argon2 instead of bcrypt (no 72-byte limit, no version issues)
+pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def verify_password(plain_password, hashed_password):
-    # Bcrypt has 72-byte limit, truncate to avoid errors
-    pwd_bytes = plain_password.encode('utf-8')[:72]
-    return pwd_context.verify(pwd_bytes, hashed_password)
+    return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
-    # Bcrypt has 72-byte limit, truncate to avoid errors
-    pwd_bytes = password.encode('utf-8')[:72]
-    return pwd_context.hash(pwd_bytes)
+    return pwd_context.hash(password)
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()

@@ -1,7 +1,6 @@
 annotated-doc
 annotated-types
 anyio
-bcrypt
 cffi
 click
 colorama
@@ -14,7 +13,8 @@ idna
 joblib
 numpy
 pandas
-passlib
+passlib[argon2]
+argon2-cffi
 psycopg2-binary
 pyasn1
 pycparser
