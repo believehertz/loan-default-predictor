@@ -18,10 +18,14 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    # Bcrypt has 72-byte limit, truncate to avoid errors
+    pwd_bytes = plain_password.encode('utf-8')[:72]
+    return pwd_context.verify(pwd_bytes, hashed_password)
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    # Bcrypt has 72-byte limit, truncate to avoid errors
+    pwd_bytes = password.encode('utf-8')[:72]
+    return pwd_context.hash(pwd_bytes)
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
