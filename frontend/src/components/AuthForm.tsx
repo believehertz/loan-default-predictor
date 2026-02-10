@@ -1,18 +1,55 @@
 import React, { useState } from 'react';
-import { Paper, TextField, Button, Typography, Box, Tabs, Tab } from '@mui/material';
+import { 
+  Box, 
+  TextField, 
+  Button, 
+  Typography, 
+  Paper, 
+  Tabs, 
+  Tab,
+  Container,
+  Avatar,
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  Fade,
+  Slide
+} from '@mui/material';
+import { 
+  LockOutlined, 
+  AccountBalance, 
+  TrendingUp,
+  Security
+} from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
-export const AuthForm: React.FC = () => {
+const theme = createTheme({
+  palette: {
+    primary: { main: '#1976d2', light: '#42a5f5', dark: '#1565c0' },
+    secondary: { main: '#dc004e' },
+    background: { default: '#f5f5f5' }
+  },
+  typography: {
+    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    h4: { fontWeight: 700 },
+    h6: { fontWeight: 600 }
+  }
+});
+
+const AuthForm: React.FC = () => {
   const [tab, setTab] = useState(0);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login, signup } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
+    
     try {
       if (tab === 0) {
         await login(username, password);
@@ -21,54 +58,216 @@ export const AuthForm: React.FC = () => {
       }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Authentication failed');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const features = [
+    { icon: <TrendingUp />, text: "90%+ Accuracy" },
+    { icon: <Security />, text: "Bank-Grade Security" },
+    { icon: <AccountBalance />, text: "594K+ Records Trained" }
+  ];
+
   return (
-    <Paper elevation={3} sx={{ p: 4, maxWidth: 400, mx: 'auto', mt: 8 }}>
-      <Tabs value={tab} onChange={(_, v) => setTab(v)} centered>
-        <Tab label="Login" />
-        <Tab label="Sign Up" />
-      </Tabs>
-      
-      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-        {tab === 1 && (
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            sx={{ mb: 2 }}
-            required
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        {/* Animated Background Elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            opacity: 0.1,
+            background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+            animation: 'moveBackground 20s linear infinite',
+            '@keyframes moveBackground': {
+              '0%': { transform: 'translateY(0)' },
+              '100%': { transform: 'translateY(-50px)' }
+            }
+          }}
+        />
+
+        <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
+          <Slide direction="up" in={true} timeout={800}>
+            <Paper
+              elevation={24}
+              sx={{
+                p: 4,
+                borderRadius: 4,
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              {/* Header */}
+              <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+                <Avatar
+                  sx={{
+                    m: 1,
+                    bgcolor: 'primary.main',
+                    width: 56,
+                    height: 56,
+                    boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
+                  }}
+                >
+                  <LockOutlined sx={{ fontSize: 32 }} />
+                </Avatar>
+                <Typography component="h1" variant="h4" color="primary" gutterBottom>
+                  {tab === 0 ? 'Welcome Back!' : 'Join Us!'}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" align="center">
+                  {tab === 0 
+                    ? 'Sign in to access your loan predictions' 
+                    : 'Start predicting loan defaults with 90%+ accuracy'}
+                </Typography>
+              </Box>
+
+              {/* Feature Pills */}
+              <Box display="flex" justifyContent="center" gap={1} mb={3} flexWrap="wrap">
+                {features.map((feature, idx) => (
+                  <Fade in={true} timeout={1000 + idx * 200} key={idx}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={0.5}
+                      px={2}
+                      py={0.5}
+                      bgcolor="primary.light"
+                      borderRadius={10}
+                      color="white"
+                      fontSize="0.75rem"
+                    >
+                      {feature.icon}
+                      {feature.text}
+                    </Box>
+                  </Fade>
+                ))}
+              </Box>
+
+              {/* Tabs */}
+              <Tabs
+                value={tab}
+                onChange={(_, v) => setTab(v)}
+                centered
+                sx={{ mb: 3 }}
+                textColor="primary"
+                indicatorColor="primary"
+              >
+                <Tab label="Login" sx={{ fontWeight: 600 }} />
+                <Tab label="Sign Up" sx={{ fontWeight: 600 }} />
+              </Tabs>
+
+              {/* Form */}
+              <Box component="form" onSubmit={handleSubmit}>
+                {tab === 1 && (
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Email Address"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                )}
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  sx={{ mb: 2 }}
+                />
+                
+                {error && (
+                  <Typography color="error" variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
+                    {error}
+                  </Typography>
+                )}
+
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  size="large"
+                  disabled={loading}
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    py: 1.5,
+                    borderRadius: 2,
+                    fontWeight: 700,
+                    background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
+                    boxShadow: '0 3px 5px 2px rgba(102, 126, 234, .3)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #764ba2 30%, #667eea 90%)',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 12px rgba(102, 126, 234, 0.4)'
+                    }
+                  }}
+                >
+                  {loading ? 'Processing...' : (tab === 0 ? 'Sign In' : 'Create Account')}
+                </Button>
+              </Box>
+
+              {/* Footer */}
+              <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
+                🔒 Secured with JWT & Argon2 Encryption
+              </Typography>
+            </Paper>
+          </Slide>
+        </Container>
+
+        {/* Floating Particles */}
+        {[...Array(5)].map((_, i) => (
+          <Box
+            key={i}
+            sx={{
+              position: 'absolute',
+              width: 40,
+              height: 40,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.1)',
+              left: `${20 + i * 15}%`,
+              animation: `float ${5 + i}s ease-in-out infinite`,
+              animationDelay: `${i * 0.5}s`,
+              '@keyframes float': {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-20px)' }
+              }
+            }}
           />
-        )}
-        <TextField
-          fullWidth
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          sx={{ mb: 2 }}
-          required
-        />
-        <TextField
-          fullWidth
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          sx={{ mb: 2 }}
-          required
-        />
-        {error && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {error}
-          </Typography>
-        )}
-        <Button type="submit" variant="contained" fullWidth size="large">
-          {tab === 0 ? 'Login' : 'Sign Up'}
-        </Button>
+        ))}
       </Box>
-    </Paper>
+    </ThemeProvider>
   );
 };
+
+export default AuthForm;
