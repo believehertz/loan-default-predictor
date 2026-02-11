@@ -61,7 +61,14 @@ const AuthWrapper: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      <Container maxWidth="md" sx={{ py: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Container maxWidth="md" sx={{ py: 4
+        position: 'relative', 
+        zIndex: 1,
+        display: 'flex',
+        justifyContent: 'center', // Center the Paper
+        alignItems: 'center', // Center vertically
+        width: '100%'
+       }}>
         <LoanForm onResult={setPrediction} />
         <ResultCard data={prediction} />
       </Container>
