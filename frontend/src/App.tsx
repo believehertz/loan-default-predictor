@@ -14,10 +14,13 @@ import {
 import LoanForm from './components/LoanForm';
 import ResultCard from './components/ResultCard';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { AuthForm } from './components/AuthForm';
+import AuthForm from './components/AuthForm';  // Removed { } - default import
 
 const theme = createTheme({
-  palette: { primary: { main: '#1976d2' }, secondary: { main: '#dc004e' } },
+  palette: { 
+    primary: { main: '#1976d2' }, 
+    secondary: { main: '#dc004e' } 
+  },
 });
 
 // Auth wrapper component
@@ -39,20 +42,20 @@ const AuthWrapper: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <AuthForm />;
+    return <AuthForm />;  // This will show your sexy centered design!
   }
 
   return (
     <>
-      <AppBar position="static" elevation={0}>
+      <AppBar position="static" elevation={0} sx={{ background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)' }}>
         <Toolbar>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Loan Default Predictor
+          <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+            💰 Loan Default Predictor
           </Typography>
           <Typography variant="body2" sx={{ mr: 2 }}>
             Welcome, {user?.username}!
           </Typography>
-          <Button color="inherit" onClick={logout} variant="outlined" size="small">
+          <Button color="inherit" onClick={logout} variant="outlined" size="small" sx={{ borderColor: 'white' }}>
             Logout
           </Button>
         </Toolbar>
