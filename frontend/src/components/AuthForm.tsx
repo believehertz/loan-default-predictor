@@ -7,7 +7,6 @@ import {
   Paper, 
   Tabs, 
   Tab,
-  Container,
   Avatar,
   Fade,
   Slide
@@ -57,13 +56,14 @@ const AuthForm: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
+        width: '100%',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         position: 'relative',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        px: { xs: 2, sm: 3, md: 4 }
       }}
     >
       {/* Animated Background Pattern */}
@@ -80,16 +80,25 @@ const AuthForm: React.FC = () => {
         }}
       />
 
-      <Container maxWidth="sm" sx={{ position: 'relative', zIndex: 1 }}>
+      {/* Centered Content */}
+      <Box sx={{ 
+        width: '100%',
+        maxWidth: 480,
+        position: 'relative', 
+        zIndex: 1,
+        mx: 'auto'
+      }}>
         <Slide direction="up" in={true} timeout={800}>
           <Paper
             elevation={24}
             sx={{
               p: 4,
+              width: '100%',
               borderRadius: 4,
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(10px)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+              mx: 'auto'
             }}
           >
             {/* Header */}
@@ -105,7 +114,7 @@ const AuthForm: React.FC = () => {
               >
                 <LockOutlined sx={{ fontSize: 32 }} />
               </Avatar>
-              <Typography component="h1" variant="h4" color="primary" gutterBottom sx={{ fontWeight: 700 }}>
+              <Typography component="h1" variant="h4" color="primary" gutterBottom sx={{ fontWeight: 700, textAlign: 'center' }}>
                 {tab === 0 ? 'Welcome Back!' : 'Join Us!'}
               </Typography>
               <Typography variant="body2" color="textSecondary" align="center">
@@ -221,9 +230,9 @@ const AuthForm: React.FC = () => {
             </Typography>
           </Paper>
         </Slide>
-      </Container>
+      </Box>
 
-      {/* Floating Circles */}
+      {/* Floating Circles - spread across full width */}
       {[...Array(5)].map((_, i) => (
         <Box
           key={i}
@@ -233,8 +242,8 @@ const AuthForm: React.FC = () => {
             height: 60,
             borderRadius: '50%',
             background: 'rgba(255,255,255,0.1)',
-            left: `${10 + i * 20}%`,
-            top: `${20 + (i % 3) * 20}%`,
+            left: `${5 + i * 22}%`,
+            top: `${10 + (i % 3) * 25}%`,
             animation: `float ${6 + i}s ease-in-out infinite`,
             animationDelay: `${i * 0.5}s`,
             '@keyframes float': {
