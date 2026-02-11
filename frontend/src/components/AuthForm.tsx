@@ -56,17 +56,23 @@ const AuthForm: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        width: '100%',
+        minWidth: '100vw',  // FORCE FULL VIEWPORT WIDTH
+        width: '100vw',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        position: 'relative',
-        overflow: 'hidden',
-        px: { xs: 2, sm: 3, md: 4 }
+        position: 'fixed',  // FIXED POSITION TO COVER EVERYTHING
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'auto',
+        px: 2
       }}
     >
-      {/* Animated Background Pattern */}
+      {/* Animated Background Pattern - Full coverage */}
       <Box
         sx={{
           position: 'absolute',
@@ -77,23 +83,28 @@ const AuthForm: React.FC = () => {
           opacity: 0.1,
           backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
           backgroundSize: '40px 40px',
+          zIndex: 0
         }}
       />
 
-      {/* Centered Content */}
+      {/* Centered Content - Takes full width but centers children */}
       <Box sx={{ 
         width: '100%',
-        maxWidth: 480,
+        maxWidth: '500px',
         position: 'relative', 
         zIndex: 1,
-        mx: 'auto'
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        py: 4
       }}>
         <Slide direction="up" in={true} timeout={800}>
           <Paper
             elevation={24}
             sx={{
-              p: 4,
+              p: { xs: 3, sm: 4 },
               width: '100%',
+              maxWidth: '450px',
               borderRadius: 4,
               background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(10px)',
@@ -232,24 +243,25 @@ const AuthForm: React.FC = () => {
         </Slide>
       </Box>
 
-      {/* Floating Circles - spread across full width */}
-      {[...Array(5)].map((_, i) => (
+      {/* Floating Circles - Full width spread */}
+      {[...Array(8)].map((_, i) => (
         <Box
           key={i}
           sx={{
             position: 'absolute',
-            width: 60,
-            height: 60,
+            width: 40 + i * 10,
+            height: 40 + i * 10,
             borderRadius: '50%',
-            background: 'rgba(255,255,255,0.1)',
-            left: `${5 + i * 22}%`,
-            top: `${10 + (i % 3) * 25}%`,
-            animation: `float ${6 + i}s ease-in-out infinite`,
-            animationDelay: `${i * 0.5}s`,
+            background: 'rgba(255,255,255,0.08)',
+            left: `${Math.random() * 90}%`,
+            top: `${Math.random() * 80}%`,
+            animation: `float ${5 + Math.random() * 5}s ease-in-out infinite`,
+            animationDelay: `${Math.random() * 3}s`,
             '@keyframes float': {
               '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-20px)' }
-            }
+              '50%': { transform: 'translateY(-30px)' }
+            },
+            zIndex: 0
           }}
         />
       ))}
