@@ -79,7 +79,13 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
   };
 
   return (
-    <Box sx={{ position: 'relative', minHeight: '100vh', overflow: 'hidden' }}>
+    <Box sx={{ position: 'relative', 
+  minHeight: '100vh', 
+  overflow: 'hidden',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center' }}>
       <FallingMoney />
       
       <Paper 
