@@ -110,36 +110,36 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Annual Income ($)" name="annual_income" 
                 type="number" value={formData.annual_income} onChange={handleChange} required />
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Credit Score (300-850)" name="credit_score" 
                 type="number" inputProps={{ min: 300, max: 850 }}
                 value={formData.credit_score} onChange={handleChange} required />
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Loan Amount ($)" name="loan_amount" 
                 type="number" value={formData.loan_amount} onChange={handleChange} required />
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Debt-to-Income Ratio (0-1)" name="debt_to_income_ratio" 
                 type="number" inputProps={{ step: 0.001, min: 0, max: 1 }}
                 value={formData.debt_to_income_ratio} onChange={handleChange} required 
                 helperText="e.g., 0.35 for 35%" />
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Interest Rate (%)" name="interest_rate" 
                 type="number" inputProps={{ step: 0.01, min: 0 }}
                 value={formData.interest_rate} onChange={handleChange} required />
             </Grid>
 
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Gender</InputLabel>
                 <Select name="gender" value={formData.gender} onChange={handleChange} label="Gender">
@@ -150,7 +150,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
               </FormControl>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Marital Status</InputLabel>
                 <Select name="marital_status" value={formData.marital_status} 
@@ -162,7 +162,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
               </FormControl>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Education Level</InputLabel>
                 <Select name="education_level" value={formData.education_level} 
@@ -176,7 +176,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
               </FormControl>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Employment Status</InputLabel>
                 <Select name="employment_status" value={formData.employment_status} 
@@ -188,7 +188,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
               </FormControl>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <FormControl fullWidth>
                 <InputLabel>Loan Purpose</InputLabel>
                 <Select name="loan_purpose" value={formData.loan_purpose} 
@@ -200,12 +200,12 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
                   <MenuItem value="Business">Business</MenuItem>
                   <MenuItem value="Medical">Medical</MenuItem>
                   <MenuItem value="Vacation">Vacation</MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
+                  <MenuItem item value="Other">Other</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             
-            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+            <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Grade/Subgrade" name="grade_subgrade" 
                 value={formData.grade_subgrade} onChange={handleChange} required 
                 helperText="e.g., A1, B2, C3, D4, E5, F1" />

@@ -68,9 +68,11 @@ const AuthWrapper: React.FC = () => {
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         py: 4
       }}>
-        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <LoanForm onResult={setPrediction} />
-          <ResultCard data={prediction} />
+        <Container maxWidth="md">
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <LoanForm onResult={setPrediction} />
+            <ResultCard data={prediction} />
+          </Box>
         </Container>
       </Box>
     </>
