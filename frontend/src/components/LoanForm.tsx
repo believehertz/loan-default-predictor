@@ -200,7 +200,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
                   <MenuItem value="Business">Business</MenuItem>
                   <MenuItem value="Medical">Medical</MenuItem>
                   <MenuItem value="Vacation">Vacation</MenuItem>
-                  <MenuItem item value="Other">Other</MenuItem>
+                  <MenuItem value="Other">Other</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
