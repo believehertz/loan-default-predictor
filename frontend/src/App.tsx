@@ -14,7 +14,7 @@ import {
 import LoanForm from './components/LoanForm';
 import ResultCard from './components/ResultCard';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import AuthForm from './components/AuthForm';  // Removed { } - default import
+import AuthForm from './components/AuthForm';
 
 const theme = createTheme({
   palette: { 
@@ -23,7 +23,6 @@ const theme = createTheme({
   },
 });
 
-// Auth wrapper component
 const AuthWrapper: React.FC = () => {
   const { isAuthenticated, loading, logout, user } = useAuth();
   const [prediction, setPrediction] = useState<{
@@ -42,7 +41,7 @@ const AuthWrapper: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <AuthForm />;  // This will show your sexy centered design!
+    return <AuthForm />;
   }
 
   return (
@@ -61,10 +60,19 @@ const AuthWrapper: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <LoanForm onResult={setPrediction} />
-        <ResultCard data={prediction} />
-      </Container>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center',
+        minHeight: 'calc(100vh - 64px)',
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        py: 4
+      }}>
+        <Container maxWidth="md" sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <LoanForm onResult={setPrediction} />
+          <ResultCard data={prediction} />
+        </Container>
+      </Box>
     </>
   );
 };

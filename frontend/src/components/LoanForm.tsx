@@ -37,7 +37,6 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
     setLoading(true);
     
     try {
-      // Get auth token from localStorage
       const token = localStorage.getItem('token');
       
       const response = await axios.post(
@@ -79,22 +78,21 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
   };
 
   return (
-    <Box sx={{ position: 'relative', 
-  minHeight: '100vh', 
-  overflow: 'hidden',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center' }}>
+    <Box sx={{ 
+      position: 'relative', 
+      width: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center'
+    }}>
       <FallingMoney />
       
       <Paper 
         elevation={24} 
         sx={{ 
           p: 4, 
+          width: '100%',
           maxWidth: 900, 
-          mx: 'auto', 
-          mt: 4,
           position: 'relative',
           zIndex: 2,
           background: 'rgba(255, 255, 255, 0.95)',
@@ -112,7 +110,6 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         
         <Box component="form" onSubmit={handleSubmit}>
           <Grid container spacing={2}>
-            {/* Numeric Fields */}
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField fullWidth label="Annual Income ($)" name="annual_income" 
                 type="number" value={formData.annual_income} onChange={handleChange} required />
@@ -142,7 +139,6 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
                 value={formData.interest_rate} onChange={handleChange} required />
             </Grid>
 
-            {/* Categorical Fields */}
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <FormControl fullWidth>
                 <InputLabel>Gender</InputLabel>
