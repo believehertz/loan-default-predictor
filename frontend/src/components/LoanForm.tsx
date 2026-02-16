@@ -81,7 +81,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
     <Box sx={{ 
       position: 'relative',
       width: '100%',
-      minHeight: 'calc(100vh - 64px)', // Subtract AppBar height
+      minHeight: 'calc(100vh - 64px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -93,14 +93,13 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         elevation={24} 
         sx={{ 
           p: 4,
-          width: '90%',
+          width: '95%',
           maxWidth: '900px',
           borderRadius: 4,
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(10px)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-          position: 'relative',
-          zIndex: 2
+          mx: 'auto'
         }}
       >
         <Typography variant="h4" gutterBottom align="center" color="primary" sx={{ fontWeight: 700 }}>
@@ -111,8 +110,8 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         </Typography>
         
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          <Grid container spacing={2}>
-            {/* All your Grid items - same as before */}
+          {/* THE KEY FIX: justifyContent="center" */}
+          <Grid container spacing={2} justifyContent="center">
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField fullWidth label="Annual Income ($)" name="annual_income" 
                 type="number" value={formData.annual_income} onChange={handleChange} required />
@@ -229,7 +228,8 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
                 boxShadow: '0 3px 5px 2px rgba(102, 126, 234, .3)',
                 '&:hover': {
                   background: 'linear-gradient(45deg, #764ba2 30%, #667eea 90%)',
-                  transform: 'translateY(-2px)'
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 12px rgba(102, 126, 234, 0.4)'
                 }
               }} 
             >
