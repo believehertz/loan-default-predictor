@@ -1,41 +1,75 @@
 import React from 'react';
 import { Box, keyframes } from '@mui/material';
 
-const denominations = [
-  { value: '50,000', color: '#d4af37', size: 80 },
-  { value: '20,000', color: '#8b4513', size: 75 },
-  { value: '10,000', color: '#2e8b57', size: 70 },
-  { value: '5,000', color: '#4169e1', size: 65 },
-  { value: '2,000', color: '#9932cc', size: 60 },
-  { value: '1,000', color: '#dc143c', size: 55 },
+// Define your money images - update these paths to match your actual filenames
+const moneyImages = [
+  { 
+    value: '50000', 
+    front: '/images/2010-2019-50000-UGX-Ugandan-Shilling-note-back.png',
+    back: '/images/2010-2019-50000-UGX-Ugandan-Shilling-note-front.png',
+    width: 120 
+  },
+  { 
+    value: '20000', 
+    front: '/images/2010-2019-20000-UGX-Ugandan-Shilling-note-back.png',
+    back: '/images/2010-2019-20000-UGX-Ugandan-Shilling-note-front.png',
+    width: 110 
+  },
+  { 
+    value: '10000', 
+    front: '/images/2010-2019-10000-UGX-Ugandan-Shilling-note-back.png',
+    back: '/images/2010-2019-10000-UGX-Ugandan-Shilling-note-front.png',
+    width: 100 
+  },
+  { 
+    value: '5000', 
+    front: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-back.png',
+    back: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-front.png',
+    width: 90 
+  },
+  { 
+    value: '2000', 
+    front: '/images/2010-2019-2000-UGX-Ugandan-Shilling-note-back.png',
+    back: '/images/2010-2019-2000-UGX-Ugandan-Shilling-note-front.png',
+    width: 80 
+  },
+  { 
+    value: '1000', 
+    front: '/images/2010-2019-1000-UGX-Ugandan-Shilling-note-back.png',
+    back: '/images/2010-2019-1000-UGX-Ugandan-Shilling-note-front.png',
+    width: 70 
+  },
 ];
 
 const fall = keyframes`
   0% {
-    transform: translateY(-100px) rotate(0deg);
+    transform: translateY(-150px) rotate(0deg);
     opacity: 0;
   }
-  10% {
+  5% {
     opacity: 1;
   }
-  90% {
+  95% {
     opacity: 1;
   }
   100% {
-    transform: translateY(100vh) rotate(360deg);
+    transform: translateY(110vh) rotate(360deg);
     opacity: 0;
   }
 `;
 
 const FallingMoney: React.FC = () => {
-  const bills = Array.from({ length: 25 }, (_, i) => {
-    const denom = denominations[i % denominations.length];
+  // Create 20 falling bills with random positions
+  const bills = Array.from({ length: 20 }, (_, i) => {
+    const money = moneyImages[i % moneyImages.length];
     return {
-      ...denom,
+      ...money,
       id: i,
-      left: Math.random() * 100,
-      delay: Math.random() * 10,
-      duration: 10 + Math.random() * 8,
+      left: Math.random() * 95, // 0-95% across screen
+      delay: Math.random() * 15, // Random start delay
+      duration: 12 + Math.random() * 8, // 12-20 seconds fall time
+      rotation: Math.random() * 360, // Random starting rotation
+      isFront: Math.random() > 0.5, // Randomly choose front or back (if you have both)
     };
   });
 
@@ -47,7 +81,7 @@ const FallingMoney: React.FC = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        pointerEvents: 'none',
+        pointerEvents: 'none', // Let clicks pass through
         overflow: 'hidden',
         zIndex: 0
       }}
@@ -55,38 +89,27 @@ const FallingMoney: React.FC = () => {
       {bills.map((bill) => (
         <Box
           key={bill.id}
+          component="img"
+          src={bill.src}
+          alt={`UGX ${bill.value}`}
           sx={{
             position: 'absolute',
             left: `${bill.left}%`,
-            top: -100,
-            width: bill.size,
-            height: bill.size * 0.5,
-            backgroundColor: bill.color,
-            borderRadius: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: bill.size / 5,
-            boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+            top: -150,
+            width: bill.width,
+            height: 'auto',
+            borderRadius: 1,
+            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
             animation: `${fall} ${bill.duration}s linear infinite`,
             animationDelay: `${bill.delay}s`,
-            '&::before': {
-              content: '"UGX"',
-              position: 'absolute',
-              top: 2,
-              left: 4,
-              fontSize: '0.5em',
-              opacity: 0.8
-            }
+            transform: `rotate(${bill.rotation}deg)`,
+            objectFit: 'contain',
+            zIndex: 0
           }}
-        >
-          {bill.value}
-        </Box>
+        />
       ))}
       
-      {/* Gradient Overlay */}
+      {/* Gradient overlay for readability */}
       <Box
         sx={{
           position: 'absolute',
@@ -94,8 +117,9 @@ const FallingMoney: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'radial-gradient(circle at center, transparent 0%, rgba(255,255,255,0.85) 100%)',
-          zIndex: 1
+          background: 'radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.8) 100%)',
+          zIndex: 1,
+          pointerEvents: 'none'
         }}
       />
     </Box>
