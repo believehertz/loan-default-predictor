@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { 
-  Container, 
   CssBaseline, 
   ThemeProvider, 
   createTheme, 
@@ -17,13 +16,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthForm from './components/AuthForm';
 
 const theme = createTheme({
-  palette: { 
-    primary: { main: '#1976d2' }, 
-    secondary: { main: '#dc004e' } 
-  },
+  palette: { primary: { main: '#1976d2' }, secondary: { main: '#dc004e' } },
 });
-
-// ... imports stay same ...
 
 const AuthWrapper: React.FC = () => {
   const { isAuthenticated, loading, logout, user } = useAuth();
@@ -42,7 +36,7 @@ const AuthWrapper: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', minHeight: '100vh' }}>  {/* FULL WIDTH */}
+    <Box sx={{ width: '100%', minHeight: '100vh' }}>
       <AppBar position="static" elevation={0} sx={{ background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
@@ -57,7 +51,6 @@ const AuthWrapper: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      {/* REMOVED CONTAINER - LET LOANFORM HANDLE FULL WIDTH */}
       <Box sx={{ width: '100%' }}>
         <LoanForm onResult={setPrediction} />
         <ResultCard data={prediction} />
@@ -65,8 +58,6 @@ const AuthWrapper: React.FC = () => {
     </Box>
   );
 };
-
-// ... rest same ...
 
 function App() {
   return (
