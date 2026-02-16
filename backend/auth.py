@@ -5,7 +5,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from database import get_db
 import models
 from schemas import UserCreate, UserResponse
@@ -182,8 +182,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    
+
     user = get_user_by_username(db, username)
     if user is None:
         raise credentials_exception
     return user
+
+async def get_current_active_user(current_user: models.User = Depends(get_current_user)):
+    return current_user
