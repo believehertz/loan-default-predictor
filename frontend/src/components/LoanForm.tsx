@@ -78,40 +78,52 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
   };
 
   return (
+    // OUTER: Full width, centered content
     <Box sx={{ 
-      position: 'relative',
       width: '100%',
-      minHeight: 'calc(100vh - 64px)',
+      minHeight: 'calc(100vh - 64px)', // Subtract AppBar
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      py: 4
+      flexDirection: 'column',
+      alignItems: 'center', // CENTER HORIZONTALLY
+      justifyContent: 'center', // CENTER VERTICALLY
+      py: 4,
+      position: 'relative'
     }}>
       <FallingMoney />
       
+      {/* PAPER: Centered with max width */}
       <Paper 
         elevation={24} 
         sx={{ 
           p: 4,
-          width: '95%',
-          maxWidth: '900px',
+          width: '95%',           // Almost full width
+          maxWidth: '900px',      // But capped at 900px
           borderRadius: 4,
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(10px)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+          position: 'relative',
+          zIndex: 2,
+          // CRITICAL: margin auto centers it!
+          margin: '0 auto',
           mx: 'auto'
         }}
       >
         <Typography variant="h4" gutterBottom align="center" color="primary" sx={{ fontWeight: 700 }}>
           Loan Payback Predictor
         </Typography>
-        <Typography variant="h6" color="textSecondary" align="center" gutterBottom>
+        <Typography variant="h6" color="textSecondary" align="center" gutterBottom sx={{ mb: 3 }}>
           💸 XGBoost 90%+ Accuracy | 594K+ Records Trained 💸
         </Typography>
         
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-          {/* THE KEY FIX: justifyContent="center" */}
-          <Grid container spacing={2} justifyContent="center">
+        <Box component="form" onSubmit={handleSubmit}>
+          {/* GRID: Center all items */}
+          <Grid 
+            container 
+            spacing={2} 
+            justifyContent="center"  // CENTER THE GRID ITEMS
+            alignItems="center"
+          >
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField fullWidth label="Annual Income ($)" name="annual_income" 
                 type="number" value={formData.annual_income} onChange={handleChange} required />
@@ -214,7 +226,13 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
             </Grid>
           </Grid>
           
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          {/* BUTTON CONTAINER: Centered */}
+          <Box sx={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            mt: 4,
+            width: '100%'
+          }}>
             <Button 
               type="submit" 
               variant="contained" 
@@ -222,14 +240,13 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
               disabled={loading}
               sx={{ 
                 py: 1.5,
-                px: 6,
+                px: 8,
                 fontWeight: 700,
                 background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
                 boxShadow: '0 3px 5px 2px rgba(102, 126, 234, .3)',
                 '&:hover': {
                   background: 'linear-gradient(45deg, #764ba2 30%, #667eea 90%)',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 6px 12px rgba(102, 126, 234, 0.4)'
+                  transform: 'translateY(-2px)'
                 }
               }} 
             >

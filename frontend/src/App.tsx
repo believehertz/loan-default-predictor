@@ -36,7 +36,14 @@ const AuthWrapper: React.FC = () => {
   }
 
   return (
-    <Box sx={{ width: '100%', minHeight: '100vh' }}>
+    // CRITICAL: Use sx with width 100% and minHeight 100vh
+    <Box sx={{ 
+      width: '100vw',  // FULL VIEWPORT WIDTH
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'auto'
+    }}>
       <AppBar position="static" elevation={0} sx={{ background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
@@ -51,9 +58,12 @@ const AuthWrapper: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      <Box sx={{ width: '100%' }}>
+      {/* NO CONTAINER - JUST BOX WITH FULL WIDTH */}
+      <Box sx={{ width: '100%', flex: 1 }}>
         <LoanForm onResult={setPrediction} />
-        <ResultCard data={prediction} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', pb: 4 }}>
+          <ResultCard data={prediction} />
+        </Box>
       </Box>
     </Box>
   );
