@@ -1,20 +1,23 @@
 from datetime import datetime, timedelta
 from typing import Optional
+import uuid
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
-from fastapi import Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from database import get_db
 import models
+from schemas import UserCreate, UserResponse
 import os
+
+router = APIRouter(prefix="/auth", tags=["authentication"])
 
 # Security config
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Use Argon2 instead of bcrypt (no 72-byte limit, no version issues)
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -48,6 +51,124 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+@router.post("/signup", response_model=UserResponse)
+def signup(user: UserCreate, db: Session = Depends(get_db)):
+    db_user = db.query(models.User).filter(
+        (models.User.email == user.email) | (models.User.username == user.username)
+    ).first()
+    
+    if db_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email or username already registered"
+        )
+    
+    hashed_password = get_password_hash(user.password)
+    db_user = models.User(
+        email=user.email,
+        username=user.username,
+        hashed_password=hashed_password
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@router.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
+    }
+
+@router.get("/me", response_model=UserResponse)
+def read_users_me(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
+@router.post("/forgot-password")
+def forgot_password(email: str, db: Session = Depends(get_db)):
+    """Request password reset - generates token"""
+    user = db.query(models.User).filter(models.User.email == email).first()
+    
+    if not user:
+        return {"message": "If email exists, reset instructions sent"}
+    
+    # Generate unique token
+    reset_token = str(uuid.uuid4())
+    expires = datetime.utcnow() + timedelta(hours=1)
+    
+    user.reset_token = reset_token
+    user.reset_token_expires = expires
+    db.commit()
+    
+    # For development: print link to console
+    # In production: send email via SMTP
+    reset_link = f"https://loan-default-predictor-one.vercel.app/reset-password?token={reset_token}"
+    
+    print(f"\n=== PASSWORD RESET LINK ===")
+    print(f"Email: {email}")
+    print(f"Link: {reset_link}")
+    print(f"===========================\n")
+    
+    return {
+        "message": "Password reset email sent",
+        "reset_link": reset_link,  # Remove in production
+        "token": reset_token  # Remove in production
+    }
+
+@router.post("/reset-password")
+def reset_password(token: str, new_password: str, db: Session = Depends(get_db)):
+    """Reset password using token"""
+    user = db.query(models.User).filter(
+        models.User.reset_token == token,
+        models.User.reset_token_expires > datetime.utcnow()
+    ).first()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset token"
+        )
+    
+    # Update password
+    user.hashed_password = get_password_hash(new_password)
+    user.reset_token = None
+    user.reset_token_expires = None
+    db.commit()
+    
+    return {"message": "Password reset successful"}
+
+@router.get("/verify-reset-token")
+def verify_reset_token(token: str, db: Session = Depends(get_db)):
+    """Check if reset token is valid"""
+    user = db.query(models.User).filter(
+        models.User.reset_token == token,
+        models.User.reset_token_expires > datetime.utcnow()
+    ).first()
+    
+    if not user:
+        return {"valid": False}
+    
+    return {"valid": True, "email": user.email}
+
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -66,8 +187,3 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
-
-async def get_current_active_user(current_user: models.User = Depends(get_current_user)):
-    if not current_user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
