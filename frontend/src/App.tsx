@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { 
   CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, 
   Typography, Button, CircularProgress, Box 
@@ -17,6 +17,7 @@ const theme = createTheme({
 
 const AuthWrapper: React.FC = () => {
   const { isAuthenticated, loading, logout, user } = useAuth();
+  const navigate = useNavigate();
   const [prediction, setPrediction] = useState<any>(null);
 
   if (loading) {
@@ -32,7 +33,7 @@ const AuthWrapper: React.FC = () => {
       <Routes>
         {/* Public routes */}
         <Route path="/forgot-password" element={
-          isAuthenticated ? <Navigate to="/" /> : <ForgotPassword />
+          isAuthenticated ? <Navigate to="/" /> : <ForgotPassword onBack={() => navigate('/')} />
         } />
         <Route path="/reset-password" element={
           isAuthenticated ? <Navigate to="/" /> : <ResetPassword />
