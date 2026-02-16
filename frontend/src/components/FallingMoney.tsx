@@ -22,7 +22,7 @@ const moneyImages = [
   },
   { 
     value: '5000', 
-    front: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-front.png', 
+    front: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-FRONT.png', 
     back: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-back.png',
     width: 110 
   },
