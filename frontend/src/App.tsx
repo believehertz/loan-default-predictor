@@ -23,14 +23,11 @@ const theme = createTheme({
   },
 });
 
+// ... imports stay same ...
+
 const AuthWrapper: React.FC = () => {
   const { isAuthenticated, loading, logout, user } = useAuth();
-  const [prediction, setPrediction] = useState<{
-    loan_paid_back_probability: number;
-    loan_will_be_paid_back: boolean;
-    risk_level: string;
-    confidence: string;
-  } | null>(null);
+  const [prediction, setPrediction] = useState<any>(null);
 
   if (loading) {
     return (
@@ -45,7 +42,7 @@ const AuthWrapper: React.FC = () => {
   }
 
   return (
-    <>
+    <Box sx={{ width: '100%', minHeight: '100vh' }}>  {/* FULL WIDTH */}
       <AppBar position="static" elevation={0} sx={{ background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
@@ -60,24 +57,16 @@ const AuthWrapper: React.FC = () => {
         </Toolbar>
       </AppBar>
       
-      <Box sx={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        alignItems: 'center',
-        minHeight: 'calc(100vh - 64px)',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        py: 4
-      }}>
-        <Container maxWidth="md">
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <LoanForm onResult={setPrediction} />
-            <ResultCard data={prediction} />
-          </Box>
-        </Container>
+      {/* REMOVED CONTAINER - LET LOANFORM HANDLE FULL WIDTH */}
+      <Box sx={{ width: '100%' }}>
+        <LoanForm onResult={setPrediction} />
+        <ResultCard data={prediction} />
       </Box>
-    </>
+    </Box>
   );
 };
+
+// ... rest same ...
 
 function App() {
   return (
