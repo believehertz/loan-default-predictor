@@ -9,13 +9,17 @@ import {
   Tab,
   Avatar,
   Fade,
-  Slide
+  Slide,
+  IconButton,
+  InputAdornment
 } from '@mui/material';
 import { 
   LockOutlined, 
   AccountBalance, 
   TrendingUp,
-  Security
+  Security,
+  Visibility,
+  VisibilityOff
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 
@@ -24,9 +28,12 @@ const AuthForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // NEW: Toggle state
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login, signup } = useAuth();
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword); // NEW: Toggle handler
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,14 +63,14 @@ const AuthForm: React.FC = () => {
     <Box
       sx={{
         minHeight: '100vh',
-        minWidth: '100vw',  // FORCE FULL VIEWPORT WIDTH
+        minWidth: '100vw',
         width: '100vw',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        position: 'fixed',  // FIXED POSITION TO COVER EVERYTHING
+        position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
@@ -72,7 +79,7 @@ const AuthForm: React.FC = () => {
         px: 2
       }}
     >
-      {/* Animated Background Pattern - Full coverage */}
+      {/* Animated Background Pattern */}
       <Box
         sx={{
           position: 'absolute',
@@ -87,7 +94,7 @@ const AuthForm: React.FC = () => {
         }}
       />
 
-      {/* Centered Content - Takes full width but centers children */}
+      {/* Centered Content */}
       <Box sx={{ 
         width: '100%',
         maxWidth: '500px',
@@ -193,15 +200,31 @@ const AuthForm: React.FC = () => {
                 onChange={(e) => setUsername(e.target.value)}
                 sx={{ mb: 2 }}
               />
+              
+              {/* PASSWORD FIELD WITH EYE ICON */}
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 label="Password"
-                type="password"
+                type={showPassword ? 'text' : 'password'} // Toggle type
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 sx={{ mb: 2 }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                        sx={{ color: 'primary.main' }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               
               {error && (
@@ -243,7 +266,7 @@ const AuthForm: React.FC = () => {
         </Slide>
       </Box>
 
-      {/* Floating Circles - Full width spread */}
+      {/* Floating Circles */}
       {[...Array(8)].map((_, i) => (
         <Box
           key={i}
