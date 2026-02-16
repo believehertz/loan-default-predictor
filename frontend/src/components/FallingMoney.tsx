@@ -1,75 +1,65 @@
 import React from 'react';
 import { Box, keyframes } from '@mui/material';
 
-// Define your money images - update these paths to match your actual filenames
 const moneyImages = [
   { 
     value: '50000', 
-    front: '/images/2010-2019-50000-UGX-Ugandan-Shilling-note-back.png',
-    back: '/images/2010-2019-50000-UGX-Ugandan-Shilling-note-front.png',
-    width: 120 
+    front: '/images/2010-2019-50000-UGX-Ugandan-Shilling-note-front.png',
+    back: '/images/2010-2019-50000-UGX-Ugandan-Shilling-note-back.png',
+    width: 140 
   },
   { 
     value: '20000', 
-    front: '/images/2010-2019-20000-UGX-Ugandan-Shilling-note-back.png',
-    back: '/images/2010-2019-20000-UGX-Ugandan-Shilling-note-front.png',
-    width: 110 
+    front: '/images/2010-2019-20000-UGX-Ugandan-Shilling-note-front.png',
+    back: '/images/2010-2019-20000-UGX-Ugandan-Shilling-note-back.png',
+    width: 130 
   },
   { 
     value: '10000', 
-    front: '/images/2010-2019-10000-UGX-Ugandan-Shilling-note-back.png',
-    back: '/images/2010-2019-10000-UGX-Ugandan-Shilling-note-front.png',
-    width: 100 
+    front: '/images/2010-2019-10000-UGX-Ugandan-Shilling-note-front.png',
+    back: '/images/2010-2019-10000-UGX-Ugandan-Shilling-note-back.png',
+    width: 120 
   },
   { 
     value: '5000', 
-    front: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-back.png',
-    back: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-front.png',
-    width: 90 
+    front: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-front.png', 
+    back: '/images/2010-2019-5000-UGX-Ugandan-Shilling-note-back.png',
+    width: 110 
   },
   { 
     value: '2000', 
-    front: '/images/2010-2019-2000-UGX-Ugandan-Shilling-note-back.png',
-    back: '/images/2010-2019-2000-UGX-Ugandan-Shilling-note-front.png',
-    width: 80 
+    front: '/images/2010-2019-2000-UGX-Ugandan-Shilling-note-front.png',
+    back: '/images/2010-2019-2000-UGX-Ugandan-Shilling-note-back.png',
+    width: 100 
   },
   { 
     value: '1000', 
-    front: '/images/2010-2019-1000-UGX-Ugandan-Shilling-note-back.png',
-    back: '/images/2010-2019-1000-UGX-Ugandan-Shilling-note-front.png',
-    width: 70 
+    front: '/images/2010-2019-1000-UGX-Ugandan-Shilling-note-front.png',
+    back: '/images/2010-2019-1000-UGX-Ugandan-Shilling-note-back.png',
+    width: 90 
   },
 ];
 
 const fall = keyframes`
-  0% {
-    transform: translateY(-150px) rotate(0deg);
-    opacity: 0;
-  }
-  5% {
-    opacity: 1;
-  }
-  95% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(110vh) rotate(360deg);
-    opacity: 0;
-  }
+  0% { transform: translateY(-150px) rotate(0deg); opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 `;
 
 const FallingMoney: React.FC = () => {
-  // Create 20 falling bills with random positions
-  const bills = Array.from({ length: 20 }, (_, i) => {
+  const bills = Array.from({ length: 25 }, (_, i) => {
     const money = moneyImages[i % moneyImages.length];
+    const isFront = Math.random() > 0.5; // Randomly choose front or back
+    
     return {
       ...money,
       id: i,
       left: Math.random() * 95, // 0-95% across screen
       delay: Math.random() * 15, // Random start delay
-      duration: 12 + Math.random() * 8, // 12-20 seconds fall time
+      duration: 10 + Math.random() * 8, // 10-18 seconds fall time
       rotation: Math.random() * 360, // Random starting rotation
-      isFront: Math.random() > 0.5, // Randomly choose front or back (if you have both)
+      isFront, // Store which side to show
     };
   });
 
@@ -90,7 +80,7 @@ const FallingMoney: React.FC = () => {
         <Box
           key={bill.id}
           component="img"
-          src={bill.src}
+          src={bill.isFront ? bill.front : bill.back} // ✅ Correct: use ternary operator
           alt={`UGX ${bill.value}`}
           sx={{
             position: 'absolute',
@@ -104,7 +94,6 @@ const FallingMoney: React.FC = () => {
             animationDelay: `${bill.delay}s`,
             transform: `rotate(${bill.rotation}deg)`,
             objectFit: 'contain',
-            zIndex: 0
           }}
         />
       ))}
