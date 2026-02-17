@@ -1,19 +1,25 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { 
   CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, 
   Typography, Button, CircularProgress, Box 
 } from '@mui/material';
-import LoanForm from './components/LoanForm';
-import ResultCard from './components/ResultCard';
-import AuthForm from './components/AuthForm';
-import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword';
+const LoanForm = lazy(() => import('./components/LoanForm'));
+const ResultCard = lazy(() => import('./components/ResultCard'));
+const AuthForm = lazy(() => import('./components/AuthForm'));
+const ForgotPassword = lazy(() => import('./components/ForgotPassword'));
+const ResetPassword = lazy(() => import('./components/ResetPassword'));
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const theme = createTheme({
   palette: { primary: { main: '#1976d2' }, secondary: { main: '#dc004e' } },
 });
+
+const LoadingSpinner = () => (
+  <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+    <CircularProgress size={60} />
+  </Box>
+);
 
 const AuthWrapper: React.FC = () => {
   const { isAuthenticated, loading, logout, user } = useAuth();
@@ -21,11 +27,7 @@ const AuthWrapper: React.FC = () => {
   const [prediction, setPrediction] = useState<any>(null);
 
   if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-        <CircularProgress size={60} />
-      </Box>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -33,15 +35,27 @@ const AuthWrapper: React.FC = () => {
       <Routes>
         {/* Public routes */}
         <Route path="/forgot-password" element={
-          isAuthenticated ? <Navigate to="/" /> : <ForgotPassword onBack={() => navigate('/')} />
+          isAuthenticated ? <Navigate to="/" /> : (
+            <Suspense fallback={<LoadingSpinner />}>
+              <ForgotPassword onBack={() => navigate('/')} />
+            </Suspense>
+          )
         } />
         <Route path="/reset-password" element={
-          isAuthenticated ? <Navigate to="/" /> : <ResetPassword />
+          isAuthenticated ? <Navigate to="/" /> : (
+            <Suspense fallback={<LoadingSpinner />}>
+              <ResetPassword />
+            </Suspense>
+          )
         } />
         
         {/* Main route */}
         <Route path="/" element={
-          !isAuthenticated ? <AuthForm onForgotPassword={() => window.location.href = '/forgot-password'} /> : (
+          !isAuthenticated ? (
+            <Suspense fallback={<LoadingSpinner />}>
+              <AuthForm onForgotPassword={() => window.location.href = '/forgot-password'} />
+            </Suspense>
+          ) : (
             <Box sx={{ width: '100%', minHeight: '100vh' }}>
               <AppBar position="static" elevation={0} sx={{ background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)' }}>
                 <Toolbar>
@@ -58,9 +72,13 @@ const AuthWrapper: React.FC = () => {
               </AppBar>
               
               <Box sx={{ width: '100%' }}>
-                <LoanForm onResult={setPrediction} />
+                <Suspense fallback={<LoadingSpinner />}>
+                  <LoanForm onResult={setPrediction} />
+                </Suspense>
                 <Box sx={{ display: 'flex', justifyContent: 'center', pb: 4 }}>
-                  <ResultCard data={prediction} />
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ResultCard data={prediction} />
+                  </Suspense>
                 </Box>
               </Box>
             </Box>
