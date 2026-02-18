@@ -3,7 +3,7 @@ import { Box, TextField, Button, Typography, Paper, Alert, CircularProgress } fr
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-// HARDCODED FOR TESTING - Replace with your actual Railway URL
+// 🔥 HARDCODED - Replace with your actual Railway URL
 const API_URL = 'https://loan-default-predictor-production-a3ad.up.railway.app/api';
 
 const ForgotPassword: React.FC = () => {
@@ -18,16 +18,16 @@ const ForgotPassword: React.FC = () => {
     setError('');
     setMessage('');
 
+    const fullUrl = `${API_URL}/auth/forgot-password`;
+    console.log('Calling:', fullUrl); // Debug
+
     try {
-      const response = await axios.post(`${API_URL}/auth/forgot-password`, {
-        email: email
-      });
-      
-      setMessage('Password reset link sent! Check console for link.');
-      console.log('Reset link:', response.data.reset_link);
+      const response = await axios.post(fullUrl, { email: email });
+      setMessage('Reset link sent! Check browser console.');
+      console.log('Link:', response.data.reset_link);
     } catch (err: any) {
       console.error('Error:', err);
-      setError(err.response?.data?.detail || 'Failed to send reset email. Check console.');
+      setError(err.response?.data?.detail || 'Failed to send reset email');
     } finally {
       setLoading(false);
     }
