@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from pydantic import BaseModel
 from database import get_db
 import models
 from schemas import UserCreate, UserResponse
@@ -20,6 +21,10 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+# Pydantic model for forgot password request
+class ForgotPasswordRequest(BaseModel):
+    email: str
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
@@ -127,11 +132,14 @@ def read_users_me(current_user: models.User = Depends(get_current_user)):
 # ========== FORGOT PASSWORD ENDPOINTS ==========
 
 @router.post("/forgot-password")
-def forgot_password(email: str, db: Session = Depends(get_db)):
-    """Request password reset - generates token"""
+def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """Request password reset - accepts JSON body with email"""
+    email = request.email  # Get email from JSON body
+    
     user = db.query(models.User).filter(models.User.email == email).first()
     
     if not user:
+        # Don't reveal if email exists
         return {"message": "If email exists, reset instructions sent"}
     
     # Generate unique token
@@ -142,9 +150,10 @@ def forgot_password(email: str, db: Session = Depends(get_db)):
     user.reset_token_expires = expires
     db.commit()
     
-    # For development: return link (remove in production)
+    # Create reset link
     reset_link = f"https://loan-default-predictor-one.vercel.app/reset-password?token={reset_token}"
     
+    # Log to console (in production, send email instead)
     print(f"\n=== PASSWORD RESET LINK ===")
     print(f"Email: {email}")
     print(f"Link: {reset_link}")
@@ -176,7 +185,7 @@ def reset_password(token: str, new_password: str, db: Session = Depends(get_db))
     user.reset_token_expires = None
     db.commit()
     
-    return {"message": "Password reset successful"}
+    return {"message": "Password reset successful. Please login with new password."}
 
 @router.get("/verify-reset-token")
 def verify_reset_token(token: str, db: Session = Depends(get_db)):
