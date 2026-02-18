@@ -20,6 +20,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
   const [loading, setLoading] = useState(false);
   const { login, signup } = useAuth();
 
+  console.log('[AuthForm] Rendering...');
+
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e: React.FormEvent) => {
