@@ -3,7 +3,9 @@ import { Box, TextField, Button, Typography, Paper, Alert, CircularProgress } fr
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+// DEBUG: Log the API URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+console.log('ForgotPassword API_URL:', API_URL); // Check browser console for this!
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -17,12 +19,29 @@ const ForgotPassword: React.FC = () => {
     setError('');
     setMessage('');
 
+    // DEBUG: Show what URL we're calling
+    const fullUrl = `${API_URL}/auth/forgot-password`;
+    console.log('Calling URL:', fullUrl);
+
     try {
-      const response = await axios.post(`${API_URL}/auth/forgot-password`, { email });
+      const response = await axios.post(fullUrl, { email }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
       setMessage('Check your email for reset instructions');
       console.log('Reset link:', response.data.reset_link);
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Failed to send reset email');
+      console.error('Full error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error request:', err.request);
+      
+      if (err.response?.status === 404) {
+        setError('API endpoint not found. Please try again later.');
+      } else {
+        setError(err.response?.data?.detail || 'Failed to send reset email');
+      }
     } finally {
       setLoading(false);
     }
@@ -44,6 +63,11 @@ const ForgotPassword: React.FC = () => {
         
         {message && <Alert severity="success" sx={{ mb: 2 }}>{message}</Alert>}
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+
+        {/* DEBUG: Show API URL (remove after fixing) */}
+        <Typography variant="caption" color="textSecondary" sx={{ mb: 2, display: 'block', textAlign: 'center' }}>
+          API: {API_URL}
+        </Typography>
 
         <Box component="form" onSubmit={handleSubmit}>
           <TextField 
