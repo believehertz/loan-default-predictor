@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from database import get_db
 import models
 from schemas import UserCreate, UserResponse
+from email_service import send_reset_email
 import os
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -133,19 +134,23 @@ def read_users_me(current_user: models.User = Depends(get_current_user)):
 
 @router.post("/forgot-password")
 def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
-    """Request password reset - accepts JSON body with email"""
-    email = request.email  # Get email from JSON body
+    """
+    Request password reset - sends real email via SendGrid
+    """
+    email = request.email
     
+    # Find user
     user = db.query(models.User).filter(models.User.email == email).first()
     
+    # Don't reveal if email exists (security best practice)
     if not user:
-        # Don't reveal if email exists
-        return {"message": "If email exists, reset instructions sent"}
+        return {"message": "If this email is registered, you will receive reset instructions."}
     
-    # Generate unique token
+    # Generate reset token
     reset_token = str(uuid.uuid4())
     expires = datetime.utcnow() + timedelta(hours=1)
     
+    # Save token to database
     user.reset_token = reset_token
     user.reset_token_expires = expires
     db.commit()
@@ -153,21 +158,31 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     # Create reset link
     reset_link = f"https://loan-default-predictor-one.vercel.app/reset-password?token={reset_token}"
     
-    # Log to console (in production, send email instead)
-    print(f"\n=== PASSWORD RESET LINK ===")
-    print(f"Email: {email}")
-    print(f"Link: {reset_link}")
-    print(f"===========================\n")
+    # Send email via SendGrid
+    email_sent = send_reset_email(
+        to_email=email,
+        reset_link=reset_link,
+        username=user.username
+    )
     
-    return {
-        "message": "Password reset email sent",
-        "reset_link": reset_link,
-        "token": reset_token
-    }
+    if email_sent:
+        return {
+            "message": "Password reset email sent! Check your inbox (and spam folder).",
+            "email_sent": True
+        }
+    else:
+        # Fallback if email service fails (for development)
+        return {
+            "message": "Email service temporarily unavailable. Use this link:",
+            "reset_link": reset_link,
+            "email_sent": False
+        }
 
 @router.post("/reset-password")
 def reset_password(token: str, new_password: str, db: Session = Depends(get_db)):
-    """Reset password using token"""
+    """
+    Reset password using token
+    """
     user = db.query(models.User).filter(
         models.User.reset_token == token,
         models.User.reset_token_expires > datetime.utcnow()
@@ -185,11 +200,13 @@ def reset_password(token: str, new_password: str, db: Session = Depends(get_db))
     user.reset_token_expires = None
     db.commit()
     
-    return {"message": "Password reset successful. Please login with new password."}
+    return {"message": "Password reset successful. Please login with your new password."}
 
 @router.get("/verify-reset-token")
 def verify_reset_token(token: str, db: Session = Depends(get_db)):
-    """Check if reset token is valid"""
+    """
+    Check if reset token is valid
+    """
     user = db.query(models.User).filter(
         models.User.reset_token == token,
         models.User.reset_token_expires > datetime.utcnow()

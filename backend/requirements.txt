@@ -37,3 +37,4 @@ uvicorn
 xgboost
 email-validator
 python-dotenv
+sendgrid
