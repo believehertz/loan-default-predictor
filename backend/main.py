@@ -3,43 +3,30 @@ from fastapi.middleware.cors import CORSMiddleware
 from database import engine, Base
 from app.routers import predict, auth
 
-# Create tables in PostgreSQL
+# Create tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Loan Default Detector",
-    description="AI-powered loan risk assessment API with Authentication",
     version="2.0.0"
 )
 
-# CORS - FIXED: Add your exact Vercel frontend URL
+# NUCLEAR CORS - Allow everything (for testing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://loan-default-predictor-one.vercel.app",  # YOUR FRONTEND URL
-        "http://localhost:5173",  # For local development
-        "http://localhost:3000",  # Alternative local port
-    ],
+    allow_origins=["*"],  # Allow ALL origins (change to specific URL in production)
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
-    max_age=3600,
 )
 
-# Include routers
 app.include_router(auth.router, prefix="/api")
 app.include_router(predict.router, prefix="/api")
 
 @app.get("/")
 def root():
-    return {
-        "message": "Loan API Running",
-        "status": "healthy",
-        "docs": "/docs",
-        "version": "2.0.0"
-    }
+    return {"status": "ok"}
 
 @app.get("/health")
-def health_check():
-    return {"status": "ok", "cors": "enabled"}
+def health():
+    return {"status": "ok", "cors": "permissive"}
