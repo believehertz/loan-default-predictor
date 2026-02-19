@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Grid, Paper, Typography, Button, Switch, FormControlLabel,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Chip, LinearProgress, Alert, Skeleton, IconButton, Tooltip
+  // Removed unused: Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  // Removed unused: Chip, Alert, IconButton,
+  LinearProgress, Skeleton, Tooltip
 } from '@mui/material';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
@@ -14,7 +15,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { DarkMode, LightMode, Download, TrendingUp, AttachMoney, Assessment } from '@mui/icons-material';
+import { DarkMode, LightMode, Download } from '@mui/icons-material';
+// Removed unused: TrendingUp, AttachMoney, Assessment
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -32,6 +34,18 @@ const themes = {
   }
 };
 
+// Type declaration for canvas-confetti
+declare module 'canvas-confetti' {
+  interface ConfettiOptions {
+    particleCount?: number;
+    spread?: number;
+    origin?: { y: number };
+    [key: string]: any;
+  }
+  function confetti(options?: ConfettiOptions): Promise<void>;
+  export default confetti;
+}
+
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
@@ -40,8 +54,7 @@ const Dashboard: React.FC = () => {
   const [timeline, setTimeline] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [compareMode, setCompareMode] = useState(false);
-  const [scenarios, setScenarios] = useState<any[]>([]);
+  // Removed unused: compareMode, setCompareMode, scenarios, setScenarios
 
   const theme = darkMode ? themes.dark : themes.light;
 
@@ -53,19 +66,19 @@ const Dashboard: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
-      
+
       const [statsRes, featuresRes, timelineRes, historyRes] = await Promise.all([
         axios.get(`${API_URL}/stats`, { headers }),
         axios.get(`${API_URL}/feature-importance`, { headers }),
         axios.get(`${API_URL}/timeline`, { headers }),
         axios.get(`${API_URL}/history`, { headers })
       ]);
-      
+
       setStats(statsRes.data);
       setFeatures(featuresRes.data.features);
       setTimeline(timelineRes.data);
       setPredictions(historyRes.data);
-      
+
       // Confetti if high accuracy
       if (statsRes.data.avg_probability > 0.9) {
         confetti({
@@ -84,10 +97,10 @@ const Dashboard: React.FC = () => {
   const exportPDF = async () => {
     const element = document.getElementById('dashboard-content');
     if (!element) return;
-    
+
     const canvas = await html2canvas(element);
     const imgData = canvas.toDataURL('image/png');
-    
+
     const pdf = new jsPDF();
     pdf.addImage(imgData, 'PNG', 10, 10, 190, 0);
     pdf.save(`loan-report-${user?.username}.pdf`);
@@ -109,16 +122,16 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <Box sx={{ 
+    <Box sx={{
       minHeight: '100vh',
       background: theme.bg,
       p: 3,
       transition: 'all 0.3s ease'
     }}>
       {/* Header */}
-      <Paper sx={{ 
-        p: 3, 
-        mb: 3, 
+      <Paper sx={{
+        p: 3,
+        mb: 3,
         background: theme.paper,
         backdropFilter: 'blur(10px)',
         display: 'flex',
@@ -128,14 +141,14 @@ const Dashboard: React.FC = () => {
         <Typography variant="h4" sx={{ color: theme.text, fontWeight: 700 }}>
           📊 Dashboard
         </Typography>
-        
+
         <Box display="flex" gap={2}>
           <FormControlLabel
             control={<Switch checked={darkMode} onChange={() => setDarkMode(!darkMode)} />}
             label={darkMode ? <DarkMode /> : <LightMode />}
           />
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             startIcon={<Download />}
             onClick={exportPDF}
           >
@@ -147,7 +160,7 @@ const Dashboard: React.FC = () => {
       <div id="dashboard-content">
         {/* Animated Stats Counter */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid size={{xs: 12, md: 4}}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, background: theme.paper, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: theme.text }}>Total Predictions</Typography>
               <Typography variant="h2" sx={{ color: '#1976d2', fontWeight: 700 }}>
@@ -155,7 +168,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Paper>
           </Grid>
-          <Grid size={{xs: 12, md: 4}}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, background: theme.paper, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: theme.text }}>Total Value Analyzed</Typography>
               <Typography variant="h2" sx={{ color: '#4caf50', fontWeight: 700 }}>
@@ -163,7 +176,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Paper>
           </Grid>
-          <Grid size={{xs: 12, md: 4}}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, background: theme.paper, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: theme.text }}>Avg Accuracy</Typography>
               <Typography variant="h2" sx={{ color: '#ff9800', fontWeight: 700 }}>
@@ -176,7 +189,7 @@ const Dashboard: React.FC = () => {
         {/* Charts Row */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {/* Risk Distribution Pie Chart */}
-          <Grid size={{xs: 12, md:4}}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, background: theme.paper, height: 400 }}>
               <Typography variant="h6" sx={{ color: theme.text, mb: 2 }}>
                 Risk Distribution
@@ -209,7 +222,7 @@ const Dashboard: React.FC = () => {
           </Grid>
 
           {/* Feature Importance Bar Chart */}
-          <Grid size={{xs: 12, md: 4}}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Paper sx={{ p: 3, background: theme.paper, height: 400 }}>
               <Typography variant="h6" sx={{ color: theme.text, mb: 2 }}>
                 Top Risk Factors (XGBoost Model)
@@ -250,11 +263,11 @@ const Dashboard: React.FC = () => {
           </Typography>
           <Grid container spacing={1}>
             {predictions.slice(0, 20).map((pred, idx) => (
-              <Grid key={idx}>
+              <Grid size={{ xs: 3, sm: 2, md: 1 }} key={idx}>
                 <Tooltip title={`$${pred.loan_amount} - ${(pred.loan_paid_back_probability * 100).toFixed(0)}%`}>
                   <Box
                     sx={{
-                      width: 60,
+                      width: '100%',
                       height: 60,
                       backgroundColor: getRiskColor(pred.loan_paid_back_probability),
                       borderRadius: 1,
@@ -286,9 +299,9 @@ const Dashboard: React.FC = () => {
               { name: "Medium Risk Profile", income: 45000, credit: 650, emp: "Employed", prob: 0.68 },
               { name: "High Risk Profile", income: 25000, credit: 550, emp: "Unemployed", prob: 0.23 }
             ].map((scenario, idx) => (
-              <Grid size={{xs: 12, md: 4}} key={idx}>
-                <Paper sx={{ 
-                  p: 2, 
+              <Grid size={{ xs: 12, md: 4 }} key={idx}>
+                <Paper sx={{
+                  p: 2,
                   background: `rgba(${scenario.prob > 0.7 ? '76, 175, 80' : scenario.prob > 0.5 ? '255, 152, 0' : '244, 67, 54'}, 0.1)`,
                   border: `2px solid ${getRiskColor(scenario.prob)}`
                 }}>
@@ -296,9 +309,9 @@ const Dashboard: React.FC = () => {
                   <Typography sx={{ color: theme.text }}>Income: ${scenario.income.toLocaleString()}</Typography>
                   <Typography sx={{ color: theme.text }}>Credit: {scenario.credit}</Typography>
                   <Typography sx={{ color: theme.text }}>Status: {scenario.emp}</Typography>
-                  <LinearProgress 
-                    variant="determinate" 
-                    value={scenario.prob * 100} 
+                  <LinearProgress
+                    variant="determinate"
+                    value={scenario.prob * 100}
                     sx={{ mt: 2, height: 10, borderRadius: 5 }}
                   />
                   <Typography align="center" sx={{ mt: 1, color: getRiskColor(scenario.prob), fontWeight: 'bold' }}>
