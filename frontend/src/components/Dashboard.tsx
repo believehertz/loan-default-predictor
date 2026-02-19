@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Grid, Paper, Typography, Button, Switch, FormControlLabel,
-  // Removed unused: Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  // Removed unused: Chip, Alert, IconButton,
   LinearProgress, Skeleton, Tooltip
 } from '@mui/material';
 import {
@@ -10,13 +8,13 @@ import {
   ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell
 } from 'recharts';
 import CountUp from 'react-countup';
+// @ts-expect-error canvas-confetti has no TypeScript types
 import confetti from 'canvas-confetti';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { DarkMode, LightMode, Download } from '@mui/icons-material';
-// Removed unused: TrendingUp, AttachMoney, Assessment
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -34,18 +32,6 @@ const themes = {
   }
 };
 
-// Type declaration for canvas-confetti
-declare module 'canvas-confetti' {
-  interface ConfettiOptions {
-    particleCount?: number;
-    spread?: number;
-    origin?: { y: number };
-    [key: string]: any;
-  }
-  function confetti(options?: ConfettiOptions): Promise<void>;
-  export default confetti;
-}
-
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [darkMode, setDarkMode] = useState(false);
@@ -54,7 +40,6 @@ const Dashboard: React.FC = () => {
   const [timeline, setTimeline] = useState<any[]>([]);
   const [predictions, setPredictions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  // Removed unused: compareMode, setCompareMode, scenarios, setScenarios
 
   const theme = darkMode ? themes.dark : themes.light;
 
@@ -75,9 +60,9 @@ const Dashboard: React.FC = () => {
       ]);
 
       setStats(statsRes.data);
-      setFeatures(featuresRes.data.features);
-      setTimeline(timelineRes.data);
-      setPredictions(historyRes.data);
+      setFeatures(featuresRes.data.features || []);
+      setTimeline(timelineRes.data || []);
+      setPredictions(historyRes.data || []);
 
       // Confetti if high accuracy
       if (statsRes.data.avg_probability > 0.9) {
@@ -189,7 +174,7 @@ const Dashboard: React.FC = () => {
         {/* Charts Row */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {/* Risk Distribution Pie Chart */}
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, background: theme.paper, height: 400 }}>
               <Typography variant="h6" sx={{ color: theme.text, mb: 2 }}>
                 Risk Distribution
@@ -206,6 +191,7 @@ const Dashboard: React.FC = () => {
                     cy="50%"
                     outerRadius={100}
                     dataKey="value"
+                    label={({name, percent}) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   >
                     {[
                       { color: '#4caf50' },
@@ -222,7 +208,7 @@ const Dashboard: React.FC = () => {
           </Grid>
 
           {/* Feature Importance Bar Chart */}
-          <Grid size={{ xs: 12, md: 4 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <Paper sx={{ p: 3, background: theme.paper, height: 400 }}>
               <Typography variant="h6" sx={{ color: theme.text, mb: 2 }}>
                 Top Risk Factors (XGBoost Model)
