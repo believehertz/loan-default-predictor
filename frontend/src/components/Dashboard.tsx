@@ -147,7 +147,7 @@ const Dashboard: React.FC = () => {
       <div id="dashboard-content">
         {/* Animated Stats Counter */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{xs: 12, md: 4}}>
             <Paper sx={{ p: 3, background: theme.paper, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: theme.text }}>Total Predictions</Typography>
               <Typography variant="h2" sx={{ color: '#1976d2', fontWeight: 700 }}>
@@ -155,7 +155,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{xs: 12, md: 4}}>
             <Paper sx={{ p: 3, background: theme.paper, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: theme.text }}>Total Value Analyzed</Typography>
               <Typography variant="h2" sx={{ color: '#4caf50', fontWeight: 700 }}>
@@ -163,7 +163,7 @@ const Dashboard: React.FC = () => {
               </Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{xs: 12, md: 4}}>
             <Paper sx={{ p: 3, background: theme.paper, textAlign: 'center' }}>
               <Typography variant="h6" sx={{ color: theme.text }}>Avg Accuracy</Typography>
               <Typography variant="h2" sx={{ color: '#ff9800', fontWeight: 700 }}>
@@ -176,7 +176,7 @@ const Dashboard: React.FC = () => {
         {/* Charts Row */}
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {/* Risk Distribution Pie Chart */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{xs: 12, md:4}}>
             <Paper sx={{ p: 3, background: theme.paper, height: 400 }}>
               <Typography variant="h6" sx={{ color: theme.text, mb: 2 }}>
                 Risk Distribution
@@ -209,7 +209,7 @@ const Dashboard: React.FC = () => {
           </Grid>
 
           {/* Feature Importance Bar Chart */}
-          <Grid item xs={12} md={6}>
+          <Grid size={{xs: 12, md: 4}}>
             <Paper sx={{ p: 3, background: theme.paper, height: 400 }}>
               <Typography variant="h6" sx={{ color: theme.text, mb: 2 }}>
                 Top Risk Factors (XGBoost Model)
@@ -250,7 +250,7 @@ const Dashboard: React.FC = () => {
           </Typography>
           <Grid container spacing={1}>
             {predictions.slice(0, 20).map((pred, idx) => (
-              <Grid item key={idx}>
+              <Grid key={idx}>
                 <Tooltip title={`$${pred.loan_amount} - ${(pred.loan_paid_back_probability * 100).toFixed(0)}%`}>
                   <Box
                     sx={{
@@ -286,7 +286,7 @@ const Dashboard: React.FC = () => {
               { name: "Medium Risk Profile", income: 45000, credit: 650, emp: "Employed", prob: 0.68 },
               { name: "High Risk Profile", income: 25000, credit: 550, emp: "Unemployed", prob: 0.23 }
             ].map((scenario, idx) => (
-              <Grid item xs={12} md={4} key={idx}>
+              <Grid size={{xs: 12, md: 4}} key={idx}>
                 <Paper sx={{ 
                   p: 2, 
                   background: `rgba(${scenario.prob > 0.7 ? '76, 175, 80' : scenario.prob > 0.5 ? '255, 152, 0' : '244, 67, 54'}, 0.1)`,
