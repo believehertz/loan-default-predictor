@@ -73,6 +73,7 @@ const ResetPassword: React.FC = () => {
         token: token,
         new_password: newPassword
       });
+      console.log('Reset response:', response.data); // Use the variable
       
       setMessage('Password reset successful! Redirecting to login...');
       
