@@ -127,3 +127,65 @@ def model_info():
         "features": numeric_features + categorical_features,
         "top_feature": "employment_status (83.8% importance)"
     }
+
+@router.get("/stats")
+def get_prediction_stats(current_user: models.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """Get user's prediction statistics"""
+    predictions = db.query(LoanApplication).filter(
+        LoanApplication.user_id == current_user.id
+    ).all()
+    
+    if not predictions:
+        return {
+            "total_predictions": 0,
+            "total_loan_value": 0,
+            "avg_probability": 0,
+            "risk_distribution": {"low": 0, "medium": 0, "high": 0}
+        }
+    
+    total_value = sum(p.loan_amount for p in predictions)
+    avg_prob = sum(p.loan_paid_back_probability or 0 for p in predictions) / len(predictions)
+    
+    # Risk distribution
+    low = sum(1 for p in predictions if (p.loan_paid_back_probability or 0) >= 0.7)
+    medium = sum(1 for p in predictions if 0.5 <= (p.loan_paid_back_probability or 0) < 0.7)
+    high = sum(1 for p in predictions if (p.loan_paid_back_probability or 0) < 0.5)
+    
+    return {
+        "total_predictions": len(predictions),
+        "total_loan_value": total_value,
+        "avg_probability": avg_prob,
+        "risk_distribution": {"low": low, "medium": medium, "high": high}
+    }
+
+@router.get("/feature-importance")
+def get_feature_importance():
+    """Get XGBoost feature importance"""
+    importance_df = pd.DataFrame({
+        'feature': model_package['all_features'],
+        'importance': model.feature_importances_
+    }).sort_values('importance', ascending=False)
+    
+    return {
+        "features": importance_df.head(10).to_dict('records'),
+        "top_feature": importance_df.iloc[0]['feature'],
+        "top_importance": float(importance_df.iloc[0]['importance'])
+    }
+
+@router.get("/timeline")
+def get_prediction_timeline(current_user: models.User = Depends(get_current_active_user), db: Session = Depends(get_db)):
+    """Get predictions over time for charting"""
+    predictions = db.query(LoanApplication).filter(
+        LoanApplication.user_id == current_user.id
+    ).order_by(LoanApplication.created_at).all()
+    
+    timeline = []
+    for p in predictions:
+        timeline.append({
+            "date": p.created_at.strftime("%Y-%m-%d"),
+            "probability": p.loan_paid_back_probability,
+            "loan_amount": p.loan_amount,
+            "risk_level": "Low" if p.loan_paid_back_probability >= 0.7 else "Medium" if p.loan_paid_back_probability >= 0.5 else "High"
+        })
+    
+    return timeline

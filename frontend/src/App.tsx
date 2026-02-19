@@ -17,6 +17,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthForm from './components/AuthForm';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import Dashboard from './components/Dashboard';
 
 const theme = createTheme({
   palette: { 
@@ -40,6 +41,9 @@ const AuthWrapper: React.FC = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/dashboard" element={
+          isAuthenticated ? <Dashboard /> : <Navigate to="/" />
+        } />
         <Route path="/forgot-password" element={
           isAuthenticated ? <Navigate to="/" /> : <ForgotPassword />
         } />
@@ -68,6 +72,9 @@ const AuthWrapper: React.FC = () => {
                   <Button color="inherit" onClick={logout} variant="outlined" size="small" 
                     sx={{ borderColor: 'white' }}>
                     Logout
+                  </Button>
+                  <Button color="inherit" onClick={() => navigate('/dashboard')}>
+                    Dashboard
                   </Button>
                 </Toolbar>
               </AppBar>
