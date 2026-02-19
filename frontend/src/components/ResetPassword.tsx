@@ -1,97 +1,53 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// API URL - production only (reset doesn't work locally anyway)
 const API_URL = 'https://loan-default-predictor-production-a3ad.up.railway.app/api';
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const token = searchParams.get('token');
+  const token = searchParams.get('token') || '';
 
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [verifying, setVerifying] = useState(true);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [isValid, setIsValid] = useState(false);
-
-  // Verify token on load
-  useEffect(() => {
-    console.log('Token from URL:', token); // DEBUG
-    
-    if (!token) {
-      setError('No reset token found in URL');
-      setVerifying(false);
-      return;
-    }
-
-    // Token exists, mark as valid (backend will verify on submit)
-    setIsValid(true);
-    setVerifying(false);
-  }, [token]);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted'); // DEBUG
-    
-    // Validation
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match!');
-      return;
-    }
-    
-    if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters!');
-      return;
-    }
-
     setLoading(true);
     setError('');
-    setMessage('');
-    
-    console.log('Sending request to:', `${API_URL}/auth/reset-password`); // DEBUG
-    console.log('Token:', token); // DEBUG
 
     try {
-      const response = await axios.post(`${API_URL}/auth/reset-password`, {
+      await axios.post(`${API_URL}/auth/reset-password`, {
         token: token,
-        new_password: newPassword
+        new_password: password
       });
       
-      console.log('Success response:', response.data); // DEBUG
-      setMessage('Password reset successful! Redirecting to login...');
-      
-      // Clear form
-      setNewPassword('');
-      setConfirmPassword('');
-      
-      // Redirect after 2 seconds
-      setTimeout(() => {
-        navigate('/');
-      }, 2000);
-      
+      setSuccess(true);
+      setTimeout(() => navigate('/'), 3000);
     } catch (err: any) {
-      console.error('Error:', err); // DEBUG
-      console.error('Response:', err.response); // DEBUG
-      
-      if (err.response?.status === 400) {
-        setError('Invalid or expired reset token. Please request a new reset link.');
-      } else {
-        setError(err.response?.data?.detail || 'Failed to reset password. Please try again.');
-      }
+      setError(err.response?.data?.detail || 'Reset failed');
     } finally {
       setLoading(false);
     }
   };
 
-  if (verifying) {
+  if (!token) {
     return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <CircularProgress />
+      <Box sx={{ p: 4 }}>
+        <Alert severity="error">Invalid reset link</Alert>
+        <Button onClick={() => navigate('/')}>Go Home</Button>
+      </Box>
+    );
+  }
+
+  if (success) {
+    return (
+      <Box sx={{ p: 4 }}>
+        <Alert severity="success">Password reset! Redirecting...</Alert>
       </Box>
     );
   }
@@ -105,77 +61,40 @@ const ResetPassword: React.FC = () => {
       background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       p: 2
     }}>
-      <Paper elevation={24} sx={{ p: 4, maxWidth: 450, width: '100%', borderRadius: 4 }}>
-        <Typography variant="h4" gutterBottom align="center" color="primary" sx={{ fontWeight: 700 }}>
-          Set New Password
-        </Typography>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 3 }}>
-            {error}
-          </Alert>
-        )}
-
-        {message && (
-          <Alert severity="success" sx={{ mb: 3 }}>
-            {message}
-          </Alert>
-        )}
-
-        {isValid && !message ? (
-          <form onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              label="New Password"
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              sx={{ mb: 2 }}
-              helperText="Minimum 6 characters"
-            />
-            
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              sx={{ mb: 3 }}
-              error={confirmPassword !== '' && newPassword !== confirmPassword}
-              helperText={confirmPassword !== '' && newPassword !== confirmPassword ? 'Passwords do not match' : ''}
-            />
-
-            <Button 
-              type="submit" 
-              variant="contained" 
-              fullWidth 
-              size="large"
-              disabled={loading || !newPassword || !confirmPassword}
-              sx={{
-                py: 1.5,
-                background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                fontWeight: 700
-              }}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Reset Password'}
-            </Button>
-
-            <Button 
-              variant="text" 
-              fullWidth 
-              onClick={() => navigate('/')}
-              sx={{ mt: 2 }}
-            >
-              Back to Login
-            </Button>
-          </form>
-        ) : (
-          <Button variant="outlined" fullWidth onClick={() => navigate('/')}>
-            Back to Login
+      <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
+        <Typography variant="h4" align="center" mb={3}>Reset Password</Typography>
+        
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="New Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            sx={{ mb: 2 }}
+          />
+          
+          <Button 
+            type="submit" 
+            variant="contained" 
+            fullWidth 
+            disabled={loading || password.length < 6}
+          >
+            {loading ? <CircularProgress size={20} /> : 'Reset Password'}
           </Button>
-        )}
+          
+          <Button 
+            variant="text" 
+            fullWidth 
+            onClick={() => navigate('/')}
+            sx={{ mt: 1 }}
+          >
+            Cancel
+          </Button>
+        </form>
       </Paper>
     </Box>
   );
