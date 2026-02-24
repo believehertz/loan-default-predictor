@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
-  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
+  ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell
 } from 'recharts';
 import CountUp from 'react-countup';
 // @ts-expect-error canvas-confetti has no TypeScript types
@@ -11,7 +11,6 @@ import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { 
-  Users, 
   DollarSign, 
   Activity, 
   TrendingUp, 
@@ -125,9 +124,9 @@ const Dashboard: React.FC = () => {
   };
 
   const getRiskColor = (prob: number) => {
-    if (prob >= 0.7) return '#10B981'; // emerald-500
-    if (prob >= 0.5) return '#F59E0B'; // amber-500
-    return '#EF4444'; // red-500
+    if (prob >= 0.7) return '#10B981';
+    if (prob >= 0.5) return '#F59E0B';
+    return '#EF4444';
   };
 
   const getRiskStatus = (prob: number) => {
@@ -141,7 +140,7 @@ const Dashboard: React.FC = () => {
     {
       title: 'Total Predictions',
       value: stats?.total_predictions || 0,
-      trend: 12.5, // Calculate from previous period if available
+      trend: 12.5,
       icon: BrainCircuit,
       color: 'blue' as const,
       prefix: ''
@@ -183,7 +182,7 @@ const Dashboard: React.FC = () => {
       id: '1',
       type: stats?.avg_probability && stats.avg_probability < 0.5 ? 'warning' : 'success',
       title: stats?.avg_probability && stats.avg_probability > 0.9 ? 'High Performance' : 'Risk Alert',
-      message: `Average prediction accuracy is ${(stats?.avg_probability || 0 * 100).toFixed(1)}%`,
+      message: `Average prediction accuracy is ${((stats?.avg_probability || 0) * 100).toFixed(1)}%`,
       time: 'Just now'
     },
     ...(predictions.some(p => p.loan_paid_back_probability < 0.3) ? [{
@@ -367,7 +366,7 @@ const Dashboard: React.FC = () => {
                 {[
                   { label: 'Add Loan Application', icon: Plus, color: 'bg-blue-600 hover:bg-blue-700' },
                   { label: 'Export PDF Report', icon: Download, color: 'bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600', onClick: exportPDF },
-                  { label: 'View Risk Report', icon: AlertTriangle, color: 'bg-amber-600 hover:bg-amber-700' },
+                  { label: 'View Risk Report', icon: AlertTriangle, color: 'bg-amber-600 hover:bg-bg-amber-700' },
                 ].map((action) => {
                   const Icon = action.icon;
                   return (
@@ -534,7 +533,7 @@ const Dashboard: React.FC = () => {
                 </div>
               </div>
 
-              {/* Scenario Comparison (Your Original Feature) */}
+              {/* Scenario Comparison */}
               <div className={`${cardBg} rounded-2xl p-6 border shadow-sm`}>
                 <h3 className={`text-lg font-semibold ${textColor} mb-6`}>Loan Scenario Comparison</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
