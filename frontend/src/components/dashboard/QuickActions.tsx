@@ -1,12 +1,12 @@
 import React from 'react';
-import { Download, Plus, AlertTriangle, FileText } from 'lucide-react';
+import { Download, Plus, AlertTriangle } from 'lucide-react';
 
 interface QuickActionsProps {
   onExportPDF: () => void;
-  darkMode: boolean;
+  // REMOVED: darkMode prop since it's not used
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({ onExportPDF, darkMode }) => {
+export const QuickActions: React.FC<QuickActionsProps> = ({ onExportPDF }) => {
   const actions = [
     { label: 'Add Loan Application', icon: Plus, color: 'bg-blue-600 hover:bg-blue-700' },
     { label: 'Export PDF Report', icon: Download, color: 'bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600', onClick: onExportPDF },

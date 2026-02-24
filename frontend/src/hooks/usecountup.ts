@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 
 export const useCountUp = (end: number, duration: number = 2000, startOnMount = true) => {
   const [count, setCount] = useState(0);
-  const countRef = useRef(0);
-  const rafRef = useRef<number>();
+  const countRef = useRef<number>(0);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!startOnMount) return;

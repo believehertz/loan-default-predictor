@@ -24,7 +24,7 @@ const navItems = [
 export const Sidebar: React.FC<SidebarProps> = ({ darkMode, onClose }) => {
   const bgClass = darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
   const textClass = darkMode ? 'text-gray-300' : 'text-gray-700';
-  const subTextClass = darkMode ? 'text-gray-400' : 'text-gray-500';
+  // REMOVED: const subTextClass = darkMode ? 'text-gray-400' : 'text-gray-500';
 
   return (
     <div className={`flex flex-col h-full ${bgClass} border-r`}>
