@@ -420,13 +420,15 @@ const Dashboard: React.FC = () => {
   };
 
   // Navigation items with their view keys
-  const navItems = [
-    { label: 'Dashboard', key: 'dashboard' as const, icon: 'LayoutDashboard' },
-    { label: 'Predictions', key: 'predictions' as const, icon: 'BrainCircuit' },
-    { label: 'Risk Analysis', key: 'risk' as const, icon: 'Target' },
-    { label: 'Reports', key: 'reports' as const, icon: 'FileText' },
-    { label: 'Settings', key: 'settings' as const, icon: 'Settings' },
-  ];
+  // DELETE THIS ENTIRE BLOCK:
+const navItems = [
+  { label: 'Dashboard', key: 'dashboard' as const, icon: 'LayoutDashboard' },
+  { label: 'Predictions', key: 'predictions' as const, icon: 'BrainCircuit' },
+  { label: 'Risk Analysis', key: 'risk' as const, icon: 'Target' },
+  { label: 'Reports', key: 'reports' as const, icon: 'FileText' },
+  { label: 'Settings', key: 'settings' as const, icon: 'Settings' },
+];
+
 
   // Render content based on active view
   const renderContent = () => {
