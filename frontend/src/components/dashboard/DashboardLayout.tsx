@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
-import { Header } from './header';
+import { Header } from './Header';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -53,9 +53,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           darkMode={darkMode}
           username={username}
           notificationCount={notificationCount}
+          activeView={activeView}
           onMenuClick={() => setSidebarOpen(true)}
           onDarkModeToggle={onDarkModeToggle}
           onLogout={onLogout}
+          onNavigate={onNavigate}
         />
         
         <main className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} ${activeView === 'home' ? 'p-0' : 'p-4 lg:p-8'}`}>
