@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, type LucideIcon } from 'lucide-react';
-import { useCountUp } from '../../hooks/useCountUp';
+import { useCountUp } from '../../hooks/usecountup';
 
 interface SummaryCardProps {
   title: string;

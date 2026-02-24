@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
+  XAxis, YAxis, CartesianGrid, ResponsiveContainer
 } from 'recharts';
-import { Feature, TimelinePoint } from '../../types/dashboard';
+import type { Feature, TimelinePoint } from '../../types/dashboard';
 
 interface ChartSectionProps {
   riskDistribution: { name: string; value: number; color: string }[];

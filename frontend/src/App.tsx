@@ -17,7 +17,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthForm from './components/AuthForm';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
-import Dashboard from './components/Dashboard';
+import Dashboard from './pages/Dashboard';
 
 const theme = createTheme({
   palette: {
