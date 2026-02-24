@@ -10,7 +10,7 @@ interface HeaderProps {
   onLogout: () => void;
 }
 
-export const header: React.FC<HeaderProps> = ({ 
+export const Header: React.FC<HeaderProps> = ({ 
   darkMode, 
   username, 
   notificationCount = 0,
