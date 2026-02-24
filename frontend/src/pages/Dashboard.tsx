@@ -14,15 +14,21 @@ import { QuickActions } from '../components/dashboard/QuickActions';
 import HistoryList from '../components/HistoryList';
 import type { Stats, Feature, TimelinePoint, Prediction } from '../types/dashboard';
 
-// Import your existing LoanForm
+// Import your existing components
 import LoanForm from '../components/LoanForm';
+import ResultCard from '../components/ResultCard'; // ADD THIS IMPORT
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
-// Home View Component (LoanForm as main view)
-const HomeView: React.FC<{ darkMode: boolean; onNewPrediction: (data: any) => void }> = ({ 
+// Home View Component (LoanForm + ResultCard)
+const HomeView: React.FC<{ 
+  darkMode: boolean; 
+  onNewPrediction: (data: any) => void;
+  currentResult: any;
+}> = ({ 
   darkMode, 
-  onNewPrediction 
+  onNewPrediction,
+  currentResult
 }) => {
   return (
     <div className={`min-h-[calc(100vh-64px)] py-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -43,6 +49,13 @@ const HomeView: React.FC<{ darkMode: boolean; onNewPrediction: (data: any) => vo
             }} 
           />
         </div>
+
+        {/* RESULT CARD DISPLAY */}
+        {currentResult && (
+          <div className="mt-8 flex justify-center">
+            <ResultCard data={currentResult} />
+          </div>
+        )}
       </div>
     </div>
   );
@@ -309,6 +322,7 @@ const Dashboard: React.FC = () => {
   const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'home' | 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings'>('home');
+  const [currentResult, setCurrentResult] = useState<any>(null); // ADD THIS STATE
   
   const chartsRef = useRef<HTMLDivElement>(null);
 
@@ -349,6 +363,9 @@ const Dashboard: React.FC = () => {
   };
 
   const handleNewPrediction = (data: any) => {
+    // Set the current result to display the ResultCard
+    setCurrentResult(data);
+    
     const newPrediction: Prediction = {
       id: Date.now().toString(),
       loan_amount: data.loan_amount || 0,
@@ -360,10 +377,8 @@ const Dashboard: React.FC = () => {
               data.probability > 0.5 ? 'pending' : 'rejected'
     };
     
-    // Add to predictions immediately (optimistic update)
     setPredictions(prev => [newPrediction, ...prev]);
     
-    // Just refresh data in background, stay on Home page
     setTimeout(() => {
       fetchDashboardData();
     }, 1000);
@@ -391,6 +406,7 @@ const Dashboard: React.FC = () => {
           <HomeView 
             darkMode={darkMode}
             onNewPrediction={handleNewPrediction}
+            currentResult={currentResult}
           />
         );
       
