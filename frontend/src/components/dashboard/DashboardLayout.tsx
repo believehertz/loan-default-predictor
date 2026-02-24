@@ -1,73 +1,61 @@
-import React from 'react';
-import { Menu, Bell, LogOut, Moon, Sun } from 'lucide-react';
+import React, { useState } from 'react';
+import { Sidebar } from './Sidebar';
+import { Header } from './Header';
 
-interface HeaderProps {
+interface DashboardLayoutProps {
+  children: React.ReactNode;
   darkMode: boolean;
   username?: string;
   notificationCount?: number;
-  onMenuClick: () => void;
   onDarkModeToggle: () => void;
   onLogout: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ 
-  darkMode, 
-  username, 
-  notificationCount = 0,
-  onMenuClick, 
-  onDarkModeToggle, 
-  onLogout 
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
+  children, 
+  darkMode,
+  username,
+  notificationCount,
+  onDarkModeToggle,
+  onLogout
 }) => {
-  const bgClass = darkMode ? 'bg-gray-800/80 border-gray-700' : 'bg-white/80 border-gray-200';
-  const textClass = darkMode ? 'text-gray-100' : 'text-gray-900';
-  const subTextClass = darkMode ? 'text-gray-400' : 'text-gray-500';
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <header className={`sticky top-0 z-30 ${bgClass} backdrop-blur-md border-b shadow-sm`}>
-      <div className="flex items-center justify-between h-16 px-4 lg:px-8">
-        <div className="flex items-center">
-          <button 
-            onClick={onMenuClick}
-            className={`lg:hidden p-2 rounded-lg transition-colors mr-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-          >
-            <Menu className={`w-6 h-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
-          </button>
-          <h1 className={`text-2xl font-bold ${textClass}`}>
-            Dashboard
-            <span className={`ml-2 text-sm font-normal ${subTextClass}`}>
-              Welcome back, {username}
-            </span>
-          </h1>
-        </div>
+    <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gray-50'} transition-colors duration-300`}>
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-        <div className="flex items-center space-x-4">
-          <button 
-            onClick={onDarkModeToggle}
-            className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
+      <div className="flex h-screen overflow-hidden">
+        <aside 
+          className={`fixed lg:static inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 lg:transform-none ${
+            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <Sidebar darkMode={darkMode} onClose={() => setSidebarOpen(false)} />
+        </aside>
 
-          <div className="relative">
-            <button 
-              className={`p-2 rounded-lg transition-colors relative ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
-            >
-              <Bell className="w-5 h-5" />
-              {notificationCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
-              )}
-            </button>
-          </div>
-
-          <button 
-            onClick={onLogout}
-            className="flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors font-medium text-sm"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Logout</span>
-          </button>
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <Header 
+            darkMode={darkMode}
+            username={username}
+            notificationCount={notificationCount}
+            onMenuClick={() => setSidebarOpen(true)}
+            onDarkModeToggle={onDarkModeToggle}
+            onLogout={onLogout}
+          />
+          
+          <main className={`flex-1 overflow-y-auto p-4 lg:p-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            <div className="max-w-7xl mx-auto">
+              {children}
+            </div>
+          </main>
         </div>
       </div>
-    </header>
+    </div>
   );
 };
