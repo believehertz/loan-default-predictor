@@ -18,53 +18,47 @@ export const Header: React.FC<HeaderProps> = ({
   onDarkModeToggle, 
   onLogout 
 }) => {
-  const bgClass = darkMode ? 'bg-gray-800/80 border-gray-700' : 'bg-white/80 border-gray-200';
-  const textClass = darkMode ? 'text-gray-100' : 'text-gray-900';
-  const subTextClass = darkMode ? 'text-gray-400' : 'text-gray-500';
-
   return (
-    <header className={`sticky top-0 z-30 ${bgClass} backdrop-blur-md border-b shadow-sm`}>
+    <header className={`sticky top-0 z-30 border-b shadow-sm ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
       <div className="flex items-center justify-between h-16 px-4 lg:px-8">
         <div className="flex items-center">
           <button 
             onClick={onMenuClick}
-            className={`lg:hidden p-2 rounded-lg transition-colors mr-2 ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            className={`lg:hidden p-2 rounded-lg mr-2 ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
           >
-            <Menu className={`w-6 h-6 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+            <Menu className="w-6 h-6" />
           </button>
-          <h1 className={`text-2xl font-bold ${textClass}`}>
-            Dashboard
-            <span className={`ml-2 text-sm font-normal ${subTextClass}`}>
+          <div>
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               Welcome back, {username}
-            </span>
-          </h1>
+            </p>
+          </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
           <button 
             onClick={onDarkModeToggle}
-            className={`p-2 rounded-lg transition-colors ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
+            className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
           >
             {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
 
-          <div className="relative">
-            <button 
-              className={`p-2 rounded-lg transition-colors relative ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
-            >
-              <Bell className="w-5 h-5" />
-              {notificationCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-gray-800" />
-              )}
-            </button>
-          </div>
+          <button 
+            className={`p-2 rounded-lg relative ${darkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-600'}`}
+          >
+            <Bell className="w-5 h-5" />
+            {notificationCount > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            )}
+          </button>
 
           <button 
             onClick={onLogout}
-            className="flex items-center px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors font-medium text-sm"
+            className="flex items-center px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 font-medium text-sm ml-2"
           >
             <LogOut className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Logout</span>
+            Logout
           </button>
         </div>
       </div>

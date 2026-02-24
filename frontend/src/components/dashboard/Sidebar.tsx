@@ -22,18 +22,12 @@ const navItems = [
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({ darkMode, onClose }) => {
-  const bgClass = darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
-  const textClass = darkMode ? 'text-gray-300' : 'text-gray-700';
-  // REMOVED: const subTextClass = darkMode ? 'text-gray-400' : 'text-gray-500';
-
   return (
-    <div className={`flex flex-col h-full ${bgClass} border-r`}>
+    <div className={`flex flex-col h-full border-r ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
       <div className={`flex items-center justify-between h-16 px-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-        <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          LoanAI Pro
-        </span>
+        <span className="text-xl font-bold text-blue-600">LoanAI Pro</span>
         <button onClick={onClose} className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-          <X className="w-5 h-5 text-gray-500" />
+          <X className="w-5 h-5" />
         </button>
       </div>
 
@@ -43,13 +37,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ darkMode, onClose }) => {
           return (
             <button
               key={item.label}
-              className={`flex items-center w-full px-4 py-3 rounded-xl transition-all duration-200 group ${
+              className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors ${
                 item.active 
-                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' 
-                  : `hover:bg-gray-100 dark:hover:bg-gray-700 ${textClass}`
+                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
+                  : `${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
               }`}
             >
-              <Icon className={`w-5 h-5 mr-3 ${item.active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400 group-hover:text-blue-600'}`} />
+              <Icon className="w-5 h-5 mr-3" />
               <span className="font-medium">{item.label}</span>
             </button>
           );
@@ -58,11 +52,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ darkMode, onClose }) => {
 
       <div className={`p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
         <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-4 text-white">
-          <p className="text-sm font-medium mb-1">Pro Plan Active</p>
-          <p className="text-xs opacity-90 mb-3">Advanced ML models enabled</p>
-          <div className="w-full bg-white/20 rounded-full h-2">
-            <div className="bg-white rounded-full h-2 w-3/4"></div>
-          </div>
+          <p className="text-sm font-medium">Pro Plan Active</p>
+          <p className="text-xs opacity-90 mt-1">Advanced ML models enabled</p>
         </div>
       </div>
     </div>
