@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
-import { Header } from './header';
+import { Header } from './Header';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ interface DashboardLayoutProps {
   onDarkModeToggle: () => void;
   onLogout: () => void;
   activeView: string;
-  onNavigate: (view: 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings') => void;
+  onNavigate: (view: 'home' | 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings') => void;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
@@ -27,7 +27,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   return (
     <div className={`min-h-screen flex ${darkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-      {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
@@ -35,7 +34,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         />
       )}
 
-      {/* Sidebar */}
       <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 lg:transform-none ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
@@ -50,7 +48,6 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         />
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header 
           darkMode={darkMode}
@@ -61,8 +58,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           onLogout={onLogout}
         />
         
-        <main className={`flex-1 overflow-y-auto p-4 lg:p-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-          <div className="max-w-7xl mx-auto">
+        <main className={`flex-1 overflow-y-auto ${darkMode ? 'bg-gray-900' : 'bg-gray-50'} ${activeView === 'home' ? 'p-0' : 'p-4 lg:p-8'}`}>
+          <div className={activeView === 'home' ? 'w-full h-full' : 'max-w-7xl mx-auto'}>
             {children}
           </div>
         </main>

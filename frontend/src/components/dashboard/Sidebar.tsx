@@ -1,5 +1,6 @@
 import React from 'react';
 import { 
+  Home,
   LayoutDashboard, 
   BrainCircuit, 
   Target, 
@@ -12,10 +13,11 @@ interface SidebarProps {
   darkMode: boolean;
   onClose: () => void;
   activeView: string;
-  onNavigate: (view: 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings') => void;
+  onNavigate: (view: 'home' | 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings') => void;
 }
 
 const navItems = [
+  { label: 'Home', key: 'home', icon: Home },           // ADDED HOME
   { label: 'Dashboard', key: 'dashboard', icon: LayoutDashboard },
   { label: 'Predictions', key: 'predictions', icon: BrainCircuit },
   { label: 'Risk Analysis', key: 'risk', icon: Target },
