@@ -24,13 +24,12 @@ const HomeView: React.FC<{ darkMode: boolean; onNewPrediction: (data: any) => vo
   darkMode, 
   onNewPrediction 
 }) => {
-
   return (
     <div className={`min-h-[calc(100vh-64px)] py-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="max-w-4xl mx-auto">
         <div className={`p-6 rounded-xl mb-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
           <h2 className={`text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Welcome to Loan Default Predictor
+            Welcome to LoanAI Pro
           </h2>
           <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Enter loan details below to get an instant AI-powered prediction
@@ -361,12 +360,13 @@ const Dashboard: React.FC = () => {
               data.probability > 0.5 ? 'pending' : 'rejected'
     };
     
+    // Add to predictions immediately (optimistic update)
     setPredictions(prev => [newPrediction, ...prev]);
     
+    // Just refresh data in background, stay on Home page
     setTimeout(() => {
-      setActiveView('dashboard');
       fetchDashboardData();
-    }, 1500);
+    }, 1000);
   };
 
   const exportPDF = async () => {
