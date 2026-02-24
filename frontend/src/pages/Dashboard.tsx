@@ -30,7 +30,7 @@ const HomeView: React.FC<{ darkMode: boolean; onNewPrediction: (data: any) => vo
       <div className="max-w-4xl mx-auto">
         <div className={`p-6 rounded-xl mb-6 ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg`}>
           <h2 className={`text-2xl font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Welcome to LoanAI Pro
+            Welcome to Loan Default Predictor
           </h2>
           <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             Enter loan details below to get an instant AI-powered prediction
