@@ -11,97 +11,13 @@ import { DashboardLayout } from '../components/dashboard/DashboardLayout';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
 import { ChartSection } from '../components/dashboard/ChartSection';
 import { QuickActions } from '../components/dashboard/QuickActions';
+import HistoryList from '../components/HistoryList'; // Using your component
 import type { Stats, Feature, TimelinePoint, Prediction } from '../types/dashboard';
 
 // Import your existing LoanForm
 import LoanForm from '../components/LoanForm';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-
-// ActivityTable Component
-const ActivityTable: React.FC<{ predictions: Prediction[]; darkMode: boolean; isLoading?: boolean }> = ({ 
-  predictions, 
-  darkMode, 
-  isLoading 
-}) => {
-  if (isLoading) {
-    return (
-      <div className={`rounded-xl border shadow-sm overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-        <div className="p-6 space-y-4">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="animate-pulse h-12 bg-gray-200 dark:bg-gray-700 rounded" />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const getRiskColor = (prob: number) => {
-    if (prob >= 0.7) return 'text-emerald-500';
-    if (prob >= 0.5) return 'text-amber-500';
-    return 'text-red-500';
-  };
-
-  const getRiskBg = (prob: number) => {
-    if (prob >= 0.7) return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400';
-    if (prob >= 0.5) return 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400';
-    return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-  };
-
-  return (
-    <div className={`rounded-xl border shadow-sm overflow-hidden ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-      <div className={`px-6 py-4 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
-        <h3 className={`text-lg font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Recent Loan Applications</h3>
-        <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{predictions.length} total</span>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className={darkMode ? 'bg-gray-700/50' : 'bg-gray-50'}>
-            <tr>
-              {['Applicant', 'Amount', 'Status', 'Probability'].map((header) => (
-                <th key={header} className={`px-6 py-3 text-left text-xs font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  {header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className={`divide-y ${darkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
-            {predictions.slice(0, 10).map((pred, idx) => (
-              <tr key={idx} className={`${darkMode ? 'hover:bg-gray-700/50' : 'hover:bg-gray-50'} transition-colors`}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-medium">
-                      {pred.applicant_name ? pred.applicant_name.charAt(0) : 'A'}
-                    </div>
-                    <div className="ml-4">
-                      <div className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {pred.applicant_name || `Applicant ${idx + 1}`}
-                      </div>
-                      <div className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        ID: {pred.id || idx + 1}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  ${pred.loan_amount.toLocaleString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRiskBg(pred.loan_paid_back_probability)}`}>
-                    {pred.loan_paid_back_probability >= 0.7 ? 'Approved' : pred.loan_paid_back_probability >= 0.5 ? 'Pending' : 'Rejected'}
-                  </span>
-                </td>
-                <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${getRiskColor(pred.loan_paid_back_probability)}`}>
-                  {(pred.loan_paid_back_probability * 100).toFixed(1)}%
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-};
 
 // Predictions View Component
 const PredictionsView: React.FC<{ darkMode: boolean; onNewPrediction: () => void; predictions: Prediction[]; loading: boolean }> = ({
@@ -144,7 +60,7 @@ const PredictionsView: React.FC<{ darkMode: boolean; onNewPrediction: () => void
         </div>
       </div>
 
-      <ActivityTable predictions={predictions} darkMode={darkMode} isLoading={loading} />
+      <HistoryList items={predictions} darkMode={darkMode} loading={loading} />
     </div>
   );
 };
@@ -504,8 +420,14 @@ const Dashboard: React.FC = () => {
               />
             </div>
 
-            {/* Activity Table */}
-            <ActivityTable predictions={predictions} darkMode={darkMode} isLoading={loading} />
+            {/* Recent Applications - Using HistoryList */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Recent Loan Applications</h3>
+                <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{predictions.length} total</span>
+              </div>
+              <HistoryList items={predictions} darkMode={darkMode} loading={loading} />
+            </div>
 
             {/* Scenario Comparison */}
             <div className={`rounded-xl p-6 border shadow-sm ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
@@ -581,10 +503,26 @@ const Dashboard: React.FC = () => {
                 <LoanForm 
                   onResult={(data) => {
                     console.log('Prediction result:', data);
+                    
+                    // Immediately add the new prediction to the list
+                    const newPrediction: Prediction = {
+                      id: Date.now().toString(),
+                      loan_amount: data.loan_amount || 0,
+                      loan_paid_back_probability: data.probability || data.loan_paid_back_probability || 0,
+                      applicant_name: user?.username || 'New User',
+                      created_at: new Date().toISOString(),
+                      status: data.prediction === 'Approved' || (data.probability > 0.7) ? 'approved' : 
+                              data.probability > 0.5 ? 'pending' : 'rejected'
+                    };
+                    
+                    // Add to predictions immediately (optimistic update)
+                    setPredictions(prev => [newPrediction, ...prev]);
+                    
+                    // Close modal and refresh from server
                     setTimeout(() => {
                       setShowLoanForm(false);
                       fetchDashboardData();
-                    }, 1500);
+                    }, 1000);
                   }} 
                 />
               </div>
