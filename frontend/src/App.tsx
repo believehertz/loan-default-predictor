@@ -30,7 +30,7 @@ const theme = createTheme({
 const AppContent: React.FC = () => {
   const { isAuthenticated, loading, logout, user } = useAuth();
   const [prediction, setPrediction] = useState<any>(null);
-  const navigate = useNavigate(); // Now this works because we're inside Router
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -64,18 +64,46 @@ const AppContent: React.FC = () => {
               background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)'
             }}>
               <Toolbar>
-                <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-                  💰 Loan Default Predictor
-                </Typography>
+                {/* LEFT SIDE: Logo + Navigation */}
+                <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700, mr: 4 }}>
+                    💰 Loan Default Predictor
+                  </Typography>
+                  
+                  {/* HOME button (active since we're on home page) */}
+                  <Button 
+                    color="inherit" 
+                    sx={{ 
+                      mr: 1,
+                      backgroundColor: 'rgba(255,255,255,0.2)',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    HOME
+                  </Button>
+                  
+                  {/* DASHBOARD button - now on LEFT */}
+                  <Button 
+                    color="inherit" 
+                    onClick={() => navigate('/dashboard')}
+                    sx={{ mr: 2 }}
+                  >
+                    DASHBOARD
+                  </Button>
+                </Box>
+
+                {/* RIGHT SIDE: User + Logout */}
                 <Typography variant="body2" sx={{ mr: 2 }}>
                   Welcome, {user?.username}!
                 </Typography>
-                <Button color="inherit" onClick={logout} variant="outlined" size="small"
-                  sx={{ borderColor: 'white' }}>
+                <Button 
+                  color="inherit" 
+                  onClick={logout} 
+                  variant="outlined" 
+                  size="small"
+                  sx={{ borderColor: 'white' }}
+                >
                   Logout
-                </Button>
-                <Button color="inherit" onClick={() => navigate('/dashboard')}>
-                  Dashboard
                 </Button>
               </Toolbar>
             </AppBar>
