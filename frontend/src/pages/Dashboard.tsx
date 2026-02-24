@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { BrainCircuit, DollarSign, Target, FileText, TrendingUp, TrendingDown, Download, AlertTriangle } from 'lucide-react';
+import { BrainCircuit, DollarSign, Target, FileText, TrendingUp, Download, AlertTriangle } from 'lucide-react';
 
 import { DashboardLayout } from '../components/dashboard/DashboardLayout';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
