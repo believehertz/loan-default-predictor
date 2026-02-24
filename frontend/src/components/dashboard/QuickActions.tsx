@@ -3,14 +3,34 @@ import { Download, Plus, AlertTriangle } from 'lucide-react';
 
 interface QuickActionsProps {
   onExportPDF: () => void;
-  // REMOVED: darkMode prop since it's not used
+  onAddLoan: () => void;
+  onViewRiskReport: () => void;
 }
 
-export const QuickActions: React.FC<QuickActionsProps> = ({ onExportPDF }) => {
+export const QuickActions: React.FC<QuickActionsProps> = ({ 
+  onExportPDF, 
+  onAddLoan,
+  onViewRiskReport
+}) => {
   const actions = [
-    { label: 'Add Loan Application', icon: Plus, color: 'bg-blue-600 hover:bg-blue-700' },
-    { label: 'Export PDF Report', icon: Download, color: 'bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600', onClick: onExportPDF },
-    { label: 'View Risk Report', icon: AlertTriangle, color: 'bg-amber-600 hover:bg-amber-700' },
+    { 
+      label: 'Add Loan Application', 
+      icon: Plus, 
+      color: 'bg-blue-600 hover:bg-blue-700',
+      onClick: onAddLoan
+    },
+    { 
+      label: 'Export PDF Report', 
+      icon: Download, 
+      color: 'bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600', 
+      onClick: onExportPDF 
+    },
+    { 
+      label: 'View Risk Report', 
+      icon: AlertTriangle, 
+      color: 'bg-amber-600 hover:bg-amber-700',
+      onClick: onViewRiskReport
+    },
   ];
 
   return (
