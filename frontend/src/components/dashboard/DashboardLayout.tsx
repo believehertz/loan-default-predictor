@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
-import { Header } from './header';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
   darkMode: boolean;
   username?: string;
-  notificationCount?: number;
+  notificationCount?: number; // Keep this in interface but don't destructure if not used
   onDarkModeToggle: () => void;
   onLogout: () => void;
   activeView: string;
@@ -17,8 +16,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children, 
   darkMode,
   username,
-  notificationCount,
-  onDarkModeToggle,
+  onDarkModeToggle, // Removed notificationCount from destructuring
   onLogout,
   activeView,
   onNavigate
