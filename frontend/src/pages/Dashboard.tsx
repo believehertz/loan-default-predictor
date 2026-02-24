@@ -200,7 +200,7 @@ const Dashboard: React.FC = () => {
           )}
         </div>
 
-        {/* Quick Actions - NOW ALL FUNCTIONAL */}
+        {/* Quick Actions */}
         <QuickActions 
           onExportPDF={exportPDF} 
           onAddLoan={() => setShowLoanForm(true)}
@@ -263,23 +263,34 @@ const Dashboard: React.FC = () => {
       {/* Loan Form Modal */}
       {showLoanForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className={`rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className="flex justify-between items-center mb-4">
-              <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>New Loan Application</h3>
-              <button 
-                onClick={() => setShowLoanForm(false)}
-                className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-600'}`}
-              >
-                ✕
-              </button>
+          <div className={`rounded-xl p-4 w-full max-w-5xl max-h-[95vh] overflow-y-auto relative ${darkMode ? 'bg-gray-900' : 'bg-white'}`}>
+            {/* Close button */}
+            <button 
+              onClick={() => setShowLoanForm(false)}
+              className={`absolute top-4 right-4 p-2 rounded-full z-50 ${darkMode ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+            >
+              ✕
+            </button>
+            
+            {/* LoanForm Container - Constrain MUI styles */}
+            <div className={darkMode ? 'dark' : ''} style={{ width: '100%' }}>
+              <div style={{ 
+                width: '100%',
+                // Override LoanForm's full-screen centering for modal
+                minHeight: 'auto',
+              }}>
+                <LoanForm 
+                  onResult={(data) => {
+                    console.log('Prediction result:', data);
+                    // Close modal and refresh after short delay
+                    setTimeout(() => {
+                      setShowLoanForm(false);
+                      fetchDashboardData();
+                    }, 1500);
+                  }} 
+                />
+              </div>
             </div>
-            <LoanForm 
-              onSuccess={() => {
-                setShowLoanForm(false);
-                fetchDashboardData(); // Refresh data after submission
-              }}
-              onCancel={() => setShowLoanForm(false)}
-            />
           </div>
         </div>
       )}
