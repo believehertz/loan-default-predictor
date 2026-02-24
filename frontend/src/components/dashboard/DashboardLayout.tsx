@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
-import { Header } from './header';
+import { Header } from './Header';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -9,6 +9,8 @@ interface DashboardLayoutProps {
   notificationCount?: number;
   onDarkModeToggle: () => void;
   onLogout: () => void;
+  activeView: string;
+  onNavigate: (view: 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings') => void;
 }
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
@@ -17,7 +19,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   username,
   notificationCount,
   onDarkModeToggle,
-  onLogout
+  onLogout,
+  activeView,
+  onNavigate
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -35,7 +39,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <div className={`fixed lg:static inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 lg:transform-none ${
         sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
-        <Sidebar darkMode={darkMode} onClose={() => setSidebarOpen(false)} />
+        <Sidebar 
+          darkMode={darkMode} 
+          onClose={() => setSidebarOpen(false)} 
+          activeView={activeView}
+          onNavigate={(view) => {
+            onNavigate(view);
+            setSidebarOpen(false);
+          }}
+        />
       </div>
 
       {/* Main Content */}
