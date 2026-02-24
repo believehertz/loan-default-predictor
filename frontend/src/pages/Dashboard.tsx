@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { BrainCircuit, DollarSign, Target, FileText, TrendingUp, Download, AlertTriangle, Settings as SettingsIcon } from 'lucide-react';
+import { BrainCircuit, DollarSign, Target, FileText, TrendingUp, Download, AlertTriangle } from 'lucide-react';
 
 import { DashboardLayout } from '../components/dashboard/DashboardLayout';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
@@ -20,11 +20,11 @@ import LoanForm from '../components/LoanForm';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 // Home View Component (LoanForm as main view)
-const HomeView: React.FC<{ darkMode: boolean; user?: any; onNewPrediction: (data: any) => void }> = ({ 
+const HomeView: React.FC<{ darkMode: boolean; onNewPrediction: (data: any) => void }> = ({ 
   darkMode, 
-  user,
   onNewPrediction 
 }) => {
+
   return (
     <div className={`min-h-[calc(100vh-64px)] py-8 ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="max-w-4xl mx-auto">
@@ -390,7 +390,6 @@ const Dashboard: React.FC = () => {
         return (
           <HomeView 
             darkMode={darkMode}
-            user={user}
             onNewPrediction={handleNewPrediction}
           />
         );
