@@ -67,7 +67,7 @@ const AppContent: React.FC = () => {
                 {/* LEFT SIDE: Logo + Navigation */}
                 <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
                   <Typography variant="h6" sx={{ fontWeight: 700, mr: 4 }}>
-                    💰 Loan Default Predictor
+                    Loan Default Predictor
                   </Typography>
                   
                   {/* HOME button (active since we're on home page) */}
@@ -79,7 +79,7 @@ const AppContent: React.FC = () => {
                       fontWeight: 'bold'
                     }}
                   >
-                    HOME
+                    Home
                   </Button>
                   
                   {/* DASHBOARD button - now on LEFT */}
@@ -88,7 +88,7 @@ const AppContent: React.FC = () => {
                     onClick={() => navigate('/dashboard')}
                     sx={{ mr: 2 }}
                   >
-                    DASHBOARD
+                    DashBoard
                   </Button>
                 </Box>
 
