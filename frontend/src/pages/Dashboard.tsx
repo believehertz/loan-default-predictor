@@ -11,7 +11,7 @@ import { DashboardLayout } from '../components/dashboard/DashboardLayout';
 import { SummaryCard } from '../components/dashboard/SummaryCard';
 import { ChartSection } from '../components/dashboard/ChartSection';
 import { QuickActions } from '../components/dashboard/QuickActions';
-import HistoryList from '../components/HistoryList'; // Using your component
+import HistoryList from '../components/HistoryList';
 import type { Stats, Feature, TimelinePoint, Prediction } from '../types/dashboard';
 
 // Import your existing LoanForm
@@ -426,7 +426,12 @@ const Dashboard: React.FC = () => {
                 <h3 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Recent Loan Applications</h3>
                 <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{predictions.length} total</span>
               </div>
-              <HistoryList items={predictions} darkMode={darkMode} loading={loading} />
+              <HistoryList 
+                items={predictions} 
+                darkMode={darkMode} 
+                loading={loading}
+                refreshTrigger={showLoanForm ? 0 : Date.now()}
+              />
             </div>
 
             {/* Scenario Comparison */}
