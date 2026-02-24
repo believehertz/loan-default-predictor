@@ -3,7 +3,7 @@ import { Paper, Typography, List, ListItem, ListItemText, Chip, Box, CircularPro
 import axios from 'axios';
 
 interface HistoryItem {
-  id: string;
+  id?: string;
   loan_amount: number;
   credit_score: number; // Required field
   loan_paid_back_probability?: number;
