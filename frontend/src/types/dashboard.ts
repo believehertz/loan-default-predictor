@@ -29,6 +29,7 @@ export interface Prediction {
   applicant_name?: string;
   created_at?: string;
   status?: 'approved' | 'pending' | 'rejected';
+  credit_score: number; // Required field
 }
 
 export interface Notification {

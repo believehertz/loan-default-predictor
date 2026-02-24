@@ -514,6 +514,7 @@ const Dashboard: React.FC = () => {
                       id: Date.now().toString(),
                       loan_amount: data.loan_amount || 0,
                       loan_paid_back_probability: data.probability || data.loan_paid_back_probability || 0,
+                      credit_score: data.credit_score || 0, // REQUIRED: credit_score
                       applicant_name: user?.username || 'New User',
                       created_at: new Date().toISOString(),
                       status: data.prediction === 'Approved' || (data.probability > 0.7) ? 'approved' : 

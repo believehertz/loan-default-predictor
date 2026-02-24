@@ -5,7 +5,7 @@ import axios from 'axios';
 interface HistoryItem {
   id: string;
   loan_amount: number;
-  credit_score: number;
+  credit_score: number; // Required field
   loan_paid_back_probability?: number;
   default_probability?: number;
   is_default_predicted?: boolean;
