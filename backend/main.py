@@ -8,30 +8,34 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Loan Default Detector",
+    description="AI-powered loan risk assessment API",
     version="2.0.0"
 )
 
-# NUCLEAR CORS - Allow everything (for testing)
+# CRITICAL: CORS must be BEFORE routers
 app.add_middleware(
     CORSMiddleware,
-    # backend/main.py
     allow_origins=[
-    "http://localhost:5173",
-    "http://localhost:3000",
-    # ... your production URLs
-],  # Allow ALL origins (change to specific URL in production)
+        "https://loan-default-predictor-one.vercel.app",  # YOUR FRONTEND
+        "https://loan-default-predictor.vercel.app",     # Alternative
+        "http://localhost:5173",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
+# Include routers AFTER CORS
 app.include_router(auth.router, prefix="/api")
 app.include_router(predict.router, prefix="/api")
 
 @app.get("/")
 def root():
-    return {"status": "ok"}
+    return {"message": "Loan API Running", "status": "healthy", "docs": "/docs"}
 
 @app.get("/health")
-def health():
-    return {"status": "ok", "cors": "permissive"}
+def health_check():
+    return {"status": "ok", "cors": "enabled"}
