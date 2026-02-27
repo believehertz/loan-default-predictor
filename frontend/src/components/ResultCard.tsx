@@ -55,7 +55,7 @@ const ResultCard: React.FC<ResultProps> = ({ data }) => {
       <Chip 
         label={data.risk_level} 
         color={color} 
-        size="large"
+        size="medium"
         sx={{ fontSize: '1.2rem', py: 2.5, px: 2 }}
       />
 

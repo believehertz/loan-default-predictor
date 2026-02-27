@@ -1,10 +1,10 @@
 // src/App.tsx
-import { useState } from 'react';
+import react from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthForm from './components/AuthForm';
-import Dashboard from './components/Dashboard/Dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 import LoanForm from './components/LoanForm';
 import ResultCard from './components/ResultCard';
 import ForgotPassword from './components/ForgotPassword';
