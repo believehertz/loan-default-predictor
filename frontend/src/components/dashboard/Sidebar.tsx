@@ -1,6 +1,6 @@
 // src/components/dashboard/Sidebar.tsx
 import React from 'react';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, Avatar, Typography, Button } from '@mui/material';
+import { Box, Divider, Avatar, Typography, Button } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
   Assessment as AssessmentIcon,
@@ -31,41 +31,33 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
         <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>
           <TrendingUp />
         </Avatar>
-        <Typography variant="h6" fontWeight="bold" noWrap>
-          LoanPredictor
-        </Typography>
+        <Typography variant="h6" fontWeight="bold" noWrap>LoanPredictor</Typography>
       </Box>
       
       <Divider sx={{ mx: 2 }} />
       
-      <List sx={{ px: 2, py: 3, flex: 1 }}>
+      <Box sx={{ px: 2, py: 3, flex: 1 }}>
         {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
-            <Button
-              fullWidth
-              onClick={() => navigate(item.path)}
-              startIcon={item.icon}
-              sx={{
-                justifyContent: 'flex-start',
-                py: 1.5,
-                borderRadius: 2,
-                color: 'text.primary',
-              }}
-            >
-              {item.text}
-            </Button>
-          </ListItem>
+          <Button
+            key={item.text}
+            fullWidth
+            onClick={() => navigate(item.path)}
+            startIcon={item.icon}
+            sx={{
+              justifyContent: 'flex-start',
+              py: 1.5,
+              mb: 1,
+              borderRadius: 2,
+              color: 'text.primary',
+            }}
+          >
+            {item.text}
+          </Button>
         ))}
-      </List>
+      </Box>
 
       <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
-        <Button
-          fullWidth
-          variant="outlined"
-          color="error"
-          startIcon={<LogoutIcon />}
-          onClick={onLogout}
-        >
+        <Button fullWidth variant="outlined" color="error" startIcon={<LogoutIcon />} onClick={onLogout}>
           Logout
         </Button>
       </Box>

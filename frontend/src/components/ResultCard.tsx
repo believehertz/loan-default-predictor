@@ -1,6 +1,6 @@
+// src/components/ResultCard.tsx
 import React from 'react';
 import { Paper, Typography, Box, Chip, LinearProgress } from '@mui/material';
-import { CheckCircle, Warning, Error } from '@mui/icons-material';
 
 interface ResultProps {
   data: {
@@ -11,48 +11,61 @@ interface ResultProps {
   } | null;
 }
 
-// Update to match dashboard styling:
-import { Paper, Typography, Box, Chip, LinearProgress } from '@mui/material';
-
-const ResultCard: React.FC<{ data: any }> = ({ data }) => {
+const ResultCard: React.FC<ResultProps> = ({ data }) => {
   if (!data) return null;
 
-  const prob = data.loan_paid_back_probability || 0;
-  const color = prob >= 0.7 ? 'success' : prob >= 0.5 ? 'warning' : 'error';
+  const prob = data.loan_paid_back_probability;
+  const pct = Math.round(prob * 100);
+  
+  let color: 'success' | 'warning' | 'error' | 'info' = 'success';
+  let Icon = () => <span>✅</span>;
+  
+  if (prob >= 0.9) {
+    color = 'success';
+  } else if (prob >= 0.7) {
+    color = 'info';
+  } else if (prob >= 0.5) {
+    color = 'warning';
+  } else {
+    color = 'error';
+  }
 
   return (
-    <Paper elevation={3} sx={{ 
-      p: 4, 
-      mt: 3, 
-      maxWidth: 600, 
-      mx: 'auto',
-      borderRadius: 4,
-      background: 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(10px)'
-    }}>
-      <Typography variant="h4" align="center" color={`${color}.main`} gutterBottom>
-        {data.loan_will_be_paid_back ? '✅ Likely to Pay' : '❌ High Risk'}
+    <Paper elevation={4} sx={{ p: 4, mt: 3, maxWidth: 600, mx: 'auto', textAlign: 'center' }}>
+      <Typography variant="h4" color={`${color}.main`} gutterBottom>
+        {data.loan_will_be_paid_back ? '✅ Likely to Pay' : '❌ High Default Risk'}
       </Typography>
       
-      <Typography variant="h2" align="center" fontWeight="bold" color="primary">
-        {(prob * 100).toFixed(1)}%
+      <Typography variant="h2" fontWeight="bold" color="primary">
+        {pct}%
       </Typography>
-      
-      <LinearProgress 
-        variant="determinate" 
-        value={prob * 100} 
-        color={color}
-        sx={{ height: 10, borderRadius: 5, mt: 2 }}
-      />
-      
+      <Typography variant="subtitle1" color="textSecondary">
+        Probability of Successful Payback
+      </Typography>
+
+      <Box sx={{ my: 3, px: 4 }}>
+        <LinearProgress 
+          variant="determinate" 
+          value={pct} 
+          color={color}
+          sx={{ height: 10, borderRadius: 5 }}
+        />
+      </Box>
+
       <Chip 
         label={data.risk_level} 
         color={color} 
-        sx={{ mt: 2, display: 'block', mx: 'auto' }}
+        size="medium"
+        sx={{ fontSize: '1.1rem', py: 2.5, px: 1 }}
       />
+
+      <Box mt={3} p={2} bgcolor="grey.50" borderRadius={2}>
+        <Typography variant="body2" color="textSecondary">
+          Model: XGBoost | 90%+ Accuracy | 594K Records
+        </Typography>
+      </Box>
     </Paper>
   );
 };
-
 
 export default ResultCard;
