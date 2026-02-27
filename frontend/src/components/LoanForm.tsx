@@ -8,7 +8,7 @@ import {
 import axios from 'axios';
 import FallingMoney from './FallingMoney';
 import { useNavigate } from 'react-router-dom';
-import { Dashboard as DashboardIcon, ArrowBack } from '@mui/icons-material';
+import { ArrowBack } from '@mui/icons-material';  // Removed DashboardIcon
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -128,7 +128,6 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         </Typography>
         
         <Box component="form" onSubmit={handleSubmit}>
-          {/* FIXED: MUI v5 Grid syntax */}
           <Grid container spacing={2} justifyContent="center">
             <Grid item xs={12} sm={6} md={4}>
               <TextField fullWidth label="Annual Income ($)" name="annual_income" 
@@ -146,9 +145,16 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
             </Grid>
             
             <Grid item xs={12} sm={6} md={4}>
-              <TextField fullWidth label="Debt-to-Income Ratio" name="debt_to_income_ratio" 
-                type="number" step="0.01"
-                value={formData.debt_to_income_ratio} onChange={handleChange} required />
+              <TextField 
+                fullWidth 
+                label="Debt-to-Income Ratio" 
+                name="debt_to_income_ratio" 
+                type="number"
+                inputProps={{ step: "0.01" }}  // Fixed: moved step to inputProps
+                value={formData.debt_to_income_ratio} 
+                onChange={handleChange} 
+                required 
+              />
             </Grid>
             
             <Grid item xs={12} sm={6} md={4}>
