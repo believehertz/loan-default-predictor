@@ -1,67 +1,76 @@
+// src/components/dashboard/Sidebar.tsx
 import React from 'react';
-import { 
-  Home,
-  LayoutDashboard, 
-  BrainCircuit, 
-  Target, 
-  FileText, 
-  Settings,
-  X
-} from 'lucide-react';
+import { Box, List, ListItem, ListItemIcon, ListItemText, Divider, Avatar, Typography, Button } from '@mui/material';
+import {
+  Dashboard as DashboardIcon,
+  Assessment as AssessmentIcon,
+  People as PeopleIcon,
+  Settings as SettingsIcon,
+  Logout as LogoutIcon,
+  TrendingUp
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 interface SidebarProps {
-  darkMode: boolean;
-  onClose: () => void;
-  activeView: string;
-  onNavigate: (view: 'home' | 'dashboard' | 'predictions' | 'risk' | 'reports' | 'settings') => void;
+  onLogout: () => void;
 }
 
-const navItems = [
-  { label: 'Home', key: 'home', icon: Home },           // ADDED HOME
-  { label: 'Dashboard', key: 'dashboard', icon: LayoutDashboard },
-  { label: 'Predictions', key: 'predictions', icon: BrainCircuit },
-  { label: 'Risk Analysis', key: 'risk', icon: Target },
-  { label: 'Reports', key: 'reports', icon: FileText },
-  { label: 'Settings', key: 'settings', icon: Settings },
-];
+const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
+  const navigate = useNavigate();
 
-export const Sidebar: React.FC<SidebarProps> = ({ darkMode, onClose, activeView, onNavigate }) => {
+  const menuItems = [
+    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
+    { text: 'Predictions', icon: <AssessmentIcon />, path: '/predict' },
+    { text: 'Users', icon: <PeopleIcon />, path: '#' },
+    { text: 'Settings', icon: <SettingsIcon />, path: '#' },
+  ];
+
   return (
-    <div className={`flex flex-col h-full border-r ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-      <div className={`flex items-center justify-between h-16 px-6 border-b ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-        <span className="text-xl font-bold text-blue-600">LoanAI Pro</span>
-        <button onClick={onClose} className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
-          <X className="w-5 h-5" />
-        </button>
-      </div>
-
-      <nav className="flex-1 px-4 py-6 space-y-1">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = activeView === item.key;
-          return (
-            <button
-              key={item.key}
-              onClick={() => onNavigate(item.key as any)}
-              className={`flex items-center w-full px-4 py-3 rounded-xl transition-all duration-200 group ${
-                isActive
-                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' 
-                  : `${darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100'}`
-              }`}
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Avatar sx={{ bgcolor: 'primary.main', width: 40, height: 40 }}>
+          <TrendingUp />
+        </Avatar>
+        <Typography variant="h6" fontWeight="bold" noWrap>
+          LoanPredictor
+        </Typography>
+      </Box>
+      
+      <Divider sx={{ mx: 2 }} />
+      
+      <List sx={{ px: 2, py: 3, flex: 1 }}>
+        {menuItems.map((item) => (
+          <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+            <Button
+              fullWidth
+              onClick={() => navigate(item.path)}
+              startIcon={item.icon}
+              sx={{
+                justifyContent: 'flex-start',
+                py: 1.5,
+                borderRadius: 2,
+                color: 'text.primary',
+              }}
             >
-              <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}`} />
-              <span className="font-medium">{item.label}</span>
-            </button>
-          );
-        })}
-      </nav>
+              {item.text}
+            </Button>
+          </ListItem>
+        ))}
+      </List>
 
-      <div className={`p-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-        <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-4 text-white">
-          <p className="text-sm font-medium mb-1">Pro Plan Active</p>
-          <p className="text-xs opacity-90 mt-1">Advanced ML models enabled</p>
-        </div>
-      </div>
-    </div>
+      <Box sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
+        <Button
+          fullWidth
+          variant="outlined"
+          color="error"
+          startIcon={<LogoutIcon />}
+          onClick={onLogout}
+        >
+          Logout
+        </Button>
+      </Box>
+    </Box>
   );
 };
+
+export default Sidebar;

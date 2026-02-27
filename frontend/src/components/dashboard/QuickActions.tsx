@@ -1,6 +1,6 @@
-// src/components/Dashboard/QuickActions.tsx
+// src/components/dashboard/QuickActions.tsx
 import React from 'react';
-import { Paper, Typography, Button, Box, Grid } from '@mui/material';
+import { Paper, Typography, Button, Grid } from '@mui/material';
 import { 
   AddCircle, 
   Assessment, 
@@ -10,23 +10,23 @@ import {
 
 const QuickActions: React.FC = () => {
   const actions = [
-    { label: 'New Prediction', icon: <AddCircle />, color: 'primary', variant: 'contained' },
-    { label: 'View Reports', icon: <Assessment />, color: 'info', variant: 'outlined' },
-    { label: 'Export Data', icon: <CloudDownload />, color: 'success', variant: 'outlined' },
-    { label: 'Risk Analysis', icon: <Analytics />, color: 'warning', variant: 'outlined' },
+    { label: 'New Prediction', icon: <AddCircle />, color: 'primary' },
+    { label: 'View Reports', icon: <Assessment />, color: 'info' },
+    { label: 'Export Data', icon: <CloudDownload />, color: 'success' },
+    { label: 'Risk Analysis', icon: <Analytics />, color: 'warning' },
   ];
 
   return (
-    <Paper sx={{ p: 3, borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+    <Paper sx={{ p: 3, borderRadius: 4 }}>
       <Typography variant="h6" fontWeight="bold" gutterBottom>
         Quick Actions
       </Typography>
-      <Grid container spacing={2} sx={{ mt: 1 }}>
+      <Grid container spacing={2}>
         {actions.map((action, idx) => (
           <Grid item xs={6} key={idx}>
             <Button
               fullWidth
-              variant={action.variant as any}
+              variant="outlined"
               color={action.color as any}
               startIcon={action.icon}
               sx={{ 

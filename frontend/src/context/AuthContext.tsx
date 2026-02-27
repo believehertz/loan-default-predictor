@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signup = async (email: string, username: string, password: string) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/signup`, {
+      await axios.post(`${API_URL}/auth/signup`, {
         email,
         username,
         password
