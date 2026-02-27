@@ -15,6 +15,7 @@ const ResetPassword: React.FC = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -27,7 +28,10 @@ const ResetPassword: React.FC = () => {
       });
       
       setSuccess(true);
-      setTimeout(() => navigate('/'), 3000);
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
+      
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Reset failed');
     } finally {

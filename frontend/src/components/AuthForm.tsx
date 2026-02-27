@@ -1,3 +1,4 @@
+// src/components/AuthForm.tsx
 import React, { useState } from 'react';
 import { 
   Box, 
@@ -11,20 +12,24 @@ import {
   Fade,
   Slide,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  Alert
 } from '@mui/material';
 import { 
   LockOutlined, 
   Visibility,
-  VisibilityOff
+  VisibilityOff,
+  TrendingUp,
+  Security,
+  Assessment
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-interface AuthFormProps {
-  onForgotPassword: () => void;
-}
-
-const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
+const AuthForm: React.FC = () => {
+  const navigate = useNavigate();
+  const { login, signup } = useAuth();
+  
   const [tab, setTab] = useState(0);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -32,7 +37,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, signup } = useAuth();
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -44,20 +48,22 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
     try {
       if (tab === 0) {
         await login(username, password);
+        navigate('/dashboard'); // Redirect to dashboard after login
       } else {
         await signup(email, username, password);
+        navigate('/dashboard'); // Redirect to dashboard after signup
       }
     } catch (err: any) {
-      setError(err.response?.data?.detail || 'Authentication failed');
+      setError(err.message || 'Authentication failed');
     } finally {
       setLoading(false);
     }
   };
 
   const features = [
-    { icon: '📈', text: "90%+ Accuracy" },
-    { icon: '🔒', text: "Bank-Grade Security" },
-    { icon: '📊', text: "594K+ Records" }
+    { icon: <TrendingUp />, text: "90%+ Accuracy" },
+    { icon: <Security />, text: "Bank-Grade Security" },
+    { icon: <Assessment />, text: "594K+ Records" }
   ];
 
   return (
@@ -117,12 +123,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
               </Avatar>
               <Typography component="h1" variant="h4" color="primary" gutterBottom 
                 sx={{ fontWeight: 700, textAlign: 'center' }}>
-                {tab === 0 ? 'Welcome Back!' : 'Join Us!'}
-              </Typography>
-              <Typography variant="body2" color="textSecondary" align="center">
-                {tab === 0 
-                  ? 'Sign in to access your loan predictions' 
-                  : 'Start predicting loan defaults with 90%+ accuracy'}
+                {tab === 0 ? 'Welcome Back!' : 'Create Account'}
               </Typography>
             </Box>
 
@@ -159,6 +160,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
               <Tab label="Sign Up" sx={{ fontWeight: 600 }} />
             </Tabs>
 
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
             <Box component="form" onSubmit={handleSubmit}>
               {tab === 1 && (
                 <TextField
@@ -189,7 +196,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                sx={{ mb: 1 }}
+                sx={{ mb: 2 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -197,7 +204,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
                         aria-label="toggle password visibility"
                         onClick={handleClickShowPassword}
                         edge="end"
-                        sx={{ color: 'primary.main' }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -209,18 +215,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
               <Box textAlign="right" sx={{ mb: 2 }}>
                 <Button 
                   size="small" 
-                  onClick={onForgotPassword}
-                  sx={{ textTransform: 'none', color: 'primary.main' }}
+                  onClick={() => navigate('/forgot-password')}
+                  sx={{ textTransform: 'none' }}
                 >
                   Forgot Password?
                 </Button>
               </Box>
-
-              {error && (
-                <Typography color="error" variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
-                  {error}
-                </Typography>
-              )}
 
               <Button
                 type="submit"
@@ -236,11 +236,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onForgotPassword }) => {
                   fontWeight: 700,
                   background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
                   boxShadow: '0 3px 5px 2px rgba(102, 126, 234, .3)',
-                  '&:hover': {
-                    background: 'linear-gradient(45deg, #764ba2 30%, #667eea 90%)',
-                    transform: 'translateY(-2px)',
-                    boxShadow: '0 6px 12px rgba(102, 126, 234, 0.4)'
-                  }
                 }}
               >
                 {loading ? 'Processing...' : (tab === 0 ? 'Sign In' : 'Create Account')}

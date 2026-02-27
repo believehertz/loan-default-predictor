@@ -1,3 +1,4 @@
+// src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -11,11 +12,11 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  isAuthenticated: boolean;
+  loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   signup: (email: string, username: string, password: string) => Promise<void>;
   logout: () => void;
-  isAuthenticated: boolean;
-  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,6 +26,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check for existing token on mount
     const token = localStorage.getItem('token');
     if (token) {
       fetchUser(token);
@@ -47,22 +49,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = async (username: string, password: string) => {
-    const formData = new FormData();
-    formData.append('username', username);
-    formData.append('password', password);
-    
-    const response = await axios.post(`${API_URL}/auth/login`, formData);
-    const { access_token, user } = response.data;
-    localStorage.setItem('token', access_token);
-    setUser(user);
+    try {
+      const formData = new FormData();
+      formData.append('username', username);
+      formData.append('password', password);
+      
+      const response = await axios.post(`${API_URL}/auth/login`, formData);
+      const { access_token, user } = response.data;
+      
+      localStorage.setItem('token', access_token);
+      setUser(user);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.detail || 'Login failed');
+    }
   };
 
   const signup = async (email: string, username: string, password: string) => {
-    await axios.post(`${API_URL}/auth/signup`, {
-      email, username, password
-    });
-    // Auto login after signup
-    await login(username, password);
+    try {
+      const response = await axios.post(`${API_URL}/auth/signup`, {
+        email,
+        username,
+        password
+      });
+      
+      // Auto login after signup
+      await login(username, password);
+    } catch (error: any) {
+      throw new Error(error.response?.data?.detail || 'Signup failed');
+    }
   };
 
   const logout = () => {
@@ -71,10 +85,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{
-      user, login, signup, logout,
-      isAuthenticated: !!user,
-      loading
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated: !!user, 
+      loading, 
+      login, 
+      signup, 
+      logout 
     }}>
       {children}
     </AuthContext.Provider>

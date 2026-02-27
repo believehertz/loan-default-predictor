@@ -1,53 +1,49 @@
+// src/components/Dashboard/QuickActions.tsx
 import React from 'react';
-import { Download, Plus, AlertTriangle } from 'lucide-react';
+import { Paper, Typography, Button, Box, Grid } from '@mui/material';
+import { 
+  AddCircle, 
+  Assessment, 
+  CloudDownload, 
+  Analytics 
+} from '@mui/icons-material';
 
-interface QuickActionsProps {
-  onExportPDF: () => void;
-  onAddLoan: () => void;
-  onViewRiskReport: () => void;
-}
-
-export const QuickActions: React.FC<QuickActionsProps> = ({ 
-  onExportPDF, 
-  onAddLoan,
-  onViewRiskReport
-}) => {
+const QuickActions: React.FC = () => {
   const actions = [
-    { 
-      label: 'Add Loan Application', 
-      icon: Plus, 
-      color: 'bg-blue-600 hover:bg-blue-700',
-      onClick: onAddLoan
-    },
-    { 
-      label: 'Export PDF Report', 
-      icon: Download, 
-      color: 'bg-gray-800 hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600', 
-      onClick: onExportPDF 
-    },
-    { 
-      label: 'View Risk Report', 
-      icon: AlertTriangle, 
-      color: 'bg-amber-600 hover:bg-amber-700',
-      onClick: onViewRiskReport
-    },
+    { label: 'New Prediction', icon: <AddCircle />, color: 'primary', variant: 'contained' },
+    { label: 'View Reports', icon: <Assessment />, color: 'info', variant: 'outlined' },
+    { label: 'Export Data', icon: <CloudDownload />, color: 'success', variant: 'outlined' },
+    { label: 'Risk Analysis', icon: <Analytics />, color: 'warning', variant: 'outlined' },
   ];
 
   return (
-    <div className="flex flex-wrap gap-4">
-      {actions.map((action) => {
-        const Icon = action.icon;
-        return (
-          <button
-            key={action.label}
-            onClick={action.onClick}
-            className={`flex items-center px-6 py-3 ${action.color} text-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 font-medium`}
-          >
-            <Icon className="w-4 h-4 mr-2" />
-            {action.label}
-          </button>
-        );
-      })}
-    </div>
+    <Paper sx={{ p: 3, borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+      <Typography variant="h6" fontWeight="bold" gutterBottom>
+        Quick Actions
+      </Typography>
+      <Grid container spacing={2} sx={{ mt: 1 }}>
+        {actions.map((action, idx) => (
+          <Grid item xs={6} key={idx}>
+            <Button
+              fullWidth
+              variant={action.variant as any}
+              color={action.color as any}
+              startIcon={action.icon}
+              sx={{ 
+                py: 1.5, 
+                borderRadius: 2,
+                justifyContent: 'flex-start',
+                textTransform: 'none',
+                fontWeight: 600
+              }}
+            >
+              {action.label}
+            </Button>
+          </Grid>
+        ))}
+      </Grid>
+    </Paper>
   );
 };
+
+export default QuickActions;

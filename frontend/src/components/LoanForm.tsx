@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import {
   TextField, Button, Box, Typography, Paper, Grid, 
-  CircularProgress, FormControl, InputLabel, Select, MenuItem
+  CircularProgress, FormControl, InputLabel, Select, MenuItem,
+  IconButton, Tooltip
 } from '@mui/material';
 import axios from 'axios';
 import FallingMoney from './FallingMoney';
+import { useNavigate } from 'react-router-dom';
+import { Dashboard as DashboardIcon, ArrowBack } from '@mui/icons-material';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
@@ -13,6 +16,7 @@ interface LoanFormProps {
 }
 
 const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     annual_income: '',
@@ -78,35 +82,70 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
   };
 
   return (
-    // OUTER: Full width, centered content
     <Box sx={{ 
       width: '100%',
-      minHeight: 'calc(100vh - 64px)', // Subtract AppBar
+      minHeight: 'calc(100vh - 64px)',
       display: 'flex',
       flexDirection: 'column',
-      alignItems: 'center', // CENTER HORIZONTALLY
-      justifyContent: 'center', // CENTER VERTICALLY
+      alignItems: 'center',
+      justifyContent: 'center',
       py: 4,
-      position: 'relative'
+      position: 'relative',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
     }}>
       <FallingMoney />
       
-      {/* PAPER: Centered with max width */}
+      {/* Header with Navigation */}
+      <Box sx={{ 
+        position: 'absolute',
+        top: 16,
+        left: 16,
+        right: 16,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        zIndex: 10
+      }}>
+        <Tooltip title="Back to Dashboard">
+          <IconButton 
+            onClick={() => navigate('/dashboard')}
+            sx={{ 
+              bgcolor: 'rgba(255,255,255,0.9)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,1)' }
+            }}
+          >
+            <ArrowBack />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title="Go to Dashboard">
+          <IconButton 
+            onClick={() => navigate('/dashboard')}
+            sx={{ 
+              bgcolor: 'rgba(255,255,255,0.9)',
+              '&:hover': { bgcolor: 'rgba(255,255,255,1)' }
+            }}
+          >
+            <DashboardIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      
       <Paper 
         elevation={24} 
         sx={{ 
           p: 4,
-          width: '95%',           // Almost full width
-          maxWidth: '900px',      // But capped at 900px
+          width: '95%',
+          maxWidth: '900px',
           borderRadius: 4,
           background: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(10px)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
           position: 'relative',
           zIndex: 2,
-          // CRITICAL: margin auto centers it!
           margin: '0 auto',
-          mx: 'auto'
+          mx: 'auto',
+          mt: 6 // Space for header buttons
         }}
       >
         <Typography variant="h4" gutterBottom align="center" color="primary" sx={{ fontWeight: 700 }}>
@@ -117,13 +156,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         </Typography>
         
         <Box component="form" onSubmit={handleSubmit}>
-          {/* GRID: Center all items */}
-          <Grid 
-            container 
-            spacing={2} 
-            justifyContent="center"  // CENTER THE GRID ITEMS
-            alignItems="center"
-          >
+          <Grid container spacing={2} justifyContent="center" alignItems="center">
             <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField fullWidth label="Annual Income ($)" name="annual_income" 
                 type="number" value={formData.annual_income} onChange={handleChange} required />
@@ -226,13 +259,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
             </Grid>
           </Grid>
           
-          {/* BUTTON CONTAINER: Centered */}
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            mt: 4,
-            width: '100%'
-          }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, width: '100%' }}>
             <Button 
               type="submit" 
               variant="contained" 

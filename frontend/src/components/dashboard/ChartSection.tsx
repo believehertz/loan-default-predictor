@@ -1,95 +1,116 @@
+// src/components/Dashboard/ChartSection.tsx
 import React from 'react';
+import { Paper, Typography, Box, useTheme } from '@mui/material';
 import {
-  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, ResponsiveContainer
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell
 } from 'recharts';
-import type { Feature, TimelinePoint } from '../../types/dashboard';
 
-interface ChartSectionProps {
-  riskDistribution: { name: string; value: number; color: string }[];
-  features: Feature[];
-  timeline: TimelinePoint[];
-  darkMode: boolean;
-  isLoading?: boolean;
-}
+const ChartSection: React.FC = () => {
+  const theme = useTheme();
 
-export const ChartSection: React.FC<ChartSectionProps> = ({ 
-  riskDistribution, 
-  features, 
-  timeline, 
-  darkMode,
-  isLoading 
-}) => {
-  const cardBg = darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200';
-  const textColor = darkMode ? 'text-gray-100' : 'text-gray-900';
-  const gridColor = darkMode ? '#374151' : '#e5e7eb';
-  const axisColor = darkMode ? '#9ca3af' : '#6b7280';
+  const trendData = [
+    { month: 'Jan', approvals: 65, defaults: 12 },
+    { month: 'Feb', approvals: 78, defaults: 15 },
+    { month: 'Mar', approvals: 90, defaults: 18 },
+    { month: 'Apr', approvals: 85, defaults: 14 },
+    { month: 'May', approvals: 95, defaults: 10 },
+    { month: 'Jun', approvals: 110, defaults: 8 },
+  ];
 
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className={`${cardBg} rounded-2xl p-6 border h-80 animate-pulse`} />
-        ))}
-      </div>
-    );
-  }
+  const riskDistribution = [
+    { name: 'Low Risk', value: 65, color: '#4caf50' },
+    { name: 'Medium Risk', value: 25, color: '#ff9800' },
+    { name: 'High Risk', value: 10, color: '#f44336' },
+  ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Risk Distribution */}
-      <div className={`${cardBg} rounded-2xl p-6 border shadow-sm`}>
-        <h3 className={`text-lg font-semibold ${textColor} mb-6`}>Risk Distribution</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <PieChart>
-            <Pie
-              data={riskDistribution}
-              cx="50%"
-              cy="50%"
-              outerRadius={100}
-              dataKey="value"
-              label={({name, percent}) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
-            >
-              {riskDistribution.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
-              ))}
-            </Pie>
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      {/* Main Trend Chart */}
+      <Paper sx={{ p: 3, borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Loan Approval Trends
+        </Typography>
+        <Box sx={{ height: 300, mt: 2 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={trendData}>
+              <defs>
+                <linearGradient id="colorApprovals" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#667eea" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#667eea" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip 
+                contentStyle={{ 
+                  borderRadius: 8, 
+                  border: 'none', 
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)' 
+                }}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="approvals" 
+                stroke="#667eea" 
+                strokeWidth={3}
+                fillOpacity={1} 
+                fill="url(#colorApprovals)" 
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Box>
+      </Paper>
 
-      {/* Feature Importance */}
-      <div className={`${cardBg} rounded-2xl p-6 border shadow-sm`}>
-        <h3 className={`text-lg font-semibold ${textColor} mb-6`}>Top Risk Factors (XGBoost)</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={features.slice(0, 5)} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis type="number" stroke={axisColor} />
-            <YAxis dataKey="feature" type="category" width={100} stroke={axisColor} />
-            <Bar dataKey="importance" fill="#8884d8" radius={[0, 4, 4, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Timeline */}
-      <div className={`lg:col-span-2 ${cardBg} rounded-2xl p-6 border shadow-sm`}>
-        <h3 className={`text-lg font-semibold ${textColor} mb-6`}>Prediction Timeline</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={timeline}>
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="date" stroke={axisColor} />
-            <YAxis domain={[0, 1]} stroke={axisColor} />
-            <Line 
-              type="monotone" 
-              dataKey="probability" 
-              stroke="#8884d8" 
-              strokeWidth={3}
-              dot={{ fill: '#8884d8', r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+      {/* Bottom Row - Risk Distribution */}
+      <Paper sx={{ p: 3, borderRadius: 4, boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
+        <Typography variant="h6" fontWeight="bold" gutterBottom>
+          Risk Distribution
+        </Typography>
+        <Box sx={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={riskDistribution}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={100}
+                paddingAngle={5}
+                dataKey="value"
+              >
+                {riskDistribution.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+          <Box sx={{ ml: 4 }}>
+            {riskDistribution.map((item) => (
+              <Box key={item.name} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: item.color }} />
+                <Typography variant="body2">
+                  {item.name}: {item.value}%
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
+
+export default ChartSection;

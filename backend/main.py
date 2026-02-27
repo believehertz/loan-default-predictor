@@ -14,7 +14,12 @@ app = FastAPI(
 # NUCLEAR CORS - Allow everything (for testing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow ALL origins (change to specific URL in production)
+    # backend/main.py
+    allow_origins=[
+    "http://localhost:5173",
+    "http://localhost:3000",
+    # ... your production URLs
+],  # Allow ALL origins (change to specific URL in production)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
