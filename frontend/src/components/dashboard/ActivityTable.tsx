@@ -7,7 +7,14 @@ import {
 } from '@mui/material';
 import { FilterList, Download } from '@mui/icons-material';
 
-const ActivityTable: React.FC = () => {
+interface ActivityTableProps {
+  darkMode: boolean;
+}
+
+const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
+  const bgColor = darkMode ? '#1a1a2e' : '#ffffff';
+  const textColor = darkMode ? '#ffffff' : '#1a1a2e';
+
   const activities = [
     { id: 1, name: 'John Doe', amount: 25000, status: 'Approved', date: '2024-02-19', riskScore: 0.92 },
     { id: 2, name: 'Jane Smith', amount: 15000, status: 'Pending', date: '2024-02-19', riskScore: 0.78 },
@@ -25,24 +32,30 @@ const ActivityTable: React.FC = () => {
   };
 
   return (
-    <Paper sx={{ borderRadius: 4, overflow: 'hidden', mt: 4 }}>
-      <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="h6" fontWeight="bold">Recent Loan Applications</Typography>
+    <Paper sx={{ borderRadius: 4, overflow: 'hidden', bgcolor: bgColor }}>
+      <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: 1, borderColor: 'divider' }}>
+        <Typography variant="h6" fontWeight="bold" sx={{ color: textColor }}>
+          Recent Loan Applications
+        </Typography>
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <Button startIcon={<FilterList />} variant="outlined" size="small">Filter</Button>
-          <Button startIcon={<Download />} variant="contained" size="small">Export</Button>
+          <Button startIcon={<FilterList />} variant="outlined" size="small">
+            Filter
+          </Button>
+          <Button startIcon={<Download />} variant="contained" size="small">
+            Export
+          </Button>
         </Box>
       </Box>
       
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow sx={{ bgcolor: 'grey.50' }}>
-              <TableCell>Applicant</TableCell>
-              <TableCell>Amount</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Risk Score</TableCell>
-              <TableCell>Date</TableCell>
+            <TableRow sx={{ bgcolor: darkMode ? '#2d2d44' : '#f5f5f5' }}>
+              <TableCell sx={{ color: textColor }}>Applicant</TableCell>
+              <TableCell sx={{ color: textColor }}>Amount</TableCell>
+              <TableCell sx={{ color: textColor }}>Status</TableCell>
+              <TableCell sx={{ color: textColor }}>Risk Score</TableCell>
+              <TableCell sx={{ color: textColor }}>Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -53,15 +66,19 @@ const ActivityTable: React.FC = () => {
                     <Avatar sx={{ bgcolor: 'primary.light' }}>
                       {row.name[0]}
                     </Avatar>
-                    <Typography fontWeight="medium">{row.name}</Typography>
+                    <Typography sx={{ color: textColor }}>{row.name}</Typography>
                   </Box>
                 </TableCell>
-                <TableCell>${row.amount.toLocaleString()}</TableCell>
+                <TableCell sx={{ color: textColor }}>${row.amount.toLocaleString()}</TableCell>
                 <TableCell>
-                  <Chip label={row.status} color={getStatusColor(row.status) as any} size="small" />
+                  <Chip 
+                    label={row.status} 
+                    color={getStatusColor(row.status) as any}
+                    size="small"
+                  />
                 </TableCell>
-                <TableCell>{(row.riskScore * 100).toFixed(0)}%</TableCell>
-                <TableCell>{row.date}</TableCell>
+                <TableCell sx={{ color: textColor }}>{(row.riskScore * 100).toFixed(0)}%</TableCell>
+                <TableCell sx={{ color: textColor }}>{row.date}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -1,20 +1,18 @@
-// src/components/Dashboard/SummaryCards.tsx
+// src/components/dashboard/SummaryCards.tsx
 import React from 'react';
 import { Grid, Paper, Typography, Box, Avatar } from '@mui/material';
 import { TrendingUp, AttachMoney, CheckCircle, Warning } from '@mui/icons-material';
 import CountUp from 'react-countup';
 
-interface CardData {
-  title: string;
-  value: number;
-  suffix?: string;
-  icon: React.ReactNode;
-  color: string;
-  trend: number;
+interface SummaryCardsProps {
+  darkMode: boolean;
 }
 
-const SummaryCards: React.FC = () => {
-  const cards: CardData[] = [
+const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
+  const bgColor = darkMode ? '#1a1a2e' : '#ffffff';
+  const textColor = darkMode ? '#ffffff' : '#1a1a2e';
+
+  const cards = [
     {
       title: 'Total Predictions',
       value: 1247,
@@ -55,20 +53,15 @@ const SummaryCards: React.FC = () => {
             sx={{
               p: 3,
               borderRadius: 4,
-              background: 'rgba(255, 255, 255, 0.9)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(0,0,0,0.05)',
+              background: bgColor,
+              border: `1px solid ${darkMode ? '#333' : '#e0e0e0'}`,
               boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-              transition: 'transform 0.3s, box-shadow 0.3s',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-                boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
-              },
+              transition: 'transform 0.3s',
+              '&:hover': { transform: 'translateY(-4px)' },
               position: 'relative',
               overflow: 'hidden'
             }}
           >
-            {/* Accent line */}
             <Box sx={{
               position: 'absolute',
               top: 0,
@@ -80,10 +73,10 @@ const SummaryCards: React.FC = () => {
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <Box>
-                <Typography color="text.secondary" variant="body2" fontWeight="medium" sx={{ mb: 1 }}>
+                <Typography sx={{ color: darkMode ? '#a0a0b0' : '#64748b', mb: 1 }}>
                   {card.title}
                 </Typography>
-                <Typography variant="h4" fontWeight="bold" color="text.primary">
+                <Typography variant="h4" fontWeight="bold" sx={{ color: textColor }}>
                   <CountUp 
                     end={card.value} 
                     duration={2} 
@@ -95,12 +88,8 @@ const SummaryCards: React.FC = () => {
                 <Typography 
                   variant="caption" 
                   sx={{ 
-                    color: card.trend > 0 ? 'success.main' : 'error.main',
-                    fontWeight: 600,
-                    mt: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 0.5
+                    color: card.trend > 0 ? '#4caf50' : '#f44336',
+                    fontWeight: 600
                   }}
                 >
                   {card.trend > 0 ? '↑' : '↓'} {Math.abs(card.trend)}% from last month
