@@ -58,8 +58,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, onClick: () => navigate('/dashboard') },
     { text: 'New Prediction', icon: <AssessmentIcon />, onClick: () => navigate('/predict') },
-    { text: 'Users', icon: <PeopleIcon />, onClick: () => alert('Users management coming soon!') },
-    { text: 'Settings', icon: <SettingsIcon />, onClick: () => alert('Settings coming soon!') },
+    { text: 'Users', icon: <PeopleIcon />, onClick: () => navigate('/users') },
+    { text: 'Settings', icon: <SettingsIcon />, onClick: () => navigate('/settings') },
   ];
 
   const drawer = (

@@ -22,6 +22,28 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
     { id: 4, name: 'Alice Brown', amount: 32000, status: 'Approved', date: '2024-02-18', riskScore: 0.88 },
   ];
 
+  const handleExport = () => {
+    // Create CSV content
+    const headers = ['Applicant', 'Amount', 'Status', 'Risk Score', 'Date'];
+    const csvContent = [
+      headers.join(','),
+      ...activities.map(row => 
+        `"${row.name}",$${row.amount.toLocaleString()},${row.status},${(row.riskScore * 100).toFixed(0)}%,${row.date}`
+      )
+    ].join('\n');
+
+    // Trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `loan-applications-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Approved': return 'success';
@@ -41,7 +63,12 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
           <Button startIcon={<FilterList />} variant="outlined" size="small">
             Filter
           </Button>
-          <Button startIcon={<Download />} variant="contained" size="small">
+          <Button 
+            startIcon={<Download />} 
+            variant="contained" 
+            size="small"
+            onClick={handleExport}  // Fixed: actual export function
+          >
             Export
           </Button>
         </Box>
