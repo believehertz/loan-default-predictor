@@ -18,7 +18,6 @@ const ResultCard: React.FC<ResultProps> = ({ data }) => {
   const pct = Math.round(prob * 100);
   
   let color: 'success' | 'warning' | 'error' | 'info' = 'success';
-  let Icon = () => <span>✅</span>;
   
   if (prob >= 0.9) {
     color = 'success';
@@ -39,6 +38,7 @@ const ResultCard: React.FC<ResultProps> = ({ data }) => {
       <Typography variant="h2" fontWeight="bold" color="primary">
         {pct}%
       </Typography>
+      
       <Typography variant="subtitle1" color="textSecondary">
         Probability of Successful Payback
       </Typography>
@@ -48,20 +48,20 @@ const ResultCard: React.FC<ResultProps> = ({ data }) => {
           variant="determinate" 
           value={pct} 
           color={color}
-          sx={{ height: 10, borderRadius: 5 }}
+          sx={{ height: 12, borderRadius: 6 }}
         />
       </Box>
 
       <Chip 
         label={data.risk_level} 
         color={color} 
-        size="medium"
-        sx={{ fontSize: '1.1rem', py: 2.5, px: 1 }}
+        size="large"
+        sx={{ fontSize: '1.2rem', py: 2.5, px: 2 }}
       />
 
       <Box mt={3} p={2} bgcolor="grey.50" borderRadius={2}>
         <Typography variant="body2" color="textSecondary">
-          Model: XGBoost | 90%+ Accuracy | 594K Records
+          Model: XGBoost | 90%+ Accuracy | 594K Records Trained
         </Typography>
       </Box>
     </Paper>

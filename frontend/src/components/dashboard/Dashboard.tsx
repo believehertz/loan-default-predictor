@@ -1,7 +1,7 @@
 // src/components/dashboard/Dashboard.tsx
 import React, { useState } from 'react';
 import {
-  Box, Grid, Paper, Typography, Button,
+  Box, Grid, Typography, Button,
   Divider, Avatar, useTheme, useMediaQuery,
   CssBaseline, IconButton, Tooltip
 } from '@mui/material';
