@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from backend.database import get_db
+from ...backend.database import get_db  # Go up 2 levels: routers -> app -> root
 from backend.models import LoanApplication, User
 from backend.auth import get_current_active_user
 from backend.schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
