@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import { 
   Paper, Typography, Table, TableBody, TableCell, TableContainer, 
   TableHead, TableRow, Avatar, Chip, Button, Box, Dialog, 
-  DialogTitle, DialogContent, DialogActions, TextField, IconButton,
-  MenuItem
+  DialogTitle, DialogContent, DialogActions, TextField, IconButton
 } from '@mui/material';
-import { AdminPanelSettings, Person, Add, Edit, Delete } from '@mui/icons-material';
+import { Person, Add, Edit, Delete } from '@mui/icons-material';
 
 interface User {
   id: number;
