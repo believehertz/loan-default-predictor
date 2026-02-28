@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from database import get_db
-from models import LoanApplication, User
-from auth import get_current_active_user
-from schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
-import joblib
+from backend.database import get_db
+from backend.models import LoanApplication, User
+from backend.auth import get_current_active_user
+from backend.schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
+import joblib  # type: ignore
 import os
 import pandas as pd
-from typing import List
+from typing import Any, Dict, List, Optional, cast
 import logging
 import warnings
 
@@ -16,6 +16,14 @@ logger = logging.getLogger(__name__)
 
 # Suppress XGBoost warnings
 warnings.filterwarnings('ignore', category=UserWarning)
+
+# Type annotations for model components loaded from pickle
+model_package: Optional[Dict[str, Any]] = None
+model: Any = None
+encoders: Dict[str, Any] = {}
+numeric_features: List[str] = []
+categorical_features: List[str] = []
+all_features: List[str] = []
 
 # Load model with error handling
 try:
@@ -31,12 +39,14 @@ try:
     if not os.path.exists(model_path):
         raise FileNotFoundError(f"Model file not found at {model_path}")
 
-    model_package = joblib.load(model_path)
-    model = model_package['model']
-    encoders = model_package.get('label_encoders', {})
-    numeric_features = model_package.get('numeric_features', [])
-    categorical_features = model_package.get('categorical_features', [])
-    all_features = model_package.get('all_features', numeric_features + categorical_features)
+    # Load and immediately cast to Dict to avoid Optional issues
+    loaded_package: Dict[str, Any] = joblib.load(model_path)  # type: ignore
+    model_package = loaded_package
+    model = loaded_package['model']
+    encoders = loaded_package.get('label_encoders', {})
+    numeric_features = loaded_package.get('numeric_features', [])
+    categorical_features = loaded_package.get('categorical_features', [])
+    all_features = loaded_package.get('all_features', numeric_features + categorical_features)
 
     logger.info(f"Model loaded successfully from {model_path}")
 
@@ -54,13 +64,13 @@ def predict(
     request: LoanRequest,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user)
-):
+) -> LoanPredictionResponse:
     if model is None:
         raise HTTPException(status_code=503, detail="Model not available")
 
     try:
         # Create DataFrame
-        input_dict = {
+        input_dict: Dict[str, Any] = {
             'annual_income': request.annual_income,
             'debt_to_income_ratio': request.debt_to_income_ratio,
             'credit_score': request.credit_score,
@@ -80,10 +90,11 @@ def predict(
         input_df = input_df[numeric_features + categorical_features]
 
         # Encode categoricals safely
+        col: str
         for col in categorical_features:
             if col in encoders:
-                le = encoders[col]
-                val = input_df[col].iloc[0]
+                le: Any = encoders[col]
+                val: Any = input_df[col].iloc[0]
 
                 if val in le.classes_:
                     input_df[col] = le.transform([val])[0]
@@ -149,7 +160,7 @@ def get_prediction_history(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_active_user),
     limit: int = 50
-):
+) -> List[Any]:
     """Get prediction history for current user"""
     try:
         predictions = db.query(LoanApplication).filter(
@@ -158,20 +169,23 @@ def get_prediction_history(
             LoanApplication.created_at.desc()
         ).limit(limit).all()
 
-        return predictions
+        return predictions  # type: ignore
     except Exception as e:
         logger.error(f"History fetch error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/model-info")
-def model_info():
+def model_info() -> Dict[str, Any]:
     if model_package is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
+    
+    # Now model_package is not None, cast to Dict
+    pkg: Dict[str, Any] = model_package
 
     try:
         return {
-            "accuracy": f"{model_package.get('accuracy', 0):.2%}",
-            "auc": f"{model_package.get('auc', 0):.4f}",
+            "accuracy": f"{pkg.get('accuracy', 0):.2%}",
+            "auc": f"{pkg.get('auc', 0):.4f}",
             "training_samples": "593,994",
             "features": numeric_features + categorical_features,
             "top_feature": "employment_status (83.8% importance)"
@@ -181,49 +195,53 @@ def model_info():
 
 @router.get("/stats")
 def get_prediction_stats(
-    current_user: User = Depends(get_current_active_user),  # FIXED: Was models.User
-    db: Session = Depends(get_db)
-):
-    """Get user's prediction statistics"""
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+    limit: int = 50
+) -> Dict[str, Any]:
+    """Return aggregated statistics for the current user's predictions"""
     try:
         predictions = db.query(LoanApplication).filter(
             LoanApplication.user_id == current_user.id
-        ).all()
+        ).order_by(
+            LoanApplication.created_at.desc()
+        ).limit(limit).all()
 
         if not predictions:
             return {
                 "total_predictions": 0,
-                "total_loan_value": 0.0,
-                "avg_probability": 0.0,
+                "total_loan_value": 0,
+                "avg_probability": 0,
                 "risk_distribution": {"low": 0, "medium": 0, "high": 0}
             }
 
-        total_value = sum(float(p.loan_amount or 0) for p in predictions)
-        avg_prob = sum(float(p.loan_paid_back_probability or 0) for p in predictions) / len(predictions)
+        total_value = sum(float(cast(Any, p).loan_amount or 0) for p in predictions)
+        avg_prob = sum(float(cast(Any, p).loan_paid_back_probability or 0) for p in predictions) / len(predictions)
 
-        # Risk distribution
-        low = sum(1 for p in predictions if (p.loan_paid_back_probability or 0) >= 0.7)
-        medium = sum(1 for p in predictions if 0.5 <= (p.loan_paid_back_probability or 0) < 0.7)
-        high = sum(1 for p in predictions if (p.loan_paid_back_probability or 0) < 0.5)
+        low = sum(1 for p in predictions if float(cast(Any, p).loan_paid_back_probability or 0) >= 0.7)
+        medium = sum(1 for p in predictions if 0.5 <= float(cast(Any, p).loan_paid_back_probability or 0) < 0.7)
+        high = sum(1 for p in predictions if float(cast(Any, p).loan_paid_back_probability or 0) < 0.5)
 
         return {
             "total_predictions": len(predictions),
-            "total_loan_value": round(total_value, 2),
-            "avg_probability": round(avg_prob, 4),
+            "total_loan_value": total_value,
+            "avg_probability": avg_prob,
             "risk_distribution": {"low": low, "medium": medium, "high": high}
         }
+
     except Exception as e:
         logger.error(f"Stats error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/feature-importance")
-def get_feature_importance():
+def get_feature_importance() -> Dict[str, Any]:
     """Get XGBoost feature importance"""
     if model is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     try:
         # Handle different model types
+        importances: List[float]
         if hasattr(model, 'feature_importances_'):
             importances = model.feature_importances_
         elif hasattr(model, 'get_booster'):
@@ -254,24 +272,29 @@ def get_feature_importance():
 
 @router.get("/timeline")
 def get_prediction_timeline(
-    current_user: User = Depends(get_current_active_user),  # FIXED: Was models.User
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db)
-):
+) -> List[Dict[str, Any]]:
     """Get predictions over time for charting"""
     try:
         predictions = db.query(LoanApplication).filter(
             LoanApplication.user_id == current_user.id
         ).order_by(LoanApplication.created_at).all()
 
-        timeline = []
+        timeline: List[Dict[str, Any]] = []
         for p in predictions:
-            prob = float(p.loan_paid_back_probability or 0)
+            # Cast to Any to access attributes without Column type issues
+            p_any: Any = p
+            prob = float(p_any.loan_paid_back_probability or 0)
             risk = "Low" if prob >= 0.7 else "Medium" if prob >= 0.5 else "High"
+            
+            created_at_val: Optional[Any] = p_any.created_at
+            loan_amt: Any = p_any.loan_amount
 
             timeline.append({
-                "date": p.created_at.strftime("%Y-%m-%d") if p.created_at else None,
+                "date": created_at_val.strftime("%Y-%m-%d") if created_at_val else None,
                 "probability": prob,
-                "loan_amount": float(p.loan_amount) if p.loan_amount else 0,
+                "loan_amount": float(loan_amt) if loan_amt is not None else 0,
                 "risk_level": risk
             })
 

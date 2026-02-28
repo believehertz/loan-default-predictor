@@ -76,5 +76,4 @@ class LoanApplicationResponse(BaseModel):
 class UserWithPredictions(UserResponse):
     predictions: List[LoanApplicationResponse] = []
     
-    class Config:
-        from_attributes = True
+    # Config is inherited from UserResponse, no need to redefine
