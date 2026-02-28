@@ -67,21 +67,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
             startIcon={<Download />} 
             variant="contained" 
             size="small"
-            onClick={() => {
-              // Export table data to CSV
-              const rows = [
-                ['ID', 'Name', 'Amount', 'Status', 'Date'],
-                ['1', 'John Doe', '25000', 'Approved', '2024-02-19'],
-                ['2', 'Jane Smith', '15000', 'Pending', '2024-02-19'],
-              ];
-              const csvContent = rows.map(e => e.join(",")).join("\n");
-              const blob = new Blob([csvContent], { type: 'text/csv' });
-              const url = window.URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = 'loan-applications.csv';
-              a.click();
-            }}
+            onClick={handleExport}
           >
             Export
           </Button>

@@ -21,8 +21,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, onClick: () => navigate('/dashboard') },
     { text: 'New Prediction', icon: <AssessmentIcon />, onClick: () => navigate('/predict') },
-    { text: 'Users', icon: <PeopleIcon />, onClick: () => navigate('/users') }, // NOW WORKS
-    { text: 'Settings', icon: <SettingsIcon />, onClick: () => navigate('/settings') }, // NOW WORKS
+    { text: 'Users', icon: <PeopleIcon />, onClick: () => navigate('/users') },
+    { text: 'Settings', icon: <SettingsIcon />, onClick: () => navigate('/settings') },
 ];
 
   return (
@@ -41,7 +41,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
           <Button
             key={item.text}
             fullWidth
-            onClick={() => navigate(item.path)}
+            onClick={item.onClick}
             startIcon={item.icon}
             sx={{
               justifyContent: 'flex-start',

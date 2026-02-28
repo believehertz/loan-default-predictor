@@ -1,6 +1,6 @@
 import React from 'react';
 import { Paper, Typography, Button, Grid, Box } from '@mui/material';
-import { Download, PictureAsPdf, TableChart } from '@mui/icons-material';
+import { PictureAsPdf, TableChart } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Reports: React.FC = () => {
