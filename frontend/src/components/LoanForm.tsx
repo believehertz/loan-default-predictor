@@ -12,8 +12,16 @@ import { Dashboard as DashboardIcon, ArrowBack } from '@mui/icons-material';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
+// Define the result interface
+interface PredictionResult {
+  loan_paid_back_probability: number;
+  loan_will_be_paid_back: boolean;
+  risk_level: string;
+  confidence: string;
+}
+
 interface LoanFormProps {
-  onResult: (data: any) => void;
+  onResult: (data: PredictionResult) => void;
 }
 
 const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
@@ -67,6 +75,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
         }
       );
       
+      // Pass result to parent
       onResult(response.data);
     } catch (error: any) {
       if (error.response?.status === 401) {

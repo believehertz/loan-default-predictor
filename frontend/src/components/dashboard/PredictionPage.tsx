@@ -5,15 +5,13 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthForm from './components/AuthForm';
 import Dashboard from './components/dashboard/Dashboard';
-import LoanForm from './components/LoanForm';
-import ResultCard from './components/ResultCard';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import Users from './components/dashboard/Users';
 import Settings from './components/dashboard/Settings';
 import Reports from './components/dashboard/Reports';
 import RiskAnalysis from './components/dashboard/RiskAnalysis';
-import PredictionPage from './components/dashboard/PredictionPage';
+import PredictionPage from './components/dashboard/PredictionPage'; // Make sure this path matches where you saved it
 
 const theme = createTheme({
   palette: {
@@ -64,7 +62,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated, loading } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
+    return <div>Loading...</div>;
   }
   
   return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
@@ -98,12 +96,8 @@ const AppRoutes: React.FC = () => {
       />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
       
-      {/* Protected Dashboard Route */}
+      {/* Protected Routes */}
       <Route 
         path="/dashboard" 
         element={
@@ -113,18 +107,21 @@ const AppRoutes: React.FC = () => {
         } 
       />
       
-      {/* Legacy Prediction Route - redirect to dashboard or keep separate */}
+      {/* NEW: Working Prediction Route */}
       <Route 
         path="/predict" 
         element={
           <ProtectedRoute>
-            <div style={{ padding: '20px' }}>
-              <LoanForm onResult={(data) => console.log(data)} />
-              <ResultCard data={null} />
-            </div>
+            <PredictionPage />
           </ProtectedRoute>
         } 
       />
+      
+      {/* Dashboard Sub-routes */}
+      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
     </Routes>
   );
 };

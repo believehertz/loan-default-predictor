@@ -1,6 +1,7 @@
 // src/components/ResultCard.tsx
 import React from 'react';
-import { Paper, Typography, Box, Chip, LinearProgress } from '@mui/material';
+import { Paper, Typography, Box, Chip, LinearProgress, Button } from '@mui/material';
+import { Refresh } from '@mui/icons-material';
 
 interface ResultProps {
   data: {
@@ -9,9 +10,10 @@ interface ResultProps {
     risk_level: string;
     confidence: string;
   } | null;
+  onReset?: () => void; // Add this prop
 }
 
-const ResultCard: React.FC<ResultProps> = ({ data }) => {
+const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
   if (!data) return null;
 
   const prob = data.loan_paid_back_probability;
@@ -30,7 +32,16 @@ const ResultCard: React.FC<ResultProps> = ({ data }) => {
   }
 
   return (
-    <Paper elevation={4} sx={{ p: 4, mt: 3, maxWidth: 600, mx: 'auto', textAlign: 'center' }}>
+    <Paper elevation={24} sx={{ 
+      p: 4, 
+      mt: 3, 
+      maxWidth: 600, 
+      mx: 'auto', 
+      textAlign: 'center',
+      background: 'rgba(255, 255, 255, 0.95)',
+      backdropFilter: 'blur(10px)',
+      borderRadius: 4
+    }}>
       <Typography variant="h4" color={`${color}.main`} gutterBottom>
         {data.loan_will_be_paid_back ? '✅ Likely to Pay' : '❌ High Default Risk'}
       </Typography>
@@ -61,9 +72,32 @@ const ResultCard: React.FC<ResultProps> = ({ data }) => {
 
       <Box mt={3} p={2} bgcolor="grey.50" borderRadius={2}>
         <Typography variant="body2" color="textSecondary">
-          Model: XGBoost | 90%+ Accuracy | 594K Records Trained
+          Confidence: {data.confidence} | Model: XGBoost | 90%+ Accuracy
         </Typography>
       </Box>
+
+      {/* Add Reset Button */}
+      {onReset && (
+        <Button
+          variant="outlined"
+          size="large"
+          startIcon={<Refresh />}
+          onClick={onReset}
+          sx={{ 
+            mt: 4,
+            px: 6,
+            py: 1.5,
+            borderRadius: 3,
+            borderWidth: 2,
+            '&:hover': {
+              borderWidth: 2,
+              transform: 'translateY(-2px)',
+            }
+          }}
+        >
+          Make Another Prediction
+        </Button>
+      )}
     </Paper>
   );
 };
