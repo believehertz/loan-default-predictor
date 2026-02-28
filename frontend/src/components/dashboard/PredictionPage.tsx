@@ -1,129 +1,57 @@
-// src/App.tsx
+import React, { useState } from 'react';
+import { Box, Fade } from '@mui/material';
+import LoanForm from '../LoanForm';
+import ResultCard from '../ResultCard';
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { AuthProvider, useAuth } from './context/AuthContext';
-import AuthForm from './components/AuthForm';
-import Dashboard from './components/dashboard/Dashboard';
-import ForgotPassword from './components/ForgotPassword';
-import ResetPassword from './components/ResetPassword';
-import Users from './components/dashboard/Users';
-import Settings from './components/dashboard/Settings';
-import Reports from './components/dashboard/Reports';
-import RiskAnalysis from './components/dashboard/RiskAnalysis';
-import PredictionPage from './components/dashboard/PredictionPage'; // Make sure this path matches where you saved it
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#667eea',
-      light: '#8b5cf6',
-      dark: '#5a67d8',
-    },
-    secondary: {
-      main: '#764ba2',
-    },
-    background: {
-      default: '#f3f4f6',
-      paper: '#ffffff',
-    },
-    success: {
-      main: '#4caf50',
-      light: '#81c784',
-    },
-    warning: {
-      main: '#ff9800',
-      light: '#ffb74d',
-    },
-    error: {
-      main: '#f44336',
-      light: '#e57373',
-    },
-  },
-  typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
-    h6: {
-      fontWeight: 600,
-    },
-    h5: {
-      fontWeight: 700,
-    },
-    h4: {
-      fontWeight: 700,
-    },
-  },
-  shape: {
-    borderRadius: 12,
-  },
-});
-
-// Protected Route wrapper
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
-  
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  
-  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
-};
-
-function App() {
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AuthProvider>
-        <Router>
-          <AppRoutes />
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
-  );
+interface PredictionResult {
+  loan_paid_back_probability: number;
+  loan_will_be_paid_back: boolean;
+  risk_level: string;
+  confidence: string;
 }
 
-// Separate component to use auth context inside router
-const AppRoutes: React.FC = () => {
-  const { isAuthenticated, logout } = useAuth();
+const PredictionPage: React.FC = () => {
+  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [showForm, setShowForm] = useState(true);
+
+  const handleResult = (data: PredictionResult) => {
+    console.log('Prediction received:', data);
+    setResult(data);
+    setShowForm(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleReset = () => {
+    setResult(null);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route 
-        path="/" 
-        element={
-          isAuthenticated ? <Navigate to="/dashboard" replace /> : <AuthForm />
-        } 
-      />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
-      
-      {/* Protected Routes */}
-      <Route 
-        path="/dashboard" 
-        element={
-          <ProtectedRoute>
-            <Dashboard onLogout={logout} />
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* NEW: Working Prediction Route */}
-      <Route 
-        path="/predict" 
-        element={
-          <ProtectedRoute>
-            <PredictionPage />
-          </ProtectedRoute>
-        } 
-      />
-      
-      {/* Dashboard Sub-routes */}
-      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
-    </Routes>
+    <Box sx={{ minHeight: '100vh' }}>
+      {showForm ? (
+        <Fade in={showForm} timeout={500}>
+          <Box>
+            <LoanForm onResult={handleResult} />
+          </Box>
+        </Fade>
+      ) : (
+        <Fade in={!showForm} timeout={500}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            py: 4
+          }}>
+            <ResultCard data={result} onReset={handleReset} />
+          </Box>
+        </Fade>
+      )}
+    </Box>
   );
 };
 
-export default App;
+export default PredictionPage;
