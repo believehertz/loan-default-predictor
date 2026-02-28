@@ -9,6 +9,10 @@ import LoanForm from './components/LoanForm';
 import ResultCard from './components/ResultCard';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import Users from './components/dashboard/Users';
+import Settings from './components/dashboard/Settings';
+import Reports from './components/dashboard/Reports';
+import RiskAnalysis from './components/dashboard/RiskAnalysis';
 
 const theme = createTheme({
   palette: {
@@ -93,6 +97,10 @@ const AppRoutes: React.FC = () => {
       />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
       
       {/* Protected Dashboard Route */}
       <Route 

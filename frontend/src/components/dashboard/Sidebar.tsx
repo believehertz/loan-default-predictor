@@ -19,11 +19,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout }) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Predictions', icon: <AssessmentIcon />, path: '/predict' },
-    { text: 'Users', icon: <PeopleIcon />, path: '#' },
-    { text: 'Settings', icon: <SettingsIcon />, path: '#' },
-  ];
+    { text: 'Dashboard', icon: <DashboardIcon />, onClick: () => navigate('/dashboard') },
+    { text: 'New Prediction', icon: <AssessmentIcon />, onClick: () => navigate('/predict') },
+    { text: 'Users', icon: <PeopleIcon />, onClick: () => navigate('/users') }, // NOW WORKS
+    { text: 'Settings', icon: <SettingsIcon />, onClick: () => navigate('/settings') }, // NOW WORKS
+];
 
   return (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
