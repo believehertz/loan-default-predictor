@@ -1,15 +1,20 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ...backend.database import get_db  # Go up 2 levels: routers -> app -> root
-from backend.models import LoanApplication, User
-from backend.auth import get_current_active_user
-from backend.schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
-import joblib  # type: ignore
 import os
+
+# Use ABSOLUTE import, not relative
+from backend.database import get_db
+from backend.models import LoanApplication, User
+from backend.schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
+from app.routers.auth import get_current_active_user
+
+import joblib
 import pandas as pd
 from typing import Any, Dict, List, Optional, cast
 import logging
 import warnings
+
+# ... rest of file unchanged
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

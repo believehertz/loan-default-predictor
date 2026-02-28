@@ -7,11 +7,15 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
-from database import get_db
-import models
-from schemas import UserCreate, UserResponse
-from email_service import send_reset_email
 import os
+
+# Use ABSOLUTE imports
+from backend.database import get_db
+from backend.models import User
+from backend.schemas import UserCreate, UserResponse
+from backend.email_service import send_reset_email
+
+# ... rest of file unchanged
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
