@@ -5,14 +5,13 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import AuthForm from './components/AuthForm';
 import Dashboard from './components/dashboard/Dashboard';
-import LoanForm from './components/LoanForm';
-import ResultCard from './components/ResultCard';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import Users from './components/dashboard/Users';
 import Settings from './components/dashboard/Settings';
 import Reports from './components/dashboard/Reports';
 import RiskAnalysis from './components/dashboard/RiskAnalysis';
+// IMPORTANT: Update this path to match where you saved PredictionPage
 import PredictionPage from './components/dashboard/PredictionPage';
 
 const theme = createTheme({
@@ -59,12 +58,11 @@ const theme = createTheme({
   },
 });
 
-// Protected Route wrapper
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>; // Or a proper loading spinner
+    return <div>Loading...</div>;
   }
   
   return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
@@ -83,7 +81,6 @@ function App() {
   );
 }
 
-// Separate component to use auth context inside router
 const AppRoutes: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
 
@@ -98,12 +95,8 @@ const AppRoutes: React.FC = () => {
       />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
-      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
       
-      {/* Protected Dashboard Route */}
+      {/* Protected Routes */}
       <Route 
         path="/dashboard" 
         element={
@@ -113,18 +106,20 @@ const AppRoutes: React.FC = () => {
         } 
       />
       
-      {/* Legacy Prediction Route - redirect to dashboard or keep separate */}
+      {/* Prediction Route - Uses PredictionPage component */}
       <Route 
         path="/predict" 
         element={
           <ProtectedRoute>
-            <div style={{ padding: '20px' }}>
-              <LoanForm onResult={(data) => console.log(data)} />
-              <ResultCard data={null} />
-            </div>
+            <PredictionPage />
           </ProtectedRoute>
         } 
       />
+      
+      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
+      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
     </Routes>
   );
 };
