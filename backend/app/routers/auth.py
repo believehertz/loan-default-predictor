@@ -9,11 +9,10 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
 import os
 
-# Use ABSOLUTE imports
-from backend.database import get_db
-from backend.models import User
-from backend.schemas import UserCreate, UserResponse
-from backend.email_service import send_reset_email
+from database import get_db
+import models
+from schemas import UserCreate, UserResponse
+from email_service import send_reset_email
 
 # ... rest of file unchanged
 
@@ -79,6 +78,12 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
+
+
+async def get_current_active_user(current_user: models.User = Depends(get_current_user)):
+    if not getattr(current_user, "is_active", True):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
+    return current_user
 
 # ========== AUTH ENDPOINTS ==========
 

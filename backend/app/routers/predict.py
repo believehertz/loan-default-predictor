@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 import os
 
-# Use ABSOLUTE import, not relative
-from backend.database import get_db
-from backend.models import LoanApplication, User
-from backend.schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
+from database import get_db
+from models import LoanApplication, User
+from schemas import LoanRequest, LoanPredictionResponse, LoanApplicationResponse
 from app.routers.auth import get_current_active_user
 
 import joblib
