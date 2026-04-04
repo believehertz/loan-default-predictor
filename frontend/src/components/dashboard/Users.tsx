@@ -4,7 +4,9 @@ import {
   TableHead, TableRow, Avatar, Chip, Button, Box, Dialog, 
   DialogTitle, DialogContent, DialogActions, TextField, IconButton
 } from '@mui/material';
-import { Person, Add, Edit, Delete } from '@mui/icons-material';
+import { Person, Add, Edit, Delete, ArrowBack } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 interface User {
   id: number;
@@ -16,6 +18,9 @@ interface User {
 }
 
 const Users: React.FC = () => {
+  const navigate = useNavigate();
+  const { darkMode } = useTheme();
+  const textColor = darkMode ? '#ffffff' : '#1a1a2e';
   const [users, setUsers] = useState<User[]>([
     { id: 1, name: 'Admin User', email: 'admin@loanpredictor.com', role: 'Admin', status: 'Active', lastLogin: '2024-02-19' },
     { id: 2, name: 'John Analyst', email: 'john@company.com', role: 'Analyst', status: 'Active', lastLogin: '2024-02-18' },
@@ -90,9 +95,17 @@ const Users: React.FC = () => {
   };
 
   return (
-    <Paper sx={{ p: 4, borderRadius: 4 }}>
+    <Paper sx={{ p: 4, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)', color: textColor }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" fontWeight="bold">User Management</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton 
+            onClick={() => navigate('/dashboard')}
+            sx={{ backdropFilter: 'blur(10px)', backgroundColor: 'rgba(102, 126, 234, 0.6)', border: '1px solid rgba(255, 255, 255, 0.1)', '&:hover': { backgroundColor: 'rgba(102, 126, 234, 0.8)' } }}
+          >
+            <ArrowBack />
+          </IconButton>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: textColor, textShadow: darkMode ? '0 0 12px rgba(255, 255, 255, 0.3)' : 'none' }}>User Management</Typography>
+        </Box>
         <Button 
           variant="contained" 
           startIcon={<Add />}
@@ -105,12 +118,12 @@ const Users: React.FC = () => {
       <TableContainer>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>User</TableCell>
-              <TableCell>Role</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Last Login</TableCell>
-              <TableCell>Actions</TableCell>
+            <TableRow sx={{ backgroundColor: darkMode ? '#2d2d44' : '#f5f5f5' }}>
+              <TableCell sx={{ color: textColor }}>User</TableCell>
+              <TableCell sx={{ color: textColor }}>Role</TableCell>
+              <TableCell sx={{ color: textColor }}>Status</TableCell>
+              <TableCell sx={{ color: textColor }}>Last Login</TableCell>
+              <TableCell sx={{ color: textColor }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -120,26 +133,26 @@ const Users: React.FC = () => {
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Avatar><Person /></Avatar>
                     <Box>
-                      <Typography fontWeight="bold">{user.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">{user.email}</Typography>
+                      <Typography fontWeight="bold" sx={{ color: textColor }}>{user.name}</Typography>
+                      <Typography variant="caption" sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)' }}>{user.email}</Typography>
                     </Box>
                   </Box>
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ color: textColor }}>
                   <Chip 
                     label={user.role} 
                     color={user.role === 'Admin' ? 'error' : user.role === 'Manager' ? 'primary' : 'default'} 
                     size="small" 
                   />
                 </TableCell>
-                <TableCell>
+                <TableCell sx={{ color: textColor }}>
                   <Chip 
                     label={user.status} 
                     color={user.status === 'Active' ? 'success' : 'default'} 
                     size="small" 
                   />
                 </TableCell>
-                <TableCell>{user.lastLogin}</TableCell>
+                <TableCell sx={{ color: textColor }}>{user.lastLogin}</TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     <Button 

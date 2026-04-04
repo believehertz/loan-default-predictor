@@ -54,12 +54,12 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
   };
 
   return (
-    <Paper sx={{ borderRadius: 4, overflow: 'hidden', bgcolor: bgColor }}>
-      <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="h6" fontWeight="bold" sx={{ color: textColor }}>
+    <Paper sx={{ borderRadius: 0, overflow: 'hidden', backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.6)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', height: '100%', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
+      <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', flexShrink: 0 }}>
+        <Typography variant="body2" fontWeight="bold" sx={{ color: textColor, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
           Recent Loan Applications
         </Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
           <Button startIcon={<FilterList />} variant="outlined" size="small">
             Filter
           </Button>
@@ -74,8 +74,8 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
         </Box>
       </Box>
       
-      <TableContainer>
-        <Table>
+      <TableContainer sx={{ overflow: 'auto', flexGrow: 1 }}>
+        <Table size="small">
           <TableHead>
             <TableRow sx={{ bgcolor: darkMode ? '#2d2d44' : '#f5f5f5' }}>
               <TableCell sx={{ color: textColor }}>Applicant</TableCell>

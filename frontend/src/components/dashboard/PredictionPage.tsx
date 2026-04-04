@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Fade } from '@mui/material';
 import LoanForm from '../LoanForm';
 import ResultCard from '../ResultCard';
+import { useTheme } from '../../context/ThemeContext';
 
 interface PredictionResult {
   loan_paid_back_probability: number;
@@ -11,6 +12,7 @@ interface PredictionResult {
 }
 
 const PredictionPage: React.FC = () => {
+  const { darkMode } = useTheme();
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [showForm, setShowForm] = useState(true);
 
@@ -43,7 +45,7 @@ const PredictionPage: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '100vh',
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff',
             py: 4
           }}>
             <ResultCard data={result} onReset={handleReset} />

@@ -2,6 +2,7 @@
 import React from 'react';
 import { Paper, Typography, Box, Chip, LinearProgress, Button } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
+import { useTheme } from '../context/ThemeContext';
 
 interface ResultProps {
   data: {
@@ -14,6 +15,8 @@ interface ResultProps {
 }
 
 const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
+  const { darkMode } = useTheme();
+  
   if (!data) return null;
 
   const prob = data.loan_paid_back_probability;
@@ -38,9 +41,11 @@ const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
       maxWidth: 600, 
       mx: 'auto', 
       textAlign: 'center',
-      background: 'rgba(255, 255, 255, 0.95)',
+      background: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'blur(10px)',
-      borderRadius: 4
+      borderRadius: 0,
+      border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+      color: darkMode ? '#ffffff' : '#000000'
     }}>
       <Typography variant="h4" color={`${color}.main`} gutterBottom>
         {data.loan_will_be_paid_back ? '✅ Likely to Pay' : '❌ High Default Risk'}
@@ -50,7 +55,7 @@ const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
         {pct}%
       </Typography>
       
-      <Typography variant="subtitle1" color="textSecondary">
+      <Typography variant="subtitle1" sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}>
         Probability of Successful Payback
       </Typography>
 
@@ -70,8 +75,8 @@ const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
         sx={{ fontSize: '1.2rem', py: 2.5, px: 2 }}
       />
 
-      <Box mt={3} p={2} bgcolor="grey.50" borderRadius={2}>
-        <Typography variant="body2" color="textSecondary">
+      <Box mt={3} p={2} sx={{ backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : '#f5f5f5', borderRadius: 2 }}>
+        <Typography variant="body2" sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}>
           Confidence: {data.confidence} | Model: XGBoost | 90%+ Accuracy
         </Typography>
       </Box>
@@ -87,11 +92,14 @@ const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
             mt: 4,
             px: 6,
             py: 1.5,
-            borderRadius: 3,
+            borderRadius: 0,
             borderWidth: 2,
+            color: darkMode ? '#ffffff' : '#000000',
+            borderColor: darkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
             '&:hover': {
               borderWidth: 2,
               transform: 'translateY(-2px)',
+              borderColor: darkMode ? '#ffffff' : '#000000'
             }
           }}
         >

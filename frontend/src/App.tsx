@@ -3,6 +3,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider as CustomThemeProvider, useTheme } from './context/ThemeContext';
 import AuthForm from './components/AuthForm';
 import Dashboard from './components/dashboard/Dashboard';
 import ForgotPassword from './components/ForgotPassword';
@@ -14,8 +15,9 @@ import RiskAnalysis from './components/dashboard/RiskAnalysis';
 // IMPORTANT: Update this path to match where you saved PredictionPage
 import PredictionPage from './components/dashboard/PredictionPage';
 
-const theme = createTheme({
+const createAppTheme = (darkMode: boolean) => createTheme({
   palette: {
+    mode: darkMode ? 'dark' : 'light',
     primary: {
       main: '#667eea',
       light: '#8b5cf6',
@@ -25,8 +27,12 @@ const theme = createTheme({
       main: '#764ba2',
     },
     background: {
-      default: '#f3f4f6',
-      paper: '#ffffff',
+      default: darkMode ? '#0a0e27' : '#ffffff',
+      paper: darkMode ? '#1a1a2e' : '#ffffff',
+    },
+    text: {
+      primary: darkMode ? '#ffffff' : '#000000',
+      secondary: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
     },
     success: {
       main: '#4caf50',
@@ -54,7 +60,7 @@ const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 0,
   },
 });
 
@@ -69,6 +75,17 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 };
 
 function App() {
+  return (
+    <CustomThemeProvider>
+      <AppWithTheme />
+    </CustomThemeProvider>
+  );
+}
+
+const AppWithTheme: React.FC = () => {
+  const { darkMode } = useTheme();
+  const theme = createAppTheme(darkMode);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

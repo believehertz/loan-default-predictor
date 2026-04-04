@@ -25,39 +25,44 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
       value: 2450000,
       suffix: ' USD',
       icon: <AttachMoney />,
-      color: '#4caf50',
+      color: '#00e676',
       trend: 8.2
     },
     {
       title: 'Low Risk Loans',
       value: 892,
       icon: <CheckCircle />,
-      color: '#2196f3',
+      color: '#29b6f6',
       trend: 15.3
     },
     {
       title: 'High Risk Detected',
       value: 34,
       icon: <Warning />,
-      color: '#ff9800',
+      color: '#ff5252',
       trend: -5.4
     }
   ];
 
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={0.5}>
       {cards.map((card, index) => (
-        <Grid item xs={12} sm={6} md={3} key={index}>
+        <Grid item xs={6} sm={6} md={3} key={index}>
           <Paper
             elevation={0}
             sx={{
-              p: 3,
-              borderRadius: 4,
-              background: bgColor,
-              border: `1px solid ${darkMode ? '#333' : '#e0e0e0'}`,
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-              transition: 'transform 0.3s',
-              '&:hover': { transform: 'translateY(-4px)' },
+              p: 1,
+              borderRadius: 0,
+              backdropFilter: 'blur(20px)',
+              backgroundColor: `rgba(${card.color === '#667eea' ? '102, 126, 234' : card.color === '#00e676' ? '0, 230, 118' : card.color === '#29b6f6' ? '41, 182, 246' : '255, 82, 82'}, 0.15)`,
+              border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+              transition: 'all 0.3s',
+              '&:hover': { 
+                transform: 'translateY(-4px)',
+                boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)',
+                backgroundColor: `rgba(${card.color === '#667eea' ? '102, 126, 234' : card.color === '#00e676' ? '0, 230, 118' : card.color === '#29b6f6' ? '41, 182, 246' : '255, 82, 82'}, 0.25)`
+              },
               position: 'relative',
               overflow: 'hidden'
             }}
@@ -73,10 +78,10 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <Box>
-                <Typography sx={{ color: darkMode ? '#a0a0b0' : '#64748b', mb: 1 }}>
+                <Typography variant="caption" sx={{ color: darkMode ? '#a0a0b0' : '#64748b', mb: 0.5 }}>
                   {card.title}
                 </Typography>
-                <Typography variant="h4" fontWeight="bold" sx={{ color: textColor }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ color: textColor, lineHeight: 1, textShadow: '0 0 12px rgba(255, 255, 255, 0.3)' }}>
                   <CountUp 
                     end={card.value} 
                     duration={2} 
@@ -89,7 +94,8 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
                   variant="caption" 
                   sx={{ 
                     color: card.trend > 0 ? '#4caf50' : '#f44336',
-                    fontWeight: 600
+                    fontWeight: 600,
+                    fontSize: '0.7rem'
                   }}
                 >
                   {card.trend > 0 ? '↑' : '↓'} {Math.abs(card.trend)}% from last month

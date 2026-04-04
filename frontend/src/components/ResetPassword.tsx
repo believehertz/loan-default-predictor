@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Paper, Alert, CircularProgress } from '@mui/material';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useTheme } from '../context/ThemeContext';
 
 const API_URL = 'https://loan-default-predictor-production-a3ad.up.railway.app/api';
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { darkMode } = useTheme();
   const token = searchParams.get('token') || '';
 
   const [password, setPassword] = useState('');
@@ -41,7 +43,7 @@ const ResetPassword: React.FC = () => {
 
   if (!token) {
     return (
-      <Box sx={{ p: 4 }}>
+      <Box sx={{ p: 4, background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Alert severity="error">Invalid reset link</Alert>
         <Button onClick={() => navigate('/')}>Go Home</Button>
       </Box>
@@ -50,7 +52,7 @@ const ResetPassword: React.FC = () => {
 
   if (success) {
     return (
-      <Box sx={{ p: 4 }}>
+      <Box sx={{ p: 4, background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Alert severity="success">Password reset! Redirecting...</Alert>
       </Box>
     );
@@ -62,11 +64,20 @@ const ResetPassword: React.FC = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff',
       p: 2
     }}>
-      <Paper sx={{ p: 4, maxWidth: 400, width: '100%' }}>
-        <Typography variant="h4" align="center" mb={3}>Reset Password</Typography>
+      <Paper sx={{ 
+        p: 4, 
+        maxWidth: 400, 
+        width: '100%',
+        borderRadius: 0,
+        backdropFilter: 'blur(20px)',
+        backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)',
+        border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+        color: darkMode ? '#ffffff' : '#000000'
+      }}>
+        <Typography variant="h4" align="center" mb={3} sx={{ color: darkMode ? '#ffffff' : '#000000' }}>Reset Password</Typography>
         
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
         
@@ -78,7 +89,17 @@ const ResetPassword: React.FC = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            sx={{ mb: 2 }}
+            sx={{ 
+              mb: 2,
+              '& .MuiOutlinedInput-root': {
+                color: darkMode ? '#ffffff' : '#000000',
+                backdropFilter: 'blur(10px)',
+                backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(0, 0, 0, 0.2)'
+              },
+              '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+              '& .MuiInputLabel-root': { color: darkMode ? '#ffffff' : '#000000' }
+            }}
           />
           
           <Button 
@@ -94,7 +115,7 @@ const ResetPassword: React.FC = () => {
             variant="text" 
             fullWidth 
             onClick={() => navigate('/')}
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, color: darkMode ? '#ffffff' : '#000000' }}
           >
             Cancel
           </Button>

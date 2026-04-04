@@ -24,29 +24,30 @@ const ChartSection: React.FC<ChartSectionProps> = ({ darkMode }) => {
   ];
 
   const riskDistribution = [
-    { name: 'Low Risk', value: 65, color: '#4caf50' },
-    { name: 'Medium Risk', value: 25, color: '#ff9800' },
-    { name: 'High Risk', value: 10, color: '#f44336' },
+    { name: 'Low Risk', value: 65, color: '#00e676' },
+    { name: 'Medium Risk', value: 25, color: '#ffb74d' },
+    { name: 'High Risk', value: 10, color: '#ef5350' },
   ];
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Paper sx={{ p: 3, borderRadius: 4, bgcolor: darkMode ? '#1a1a2e' : '#ffffff' }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: textColor }}>
-          Loan Approval Trends
+    <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5, height: '100%', overflow: 'auto' }}>
+      <Paper sx={{ p: 1, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.4)' : 'rgba(255, 255, 255, 0.9)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
+        <Typography variant="caption" fontWeight="bold" sx={{ color: textColor, mb: 0, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
+          Approval Trends
         </Typography>
-        <Box sx={{ height: 300 }}>
+        <Box sx={{ height: '100%', minHeight: 80, flexGrow: 1 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={trendData}>
               <defs>
                 <linearGradient id="colorApprovals" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#667eea" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#667eea" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#667eea" stopOpacity={1}/>
+                  <stop offset="50%" stopColor="#764ba2" stopOpacity={0.6}/>
+                  <stop offset="95%" stopColor="#764ba2" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-              <XAxis dataKey="month" stroke={textColor} />
-              <YAxis stroke={textColor} />
+              <XAxis dataKey="month" stroke={textColor} style={{ fontSize: '0.75rem' }} />
+              <YAxis stroke={textColor} style={{ fontSize: '0.75rem' }} />
               <Tooltip 
                 contentStyle={{ 
                   borderRadius: 8, 
@@ -60,7 +61,7 @@ const ChartSection: React.FC<ChartSectionProps> = ({ darkMode }) => {
                 type="monotone" 
                 dataKey="approvals" 
                 stroke="#667eea" 
-                strokeWidth={3}
+                strokeWidth={2}
                 fill="url(#colorApprovals)" 
               />
             </AreaChart>
@@ -68,19 +69,19 @@ const ChartSection: React.FC<ChartSectionProps> = ({ darkMode }) => {
         </Box>
       </Paper>
 
-      <Paper sx={{ p: 3, borderRadius: 4, bgcolor: darkMode ? '#1a1a2e' : '#ffffff' }}>
-        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ color: textColor }}>
+      <Paper sx={{ p: 1, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.4)' : 'rgba(255, 255, 255, 0.9)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
+        <Typography variant="caption" fontWeight="bold" sx={{ color: textColor, mb: 0, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
           Risk Distribution
         </Typography>
-        <Box sx={{ height: 250, display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ height: '100%', minHeight: 80, flexGrow: 1, display: 'flex', alignItems: 'center' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={riskDistribution}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={100}
+                innerRadius={30}
+                outerRadius={50}
                 dataKey="value"
               >
                 {riskDistribution.map((entry, index) => (

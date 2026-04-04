@@ -1,8 +1,12 @@
 import React from 'react';
 import { Paper, Typography, Box, Grid, LinearProgress, Alert, Chip } from '@mui/material';
 import { Warning, TrendingDown, Security } from '@mui/icons-material';
+import { useTheme } from '../../context/ThemeContext';
 
 const RiskAnalysis: React.FC = () => {
+  const { darkMode } = useTheme();
+  const textColor = darkMode ? '#ffffff' : '#1a1a2e';
+  
   const riskFactors = [
     { factor: 'Employment Status', impact: 88, risk: 'High', color: 'error' },
     { factor: 'Debt-to-Income Ratio', impact: 65, risk: 'Medium', color: 'warning' },
@@ -11,8 +15,8 @@ const RiskAnalysis: React.FC = () => {
   ];
 
   return (
-    <Paper sx={{ p: 4, borderRadius: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <Paper sx={{ p: 4, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', color: textColor }}>
+      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: textColor }}>
         <Security color="primary" />
         Risk Analysis Engine
       </Typography>
@@ -26,7 +30,7 @@ const RiskAnalysis: React.FC = () => {
           <Grid item xs={12} key={idx}>
             <Box sx={{ mb: 2 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                <Typography fontWeight="bold">{item.factor}</Typography>
+                <Typography fontWeight="bold" sx={{ color: textColor }}>{item.factor}</Typography>
                 <Chip 
                   label={`${item.impact}% Impact`} 
                   color={item.color as any} 
@@ -40,7 +44,7 @@ const RiskAnalysis: React.FC = () => {
                 color={item.color as any}
                 sx={{ height: 10, borderRadius: 5 }}
               />
-              <Typography variant="caption" color="text.secondary">
+              <Typography variant="caption" sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)' }}>
                 {item.risk} Risk Factor
               </Typography>
             </Box>
@@ -48,7 +52,7 @@ const RiskAnalysis: React.FC = () => {
         ))}
       </Grid>
 
-      <Box sx={{ mt: 4, p: 3, bgcolor: 'error.light', borderRadius: 2, color: 'error.contrastText' }}>
+      <Box sx={{ mt: 4, p: 3, backgroundColor: darkMode ? 'rgba(244, 67, 54, 0.2)' : 'rgba(244, 67, 54, 0.1)', borderRadius: 0, color: darkMode ? 'rgba(255, 107, 107, 1)' : '#d32f2f' }}>
         <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <TrendingDown />
           High Risk Indicators

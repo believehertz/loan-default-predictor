@@ -13,7 +13,8 @@ import {
   Slide,
   IconButton,
   InputAdornment,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { 
   LockOutlined, 
@@ -25,10 +26,12 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const AuthForm: React.FC = () => {
   const navigate = useNavigate();
   const { login, signup } = useAuth();
+  const { darkMode } = useTheme();
   
   const [tab, setTab] = useState(0);
   const [email, setEmail] = useState('');
@@ -36,13 +39,70 @@ const AuthForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [loading, setLoading] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
+  // Validation function
+  const validateForm = (): boolean => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (tab === 0) {
+      // Login validation
+      if (!username.trim()) {
+        newErrors.username = 'Username is required';
+      }
+      if (!password) {
+        newErrors.password = 'Password is required';
+      }
+    } else {
+      // Sign up validation
+      if (!email.trim()) {
+        newErrors.email = 'Email is required';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        newErrors.email = 'Please enter a valid email address';
+      }
+      if (!username.trim()) {
+        newErrors.username = 'Username is required';
+      } else if (username.length < 3) {
+        newErrors.username = 'Username must be at least 3 characters';
+      } else if (username.length > 20) {
+        newErrors.username = 'Username must be 20 characters or less';
+      }
+      if (!password) {
+        newErrors.password = 'Password is required';
+      } else if (password.length < 6) {
+        newErrors.password = 'Password must be at least 6 characters';
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (field === 'email') setEmail(value);
+    else if (field === 'username') setUsername(value);
+    else if (field === 'password') setPassword(value);
+
+    // Clear error for this field when user starts typing
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: '' });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Validate form before submission
+    if (!validateForm()) {
+      setError('Please fix the errors above and try again');
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -54,11 +114,27 @@ const AuthForm: React.FC = () => {
         navigate('/dashboard'); // Redirect to dashboard after signup
       }
     } catch (err: any) {
-      setError(err.message || 'Authentication failed');
+      const errorMsg = err.message || 'Authentication failed';
+      setError(errorMsg);
     } finally {
       setLoading(false);
     }
   };
+
+  // Compute theme-aware styles for TextFields
+  const getAuthTextFieldSx = (hasError: boolean) => ({
+    mb: 0.5,
+    '& .MuiOutlinedInput-root': {
+      color: darkMode ? '#ffffff' : '#000000',
+      backdropFilter: 'blur(10px)',
+      backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+      border: hasError ? 'rgba(244, 67, 54, 0.5)' : (darkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)')
+    },
+    '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+    '& .MuiInputBase-input::placeholder': { color: darkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)' },
+    '& .MuiInputLabel-root': { color: darkMode ? '#ffffff' : '#000000' },
+    '& .MuiFormHelperText-root': { color: hasError ? (darkMode ? '#ffcdd2' : '#d32f2f') : (darkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)') }
+  });
 
   const features = [
     { icon: <TrendingUp />, text: "90%+ Accuracy" },
@@ -69,91 +145,75 @@ const AuthForm: React.FC = () => {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
+        height: '100vh',
         width: '100vw',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff',
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
         overflow: 'auto',
-        px: 2
+        px: 1,
+        py: 1
       }}
     >
       <Box sx={{ 
         width: '100%',
-        maxWidth: '500px',
+        maxWidth: '450px',
         position: 'relative',
         zIndex: 1,
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        py: 4
+        my: 'auto'
       }}>
         <Slide direction="up" in={true} timeout={800}>
           <Paper
             elevation={24}
             sx={{
-              p: { xs: 3, sm: 4 },
+              p: 1,
               width: '100%',
-              maxWidth: '450px',
-              borderRadius: 4,
-              background: 'rgba(255, 255, 255, 0.95)',
-              backdropFilter: 'blur(10px)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
-              mx: 'auto'
+              maxWidth: '420px',
+              borderRadius: 0,
+              backdropFilter: 'blur(20px)',
+              backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)',
+              border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+              mx: 'auto',
+              color: darkMode ? '#ffffff' : '#000000'
             }}
           >
-            <Box display="flex" flexDirection="column" alignItems="center" mb={3}>
+            <Box display="flex" flexDirection="column" alignItems="center" mb={1}>
               <Avatar
                 sx={{
-                  m: 1,
-                  bgcolor: 'primary.main',
-                  width: 56,
-                  height: 56,
-                  boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)'
+                  m: 0.5,
+                  backdropFilter: 'blur(10px)',
+                  backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  width: 44,
+                  height: 44,
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)'
                 }}
               >
-                <LockOutlined sx={{ fontSize: 32 }} />
+                <LockOutlined sx={{ fontSize: 24, color: '#ffffff' }} />
               </Avatar>
-              <Typography component="h1" variant="h4" color="primary" gutterBottom 
-                sx={{ fontWeight: 700, textAlign: 'center' }}>
+              <Typography component="h1" variant="h6" gutterBottom 
+                sx={{ fontWeight: 700, textAlign: 'center', color: darkMode ? '#ffffff' : '#000000', textShadow: darkMode ? '0 0 12px rgba(255, 255, 255, 0.3)' : 'none', mb: 0 }}>
                 {tab === 0 ? 'Welcome Back!' : 'Create Account'}
               </Typography>
-            </Box>
-
-            <Box display="flex" justifyContent="center" gap={1} mb={3} flexWrap="wrap">
-              {features.map((feature, idx) => (
-                <Fade in={true} timeout={1000 + idx * 200} key={idx}>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    gap={0.5}
-                    px={2}
-                    py={0.5}
-                    bgcolor="primary.light"
-                    borderRadius={10}
-                    color="white"
-                    fontSize="0.75rem"
-                  >
-                    {feature.icon}
-                    {feature.text}
-                  </Box>
-                </Fade>
-              ))}
             </Box>
 
             <Tabs
               value={tab}
               onChange={(_, v) => setTab(v)}
               centered
-              sx={{ mb: 3 }}
-              textColor="primary"
+              sx={{ mb: 1, '& .MuiTab-root': { color: darkMode ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.6)', fontWeight: 600, py: 0.5 }, '& .Mui-selected': { color: darkMode ? '#ffffff' : '#000000' } }}
+              textColor="inherit"
               indicatorColor="primary"
             >
               <Tab label="Login" sx={{ fontWeight: 600 }} />
@@ -161,7 +221,7 @@ const AuthForm: React.FC = () => {
             </Tabs>
 
             {error && (
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error" sx={{ mb: 1, backgroundColor: 'rgba(211, 47, 47, 0.2)', border: '1px solid rgba(229, 57, 53, 0.5)', color: '#ffcdd2' }}>
                 {error}
               </Alert>
             )}
@@ -169,34 +229,40 @@ const AuthForm: React.FC = () => {
             <Box component="form" onSubmit={handleSubmit}>
               {tab === 1 && (
                 <TextField
-                  margin="normal"
+                  margin="dense"
                   required
                   fullWidth
                   label="Email Address"
                   type="email"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  sx={{ mb: 2 }}
+                  onChange={handleInputChange('email')}
+                  error={!!errors.email}
+                  helperText={errors.email}
+                  sx={getAuthTextFieldSx(!!errors.email)}
                 />
               )}
               <TextField
-                margin="normal"
+                margin="dense"
                 required
                 fullWidth
                 label="Username"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                sx={{ mb: 2 }}
+                onChange={handleInputChange('username')}
+                error={!!errors.username}
+                helperText={errors.username}
+                sx={getAuthTextFieldSx(!!errors.username)}
               />
               <TextField
-                margin="normal"
+                margin="dense"
                 required
                 fullWidth
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                sx={{ mb: 2 }}
+                onChange={handleInputChange('password')}
+                error={!!errors.password}
+                helperText={errors.password}
+                sx={getAuthTextFieldSx(!!errors.password)}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -204,6 +270,7 @@ const AuthForm: React.FC = () => {
                         aria-label="toggle password visibility"
                         onClick={handleClickShowPassword}
                         edge="end"
+                        sx={{ color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)', p: 0.5 }}
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -212,11 +279,11 @@ const AuthForm: React.FC = () => {
                 }}
               />
               
-              <Box textAlign="right" sx={{ mb: 2 }}>
+              <Box textAlign="right" sx={{ mb: 0.5 }}>
                 <Button 
                   size="small" 
                   onClick={() => navigate('/forgot-password')}
-                  sx={{ textTransform: 'none' }}
+                  sx={{ textTransform: 'none', color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)', py: 0 }}
                 >
                   Forgot Password?
                 </Button>
@@ -226,25 +293,33 @@ const AuthForm: React.FC = () => {
                 type="submit"
                 fullWidth
                 variant="contained"
-                size="large"
-                disabled={loading}
+                size="medium"
+                disabled={loading || Object.keys(errors).some(key => errors[key])}
                 sx={{
-                  mt: 2,
-                  mb: 2,
-                  py: 1.5,
-                  borderRadius: 2,
+                  mt: 0.5,
+                  py: 0.8,
+                  borderRadius: 20,
                   fontWeight: 700,
-                  background: 'linear-gradient(45deg, #667eea 30%, #764ba2 90%)',
-                  boxShadow: '0 3px 5px 2px rgba(102, 126, 234, .3)',
+                  backdropFilter: 'blur(10px)',
+                  backgroundColor: 'rgba(102, 126, 234, 0.6)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff',
+                  textShadow: '0 0 8px rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+                  '&:hover': {
+                    backdropFilter: 'blur(10px)',
+                    backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.5)'
+                  },
+                  '&:disabled': {
+                    opacity: 0.6,
+                    cursor: 'not-allowed'
+                  }
                 }}
               >
-                {loading ? 'Processing...' : (tab === 0 ? 'Sign In' : 'Create Account')}
+                {loading ? <CircularProgress size={20} sx={{ color: '#ffffff' }} /> : (tab === 0 ? 'Sign In' : 'Create Account')}
               </Button>
             </Box>
-
-            <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 2 }}>
-              🔒 Secured with JWT & Argon2 Encryption
-            </Typography>
           </Paper>
         </Slide>
       </Box>
