@@ -46,7 +46,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://loan-default-predictor-one.vercel.app",  # YOUR FRONTEND
+        "https://loan-default-predictor-snowy.vercel.app",  # YOUR FRONTEND
         "https://loan-default-predictor.vercel.app",     # Alternative
         "http://localhost:5173",
         "http://localhost:3000",
