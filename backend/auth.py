@@ -272,7 +272,7 @@ async def forgot_password(
     user.reset_token_expires = expires
     db.commit()
 
-    reset_link = f"https://loan-default-predictor-one.vercel.app/reset-password?token={reset_token}"
+    reset_link = f"{os.getenv("FRONTEND_URL", "https://loan-default-predictor-snowy.vercel.app")}/reset-password?token={reset_token}"
 
     background_tasks.add_task(
         send_reset_email,
