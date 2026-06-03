@@ -47,8 +47,8 @@ const QuickActions: React.FC = () => {
   ];
 
   return (
-    <Paper sx={{ p: 2, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.4)' : 'rgba(255, 255, 255, 0.9)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', flexShrink: 0, boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
-      <Typography variant="body2" fontWeight="bold" gutterBottom sx={{ color: textColor, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
+    <Paper sx={{ p: 2, borderRadius: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', flexShrink: 0, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+      <Typography variant="body2" fontWeight="bold" gutterBottom sx={{ color: textColor }}>
         Quick Actions
       </Typography>
       <Grid container spacing={1}>
@@ -63,7 +63,7 @@ const QuickActions: React.FC = () => {
               size="small"
               sx={{
                 py: 0.75,
-                borderRadius: 0,
+                borderRadius: 2,
                 justifyContent: 'flex-start',
                 textTransform: 'none',
                 fontWeight: 600,

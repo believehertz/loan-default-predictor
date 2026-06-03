@@ -1,10 +1,12 @@
 import React from 'react';
 import { Paper, Typography, Button, Grid, Box } from '@mui/material';
-import { PictureAsPdf, TableChart } from '@mui/icons-material';
+import { PictureAsPdf, TableChart, ArrowBack } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from '../../context/ThemeContext';
 
 const Reports: React.FC = () => {
+  const navigate = useNavigate();
   const { darkMode } = useTheme();
   const textColor = darkMode ? '#ffffff' : '#1a1a2e';
   const gridColor = darkMode ? '#333' : '#e0e0e0';
@@ -30,9 +32,18 @@ const Reports: React.FC = () => {
   };
 
   return (
-    <Paper sx={{ p: 4, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', color: textColor }}>
+    <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', color: textColor, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" fontWeight="bold" sx={{ color: textColor }}>Loan Reports</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Button
+            variant="text"
+            onClick={() => navigate('/dashboard')}
+            startIcon={<ArrowBack />}
+          >
+            Back to Dashboard
+          </Button>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: textColor }}>Loan Reports</Typography>
+        </Box>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button variant="outlined" startIcon={<TableChart />} onClick={exportCSV}>
             Export CSV
@@ -62,7 +73,7 @@ const Reports: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Box sx={{ mt: 4, p: 3, backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.1)' : '#f5f5f5', borderRadius: 0 }}>
+      <Box sx={{ mt: 4, p: 3, backgroundColor: darkMode ? 'rgba(255, 255, 255, 0.05)' : '#f5f5f5', borderRadius: 2 }}>
         <Typography variant="h6" gutterBottom sx={{ color: textColor }}>Summary Statistics</Typography>
         <Typography sx={{ color: textColor }}>Total Applications: 145</Typography>
         <Typography sx={{ color: textColor }}>Approval Rate: 68%</Typography>

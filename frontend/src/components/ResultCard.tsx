@@ -1,7 +1,7 @@
 // src/components/ResultCard.tsx
 import React from 'react';
 import { Paper, Typography, Box, Chip, LinearProgress, Button } from '@mui/material';
-import { Refresh } from '@mui/icons-material';
+import { Refresh, CheckCircle, Warning } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
 
 interface ResultProps {
@@ -41,15 +41,18 @@ const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
       maxWidth: 600, 
       mx: 'auto', 
       textAlign: 'center',
-      background: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)',
+      background: darkMode ? '#1e293b' : '#ffffff',
       backdropFilter: 'blur(10px)',
-      borderRadius: 0,
+      borderRadius: 2,
       border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-      color: darkMode ? '#ffffff' : '#000000'
+      color: darkMode ? '#ffffff' : '#0f172a'
     }}>
-      <Typography variant="h4" color={`${color}.main`} gutterBottom>
-        {data.loan_will_be_paid_back ? '✅ Likely to Pay' : '❌ High Default Risk'}
-      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mb: 2 }}>
+        {data.loan_will_be_paid_back ? <CheckCircle color="success" fontSize="large" /> : <Warning color="error" fontSize="large" />}
+        <Typography variant="h4" color={`${color}.main`}>
+          {data.loan_will_be_paid_back ? 'Likely to Pay' : 'High Default Risk'}
+        </Typography>
+      </Box>
       
       <Typography variant="h2" fontWeight="bold" color="primary">
         {pct}%
@@ -92,7 +95,7 @@ const ResultCard: React.FC<ResultProps> = ({ data, onReset }) => {
             mt: 4,
             px: 6,
             py: 1.5,
-            borderRadius: 0,
+            borderRadius: 2,
             borderWidth: 2,
             color: darkMode ? '#ffffff' : '#000000',
             borderColor: darkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',

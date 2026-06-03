@@ -23,7 +23,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <Paper sx={{ p: 4, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', maxWidth: 800, mx: 'auto', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)', color: textColor }}>
+    <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', maxWidth: 800, mx: 'auto', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)', color: textColor }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <IconButton 
           onClick={() => navigate('/dashboard')}
@@ -31,7 +31,7 @@ const Settings: React.FC = () => {
         >
           <ArrowBack />
         </IconButton>
-        <Typography variant="h4" fontWeight="bold" sx={{ color: textColor, textShadow: darkMode ? '0 0 12px rgba(255, 255, 255, 0.3)' : 'none' }}>Settings</Typography>
+        <Typography variant="h4" fontWeight="bold" sx={{ color: textColor }}>Settings</Typography>
       </Box>
       {saved && <Alert severity="success" sx={{ mb: 3 }}>Settings saved successfully!</Alert>}
 

@@ -31,8 +31,8 @@ const ChartSection: React.FC<ChartSectionProps> = ({ darkMode }) => {
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0.5, height: '100%', overflow: 'auto' }}>
-      <Paper sx={{ p: 1, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.4)' : 'rgba(255, 255, 255, 0.9)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
-        <Typography variant="caption" fontWeight="bold" sx={{ color: textColor, mb: 0, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
+      <Paper sx={{ p: 2, borderRadius: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+        <Typography variant="body2" fontWeight="bold" sx={{ color: textColor, mb: 1 }}>
           Approval Trends
         </Typography>
         <Box sx={{ height: '100%', minHeight: 80, flexGrow: 1 }}>
@@ -69,8 +69,8 @@ const ChartSection: React.FC<ChartSectionProps> = ({ darkMode }) => {
         </Box>
       </Paper>
 
-      <Paper sx={{ p: 1, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.4)' : 'rgba(255, 255, 255, 0.9)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
-        <Typography variant="caption" fontWeight="bold" sx={{ color: textColor, mb: 0, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
+      <Paper sx={{ p: 2, borderRadius: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+        <Typography variant="body2" fontWeight="bold" sx={{ color: textColor, mb: 1 }}>
           Risk Distribution
         </Typography>
         <Box sx={{ height: '100%', minHeight: 80, flexGrow: 1, display: 'flex', alignItems: 'center' }}>

@@ -4,7 +4,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
-const API_URL = 'https://loan-default-predictor-production-a3ad.up.railway.app/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const ResetPassword: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -43,7 +43,7 @@ const ResetPassword: React.FC = () => {
 
   if (!token) {
     return (
-      <Box sx={{ p: 4, background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ p: 4, background: 'transparent', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Alert severity="error">Invalid reset link</Alert>
         <Button onClick={() => navigate('/')}>Go Home</Button>
       </Box>
@@ -52,7 +52,7 @@ const ResetPassword: React.FC = () => {
 
   if (success) {
     return (
-      <Box sx={{ p: 4, background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <Box sx={{ p: 4, background: 'transparent', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <Alert severity="success">Password reset! Redirecting...</Alert>
       </Box>
     );
@@ -64,16 +64,15 @@ const ResetPassword: React.FC = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff',
+      background: 'transparent',
       p: 2
     }}>
       <Paper sx={{ 
         p: 4, 
         maxWidth: 400, 
         width: '100%',
-        borderRadius: 0,
-        backdropFilter: 'blur(20px)',
-        backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)',
+        borderRadius: 2,
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
         border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
         color: darkMode ? '#ffffff' : '#000000'
       }}>

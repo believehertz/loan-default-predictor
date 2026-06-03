@@ -1,9 +1,11 @@
-// src/App.tsx
-
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider as CustomThemeProvider, useTheme } from './context/ThemeContext';
+
+// Components
+import LandingPage from './components/LandingPage';
 import AuthForm from './components/AuthForm';
 import Dashboard from './components/dashboard/Dashboard';
 import ForgotPassword from './components/ForgotPassword';
@@ -12,40 +14,50 @@ import Users from './components/dashboard/Users';
 import Settings from './components/dashboard/Settings';
 import Reports from './components/dashboard/Reports';
 import RiskAnalysis from './components/dashboard/RiskAnalysis';
-// IMPORTANT: Update this path to match where you saved PredictionPage
 import PredictionPage from './components/dashboard/PredictionPage';
+
+// New Role-Based Components
+import BorrowersLoanForm from './components/BorrowersLoanForm';
+import BorrowersLoanStatus from './components/BorrowersLoanStatus';
+import EmployeeLoanReview from './components/EmployeeLoanReview';
+import AdminSystemDashboard from './components/AdminSystemDashboard';
+import InterestRateManagement from './components/dashboard/InterestRateManagement';
+import EmployeePerformance from './components/dashboard/EmployeePerformance';
 
 const createAppTheme = (darkMode: boolean) => createTheme({
   palette: {
     mode: darkMode ? 'dark' : 'light',
     primary: {
-      main: '#667eea',
-      light: '#8b5cf6',
-      dark: '#5a67d8',
+      main: '#0f2b46', // Bank-grade Navy
+      light: '#1e3a8a',
+      dark: '#0a1a2b',
     },
     secondary: {
-      main: '#764ba2',
+      main: '#475569', // Slate
     },
     background: {
-      default: darkMode ? '#0a0e27' : '#ffffff',
-      paper: darkMode ? '#1a1a2e' : '#ffffff',
+      default: darkMode ? '#0f172a' : '#f8fafc',
+      paper: darkMode ? '#1e293b' : '#ffffff',
     },
     text: {
-      primary: darkMode ? '#ffffff' : '#000000',
-      secondary: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+      primary: darkMode ? '#f8fafc' : '#0f172a',
+      secondary: darkMode ? '#cbd5e1' : '#475569',
     },
     success: {
-      main: '#4caf50',
-      light: '#81c784',
+      main: '#10b981',
+      light: '#d1fae5',
     },
     warning: {
-      main: '#ff9800',
-      light: '#ffb74d',
+      main: '#f59e0b',
+      light: '#fef3c7',
     },
     error: {
-      main: '#f44336',
-      light: '#e57373',
+      main: '#ef4444',
+      light: '#fee2e2',
     },
+    info: {
+      main: '#3b82f6',
+    }
   },
   typography: {
     fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
@@ -62,16 +74,42 @@ const createAppTheme = (darkMode: boolean) => createTheme({
   shape: {
     borderRadius: 0,
   },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          fontWeight: 600,
+        },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          backgroundImage: 'none',
+        },
+      },
+    },
+  },
 });
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+const ProtectedRoute: React.FC<{ children: React.ReactNode, allowedRoles?: string[] }> = ({ children, allowedRoles }) => {
+  const { isAuthenticated, loading, user } = useAuth();
   
   if (loading) {
-    return <div>Loading...</div>;
+    return <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>;
   }
   
-  return isAuthenticated ? <>{children}</> : <Navigate to="/" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Handle role-based access if roles are specified
+  if (allowedRoles && user && !allowedRoles.includes(user.role || 'USER')) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return <>{children}</>;
 };
 
 function App() {
@@ -100,12 +138,19 @@ const AppWithTheme: React.FC = () => {
 
 const AppRoutes: React.FC = () => {
   const { isAuthenticated, logout } = useAuth();
+  const { darkMode } = useTheme();
 
   return (
     <Routes>
       {/* Public Routes */}
       <Route 
         path="/" 
+        element={
+          isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />
+        } 
+      />
+      <Route 
+        path="/login" 
         element={
           isAuthenticated ? <Navigate to="/dashboard" replace /> : <AuthForm />
         } 
@@ -123,7 +168,6 @@ const AppRoutes: React.FC = () => {
         } 
       />
       
-      {/* Prediction Route - Uses PredictionPage component */}
       <Route 
         path="/predict" 
         element={
@@ -133,10 +177,58 @@ const AppRoutes: React.FC = () => {
         } 
       />
       
-      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+      {/* Admin / Employee specific routes */}
+      <Route path="/users" element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLOYEE']}><Users /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-      <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
-      <Route path="/risk-analysis" element={<ProtectedRoute><RiskAnalysis /></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLOYEE']}><Reports /></ProtectedRoute>} />
+      <Route path="/risk-analysis" element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLOYEE']}><RiskAnalysis /></ProtectedRoute>} />
+      <Route path="/employee-performance" element={<ProtectedRoute allowedRoles={['ADMIN']}><EmployeePerformance /></ProtectedRoute>} />
+      
+      {/* Borrower (User) Routes */}
+      <Route 
+        path="/apply-loan" 
+        element={
+          <ProtectedRoute allowedRoles={['USER']}>
+            <BorrowersLoanForm darkMode={darkMode} />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/my-loans" 
+        element={
+          <ProtectedRoute allowedRoles={['USER']}>
+            <BorrowersLoanStatus darkMode={darkMode} />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Employee Routes */}
+      <Route 
+        path="/employee-review" 
+        element={
+          <ProtectedRoute allowedRoles={['EMPLOYEE', 'ADMIN']}>
+            <EmployeeLoanReview darkMode={darkMode} />
+          </ProtectedRoute>
+        } 
+      />
+      
+      {/* Admin Routes */}
+      <Route
+        path="/admin-dashboard"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <AdminSystemDashboard darkMode={darkMode} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/interest-rates"
+        element={
+          <ProtectedRoute allowedRoles={['ADMIN']}>
+            <InterestRateManagement darkMode={darkMode} />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };

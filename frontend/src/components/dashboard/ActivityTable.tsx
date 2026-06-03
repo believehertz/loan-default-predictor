@@ -54,9 +54,9 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
   };
 
   return (
-    <Paper sx={{ borderRadius: 0, overflow: 'hidden', backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.6)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', height: '100%', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)' }}>
-      <Box sx={{ p: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', flexShrink: 0 }}>
-        <Typography variant="body2" fontWeight="bold" sx={{ color: textColor, textShadow: darkMode ? '0 0 8px rgba(255, 255, 255, 0.2)' : 'none' }}>
+    <Paper sx={{ borderRadius: 2, overflow: 'hidden', backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', display: 'flex', flexDirection: 'column', height: '100%', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', flexShrink: 0 }}>
+        <Typography variant="body1" fontWeight="bold" sx={{ color: textColor }}>
           Recent Loan Applications
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -77,7 +77,7 @@ const ActivityTable: React.FC<ActivityTableProps> = ({ darkMode }) => {
       <TableContainer sx={{ overflow: 'auto', flexGrow: 1 }}>
         <Table size="small">
           <TableHead>
-            <TableRow sx={{ bgcolor: darkMode ? '#2d2d44' : '#f5f5f5' }}>
+            <TableRow sx={{ bgcolor: darkMode ? '#0f172a' : '#f8fafc' }}>
               <TableCell sx={{ color: textColor }}>Applicant</TableCell>
               <TableCell sx={{ color: textColor }}>Amount</TableCell>
               <TableCell sx={{ color: textColor }}>Status</TableCell>

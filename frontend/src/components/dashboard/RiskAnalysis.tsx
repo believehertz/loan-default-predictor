@@ -1,9 +1,11 @@
 import React from 'react';
-import { Paper, Typography, Box, Grid, LinearProgress, Alert, Chip } from '@mui/material';
-import { Warning, TrendingDown, Security } from '@mui/icons-material';
+import { Paper, Typography, Box, Grid, LinearProgress, Alert, Chip, Button } from '@mui/material';
+import { Warning, TrendingDown, Security, ArrowBack } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 
 const RiskAnalysis: React.FC = () => {
+  const navigate = useNavigate();
   const { darkMode } = useTheme();
   const textColor = darkMode ? '#ffffff' : '#1a1a2e';
   
@@ -15,11 +17,20 @@ const RiskAnalysis: React.FC = () => {
   ];
 
   return (
-    <Paper sx={{ p: 4, borderRadius: 0, backdropFilter: 'blur(20px)', backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', color: textColor }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1, color: textColor }}>
-        <Security color="primary" />
-        Risk Analysis Engine
-      </Typography>
+    <Paper sx={{ p: 4, borderRadius: 2, backgroundColor: darkMode ? '#1e293b' : '#ffffff', border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)', color: textColor, boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <Button
+          variant="text"
+          onClick={() => navigate('/dashboard')}
+          startIcon={<ArrowBack />}
+        >
+          Back to Dashboard
+        </Button>
+        <Typography variant="h4" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: textColor }}>
+          <Security color="primary" />
+          Risk Analysis Engine
+        </Typography>
+      </Box>
 
       <Alert severity="info" sx={{ mb: 3 }}>
         Powered by XGBoost ML Model trained on 594K+ loan records
@@ -52,7 +63,7 @@ const RiskAnalysis: React.FC = () => {
         ))}
       </Grid>
 
-      <Box sx={{ mt: 4, p: 3, backgroundColor: darkMode ? 'rgba(244, 67, 54, 0.2)' : 'rgba(244, 67, 54, 0.1)', borderRadius: 0, color: darkMode ? 'rgba(255, 107, 107, 1)' : '#d32f2f' }}>
+      <Box sx={{ mt: 4, p: 3, backgroundColor: darkMode ? 'rgba(244, 67, 54, 0.1)' : 'rgba(244, 67, 54, 0.05)', borderRadius: 2, color: darkMode ? 'rgba(255, 107, 107, 1)' : '#d32f2f' }}>
         <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <TrendingDown />
           High Risk Indicators

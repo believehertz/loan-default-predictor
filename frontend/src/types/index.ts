@@ -5,10 +5,13 @@ export interface PredictionData {
   confidence: string;
 }
 
+export type UserRole = 'ADMIN' | 'EMPLOYEE' | 'USER';
+
 export interface User {
   id: number;
   username: string;
   email: string;
+  role?: UserRole | string;
 }
 
 export interface LoanApplication {

@@ -6,7 +6,6 @@ import {
   IconButton, Tooltip, Alert
 } from '@mui/material';
 import axios from 'axios';
-import FallingMoney from './FallingMoney';
 import { useNavigate } from 'react-router-dom';
 import { Dashboard as DashboardIcon, ArrowBack } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
@@ -227,11 +226,9 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
       justifyContent: 'center',
       py: 1,
       position: 'relative',
-      background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff',
+      background: 'transparent',
       overflow: 'auto'
     }}>
-      <FallingMoney />
-      
       <Box sx={{ 
         position: 'absolute',
         top: 16,
@@ -273,22 +270,22 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
           p: 2,
           width: '95%',
           maxWidth: '900px',
-          borderRadius: 0,
+          borderRadius: 2,
           backdropFilter: 'blur(20px)',
-          backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.6)' : 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: darkMode ? '#1e293b' : '#ffffff',
           border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           position: 'relative',
           zIndex: 2,
           margin: '0 auto',
           mt: 1
         }}
       >
-        <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 700, mb: 0.5, color: darkMode ? '#ffffff' : '#000000', textShadow: darkMode ? '0 0 12px rgba(255, 255, 255, 0.3)' : 'none' }}>
+        <Typography variant="h5" gutterBottom align="center" sx={{ fontWeight: 700, mb: 0.5 }}>
           Loan Payback Predictor
         </Typography>
-        <Typography variant="body2" align="center" gutterBottom sx={{ mb: 1.5, color: darkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)' }}>
-          💸 XGBoost 90%+ Accuracy | 594K+ Records Trained 💸
+        <Typography variant="body2" align="center" gutterBottom sx={{ mb: 1.5, color: 'text.secondary' }}>
+          Powered by XGBoost • 90%+ Accuracy • 594K+ Records Trained
         </Typography>
         
         <Box component="form" onSubmit={handleSubmit}>
@@ -461,7 +458,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
                 }
               }} 
             >
-              {loading ? <CircularProgress size={24} sx={{ color: '#ffffff' }} /> : '💰 PREDICT LOAN PAYBACK 💰'}
+              {loading ? <CircularProgress size={24} sx={{ color: '#ffffff' }} /> : 'PREDICT LOAN PAYBACK'}
             </Button>
           </Box>
         </Box>

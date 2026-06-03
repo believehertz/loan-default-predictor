@@ -12,7 +12,7 @@ interface PredictionResult {
 }
 
 const PredictionPage: React.FC = () => {
-  const { darkMode } = useTheme();
+
   const [result, setResult] = useState<PredictionResult | null>(null);
   const [showForm, setShowForm] = useState(true);
 
@@ -45,7 +45,7 @@ const PredictionPage: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             minHeight: '100vh',
-            background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff',
+            background: 'transparent',
             py: 4
           }}>
             <ResultCard data={result} onReset={handleReset} />

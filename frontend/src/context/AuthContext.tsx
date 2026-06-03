@@ -8,12 +8,15 @@ interface User {
   id: number;
   username: string;
   email: string;
+  role?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
+  isAdmin: boolean;
+  isEmployee: boolean;
   login: (username: string, password: string) => Promise<void>;
   signup: (email: string, username: string, password: string) => Promise<void>;
   logout: () => void;
@@ -89,6 +92,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       user, 
       isAuthenticated: !!user, 
       loading, 
+      isAdmin: user?.role === 'ADMIN',
+      isEmployee: user?.role === 'EMPLOYEE',
       login, 
       signup, 
       logout 

@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,9 +19,8 @@ const ForgotPassword: React.FC = () => {
     setLoading(true);
     
     try {
-      // Hardcoded Railway URL - replace with yours
       const response = await axios.post(
-        'https://loan-default-predictor-production-a3ad.up.railway.app/api/auth/forgot-password',
+        `${API_URL}/auth/forgot-password`,
         { email }
       );
       setMessage('Reset link sent! Check console.');
@@ -37,16 +38,15 @@ const ForgotPassword: React.FC = () => {
       display: 'flex', 
       alignItems: 'center', 
       justifyContent: 'center',
-      background: darkMode ? 'linear-gradient(135deg, #0a0e27 0%, #1a1a3e 50%, #2d1b4e 100%)' : '#ffffff', 
+      background: 'transparent', 
       p: 2
     }}>
       <Paper sx={{ 
         p: 4, 
         maxWidth: 400, 
         width: '100%',
-        borderRadius: 0,
-        backdropFilter: 'blur(20px)',
-        backgroundColor: darkMode ? 'rgba(26, 26, 46, 0.7)' : 'rgba(255, 255, 255, 0.95)',
+        borderRadius: 2,
+        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
         border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
         color: darkMode ? '#ffffff' : '#000000'
       }}>

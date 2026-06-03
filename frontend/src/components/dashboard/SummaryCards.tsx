@@ -51,17 +51,15 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
           <Paper
             elevation={0}
             sx={{
-              p: 1,
-              borderRadius: 0,
-              backdropFilter: 'blur(20px)',
-              backgroundColor: `rgba(${card.color === '#667eea' ? '102, 126, 234' : card.color === '#00e676' ? '0, 230, 118' : card.color === '#29b6f6' ? '41, 182, 246' : '255, 82, 82'}, 0.15)`,
+              p: 1.5,
+              borderRadius: 2,
+              backgroundColor: darkMode ? '#1e293b' : '#ffffff',
               border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
               transition: 'all 0.3s',
               '&:hover': { 
                 transform: 'translateY(-4px)',
-                boxShadow: '0 12px 48px rgba(0, 0, 0, 0.4)',
-                backgroundColor: `rgba(${card.color === '#667eea' ? '102, 126, 234' : card.color === '#00e676' ? '0, 230, 118' : card.color === '#29b6f6' ? '41, 182, 246' : '255, 82, 82'}, 0.25)`
+                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
               },
               position: 'relative',
               overflow: 'hidden'

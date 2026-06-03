@@ -1,9 +1,11 @@
 import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# Use SQLite for local, PostgreSQL for production
+load_dotenv()
+
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./local.db")
 
 # Handle Railway's postgres:// vs postgresql://

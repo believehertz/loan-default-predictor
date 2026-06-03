@@ -6,7 +6,7 @@ click
 colorama
 cryptography
 ecdsa
-fastapi
+fastapi==0.109.0
 greenlet
 h11
 idna
@@ -18,7 +18,7 @@ argon2-cffi
 psycopg2-binary
 pyasn1
 pycparser
-pydantic[email]
+pydantic[email]==2.5.0
 pydantic_core
 python-dateutil
 python-jose
@@ -27,14 +27,14 @@ rsa
 scikit-learn
 scipy
 six
-SQLAlchemy
-starlette
+SQLAlchemy==2.0.23
+starlette==0.35.0
 threadpoolctl
 typing-inspection
 typing_extensions
 tzdata
-uvicorn
+uvicorn==0.27.0
 xgboost
 email-validator
 python-dotenv
-sendgrid
+fastapi-mail
