@@ -5,8 +5,7 @@ import {
 } from '@mui/material';
 import { Search, Warning, CheckCircle, Assignment, TrendingUp } from '@mui/icons-material';
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import { API_URL } from '../../config/api';
 
 interface LoanApplication {
   id: number;
@@ -86,11 +85,7 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
       setReviewingId(loanId);
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
-      await axios.post(
-        `${API_URL}/loans/${loanId}/review`,
-        { approval_status: decision },
-        { headers }
-      );
+      await axios.post(`${API_URL}/loans/${loanId}/review`, { approval_status: decision }, { headers });
       await fetchData();
     } catch (err: any) {
       setError('Review failed: ' + (err.response?.data?.detail || err.message));
@@ -117,7 +112,6 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
         Employee Workspace
       </Typography>
 
-      {/* Stats strip */}
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
           { label: 'Pending Review', value: queue.length, icon: <Warning color="warning" /> },
@@ -140,12 +134,10 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
       {error && <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError('')}>{error}</Alert>}
 
       <Grid container spacing={3}>
-        {/* Pending Review Queue */}
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 3, bgcolor: paperBg, color: textColor, borderRadius: 2, minHeight: 400 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Warning color="warning" />
-              Pending Manual Reviews
+              <Warning color="warning" /> Pending Manual Reviews
             </Typography>
             <Typography color="text.secondary" variant="body2" sx={{ mb: 2 }}>
               Applications awaiting human review
@@ -160,20 +152,12 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
               </Box>
             ) : (
               queue.map((loan) => (
-                <Box
-                  key={loan.id}
-                  sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 2 }}
-                >
+                <Box key={loan.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1, mb: 2 }}>
                   <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
                     <Typography fontWeight="bold">App ID: #L-{loan.id}</Typography>
-                    <Chip
-                      label={riskLabel(loan.loan_paid_back_probability)}
-                      color={riskColor(loan.loan_paid_back_probability) as any}
-                      size="small"
-                    />
+                    <Chip label={riskLabel(loan.loan_paid_back_probability)} color={riskColor(loan.loan_paid_back_probability) as any} size="small" />
                   </Box>
 
-                  {/* Full applicant profile */}
                   <Grid container spacing={1} sx={{ mb: 1 }}>
                     {[
                       { label: 'Loan Amount', value: `$${loan.loan_amount?.toLocaleString()}` },
@@ -193,22 +177,10 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
                   </Grid>
 
                   <Box display="flex" gap={2} mt={1}>
-                    <Button
-                      variant="contained"
-                      color="success"
-                      size="small"
-                      disabled={reviewingId === loan.id}
-                      onClick={() => handleReview(loan.id, 'APPROVED')}
-                    >
+                    <Button variant="contained" color="success" size="small" disabled={reviewingId === loan.id} onClick={() => handleReview(loan.id, 'APPROVED')}>
                       {reviewingId === loan.id ? <CircularProgress size={16} /> : 'Approve'}
                     </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
-                      size="small"
-                      disabled={reviewingId === loan.id}
-                      onClick={() => handleReview(loan.id, 'REJECTED')}
-                    >
+                    <Button variant="outlined" color="error" size="small" disabled={reviewingId === loan.id} onClick={() => handleReview(loan.id, 'REJECTED')}>
                       Reject
                     </Button>
                   </Box>
@@ -218,7 +190,6 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
           </Paper>
         </Grid>
 
-        {/* Sidebar */}
         <Grid item xs={12} md={4}>
           <Paper sx={{ p: 3, bgcolor: paperBg, color: textColor, borderRadius: 2, mb: 2 }}>
             <Typography variant="h6" gutterBottom>User Lookup</Typography>
@@ -229,14 +200,10 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
                 variant="standard"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                sx={{
-                  input: { color: textColor },
-                  label: { color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' }
-                }}
+                sx={{ input: { color: textColor }, label: { color: darkMode ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.6)' } }}
               />
               <Button sx={{ ml: 1 }} variant="contained"><Search /></Button>
             </Box>
-
             <Typography variant="subtitle2" color="text.secondary" mb={1}>Quick Links</Typography>
             <Box display="flex" flexDirection="column" gap={1}>
               <Button variant="text" sx={{ justifyContent: 'flex-start' }} href="/predict">Run Assessment</Button>
@@ -244,7 +211,6 @@ const EmployeeDashboard: React.FC<Props> = ({ darkMode }) => {
             </Box>
           </Paper>
 
-          {/* My Assigned Backlog */}
           <Paper sx={{ p: 3, bgcolor: paperBg, color: textColor, borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TrendingUp fontSize="small" /> My Assigned Loans

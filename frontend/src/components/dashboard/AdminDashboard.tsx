@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, Grid, Paper, Typography, Button, CircularProgress, Alert, Chip } from '@mui/material';
 import { Group, TrendingUp, Security, Assessment } from '@mui/icons-material';
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import { API_URL } from '../../config/api';
 
 interface DashboardStats {
   total_users: number;
@@ -80,14 +79,9 @@ const AdminDashboard: React.FC<Props> = ({ darkMode }) => {
   const formatTime = (dateStr: string) => {
     const date = new Date(dateStr + 'Z');
     return date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: true, timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
     });
   };
 
@@ -104,7 +98,6 @@ const AdminDashboard: React.FC<Props> = ({ darkMode }) => {
       )}
 
       <Grid container spacing={3}>
-        {/* ── Stat Cards ── */}
         <Grid item xs={12} md={3}>
           <Paper sx={{ p: 3, bgcolor: paperBg, color: textColor, borderRadius: 2 }}>
             <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -157,68 +150,24 @@ const AdminDashboard: React.FC<Props> = ({ darkMode }) => {
           </Paper>
         </Grid>
 
-        {/* ── Recent System Activity (live) ── */}
         <Grid item xs={12} md={6}>
-          <Paper
-            sx={{
-              p: 3,
-              bgcolor: paperBg,
-              color: textColor,
-              borderRadius: 2,
-              height: 300,
-              display: 'flex',
-              flexDirection: 'column',
-              overflow: 'hidden',
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Recent System Activity
-            </Typography>
-
+          <Paper sx={{ p: 3, bgcolor: paperBg, color: textColor, borderRadius: 2, height: 300, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+            <Typography variant="h6" gutterBottom>Recent System Activity</Typography>
             {loading ? (
               <Box display="flex" justifyContent="center" alignItems="center" flexGrow={1}>
                 <CircularProgress size={32} />
               </Box>
             ) : recentActivity.length === 0 ? (
-              <Typography color="text.secondary" variant="body2">
-                No activity logged yet.
-              </Typography>
+              <Typography color="text.secondary" variant="body2">No activity logged yet.</Typography>
             ) : (
               <Box sx={{ overflowY: 'auto', flexGrow: 1 }}>
                 {recentActivity.map((log) => (
-                  <Box
-                    key={log.id}
-                    sx={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1,
-                      py: 0.8,
-                      borderBottom: `1px solid ${dividerColor}`,
-                    }}
-                  >
-                    <Chip
-                      label={log.action}
-                      color={getActionColor(log.action)}
-                      size="small"
-                      sx={{ fontSize: '0.6rem', height: 20, flexShrink: 0 }}
-                    />
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        flexGrow: 1,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        opacity: 0.85,
-                        color: textColor,
-                      }}
-                    >
+                  <Box key={log.id} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.8, borderBottom: `1px solid ${dividerColor}` }}>
+                    <Chip label={log.action} color={getActionColor(log.action)} size="small" sx={{ fontSize: '0.6rem', height: 20, flexShrink: 0 }} />
+                    <Typography variant="caption" sx={{ flexGrow: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: 0.85, color: textColor }}>
                       {log.details}
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{ color: 'text.secondary', flexShrink: 0 }}
-                    >
+                    <Typography variant="caption" sx={{ color: 'text.secondary', flexShrink: 0 }}>
                       {formatTime(log.created_at)}
                     </Typography>
                   </Box>
@@ -228,7 +177,6 @@ const AdminDashboard: React.FC<Props> = ({ darkMode }) => {
           </Paper>
         </Grid>
 
-        {/* ── Quick Actions ── */}
         <Grid item xs={12} md={6}>
           <Paper sx={{ p: 3, bgcolor: paperBg, color: textColor, borderRadius: 2, height: 300 }}>
             <Typography variant="h6" gutterBottom>Quick Actions</Typography>
