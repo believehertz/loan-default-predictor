@@ -10,7 +10,10 @@ import { useNavigate } from 'react-router-dom';
 import { Dashboard as DashboardIcon, ArrowBack } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = (() => {
+  const base = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  return `${base.replace(/\/+$/, '')}/api`;
+})();
 
 // Define the result interface
 interface PredictionResult {

@@ -11,7 +11,10 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = (() => {
+  const base = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  return `${base.replace(/\/+$/, '')}/api`;
+})();
 
 interface User {
   id: number;

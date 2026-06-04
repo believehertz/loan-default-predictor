@@ -54,7 +54,7 @@ const AdminDashboard: React.FC<Props> = ({ darkMode }) => {
 
       const [statsRes, activityRes, modelRes] = await Promise.all([
         axios.get(`${API_URL}/admin/dashboard-stats`, { headers }),
-        axios.get(`${API_URL}/admin/recent-activity?limit=8`, { headers }),
+        axios.get(`${API_URL}/admin/recent-activity?limit=50`, { headers }),
         axios.get(`${API_URL}/model-info`).catch(() => ({ data: { accuracy: null } })),
       ]);
 

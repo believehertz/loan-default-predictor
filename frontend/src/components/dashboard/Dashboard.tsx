@@ -32,7 +32,7 @@ import EmployeeDashboard from './EmployeeDashboard';
 const drawerWidth = 280;
 
 interface DashboardProps {
-  onLogout: () => void;
+  onLogout: () => Promise<void>;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
@@ -43,6 +43,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const navigate = useNavigate();
 
   const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
+
+  const handleLogout = async () => {
+    await onLogout();
+    navigate('/login');
+  };
 
   // Theme colors
   const bgColor = darkMode ? '#0f172a' : '#f8fafc';
@@ -122,7 +127,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
           fullWidth 
           variant="outlined" 
           startIcon={<LogoutIcon />} 
-          onClick={onLogout}
+          onClick={handleLogout}
           sx={{ color: sidebarText, borderColor: 'rgba(255,255,255,0.3)', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
         >
           Logout
