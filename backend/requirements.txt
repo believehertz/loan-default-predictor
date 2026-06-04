@@ -37,4 +37,4 @@ uvicorn==0.27.0
 xgboost
 email-validator
 python-dotenv
-fastapi-mail
+sendgrid

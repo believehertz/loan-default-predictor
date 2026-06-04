@@ -1,31 +1,17 @@
 import os
-from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Email, To, Content
 from pydantic import EmailStr
 
-conf = ConnectionConfig(
-    MAIL_USERNAME=os.getenv("MAIL_USERNAME", "your_gmail@gmail.com"),
-    MAIL_PASSWORD=os.getenv("MAIL_PASSWORD", "your_app_password"),
-    MAIL_FROM=os.getenv("MAIL_FROM", "your_gmail@gmail.com"),
-    MAIL_PORT=int(os.getenv("MAIL_PORT", 587)),
-    MAIL_SERVER=os.getenv("MAIL_SERVER", "smtp.gmail.com"),
-    MAIL_STARTTLS=os.getenv("MAIL_STARTTLS", "True").lower() in ('true', '1', 't'),
-    MAIL_SSL_TLS=os.getenv("MAIL_SSL_TLS", "False").lower() in ('true', '1', 't'),
-    USE_CREDENTIALS=True,
-    VALIDATE_CERTS=True
-)
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "believehertz867@gmail.com")
 
 async def send_reset_email(to_email: str, reset_link: str, username: str = ""):
     """
-    Send password reset email via fastapi-mail
+    Send password reset email via SendGrid
     """
-    if conf.MAIL_PASSWORD == "your_app_password" or not conf.MAIL_PASSWORD:
-        print("⚠️ Warning: MAIL_PASSWORD not properly set. Check .env")
-        print(f"⚠️ To fix this, create a Gmail App Password:")
-        print(f"⚠️ 1. Go to https://myaccount.google.com/security")
-        print(f"⚠️ 2. Enable 2-Step Verification if not enabled")
-        print(f"⚠️ 3. Go to App Passwords section")
-        print(f"⚠️ 4. Create a new App Password named 'LoanGuard'")
-        print(f"⚠️ 5. Copy the 16-character password and set it as MAIL_PASSWORD in .env")
+    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "your_sendgrid_api_key":
+        print("⚠️ Warning: SENDGRID_API_KEY not properly set. Check .env")
         print(f"Reset link for {to_email}: {reset_link}")
         return False
 
@@ -74,16 +60,16 @@ async def send_reset_email(to_email: str, reset_link: str, username: str = ""):
     </html>
     """
 
-    message = MessageSchema(
+    message = Mail(
+        from_email=SENDGRID_FROM_EMAIL,
+        to_emails=to_email,
         subject="Password Reset - LoanGuard",
-        recipients=[to_email],
-        body=html_content,
-        subtype=MessageType.html
+        html_content=html_content
     )
 
-    fm = FastMail(conf)
     try:
-        await fm.send_message(message)
+        sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        response = sg.send(message)
         print(f"✅ Email sent successfully to {to_email}")
         return True
     except Exception as e:
@@ -94,10 +80,10 @@ async def send_reset_email(to_email: str, reset_link: str, username: str = ""):
 
 async def send_loan_status_email(to_email: str, username: str, loan_id: int, status: str, rejection_reason: str = None):
     """
-    Send loan status update email to borrower
+    Send loan status update email to borrower via SendGrid
     """
-    if conf.MAIL_PASSWORD == "your_app_password" or not conf.MAIL_PASSWORD:
-        print("⚠️ Warning: MAIL_PASSWORD not properly set. Check .env")
+    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "your_sendgrid_api_key":
+        print("⚠️ Warning: SENDGRID_API_KEY not properly set. Check .env")
         print(f"Loan status update for {to_email}: Loan #{loan_id} - {status}")
         return False
 
@@ -157,16 +143,16 @@ async def send_loan_status_email(to_email: str, username: str, loan_id: int, sta
     </html>
     """
 
-    message = MessageSchema(
+    message = Mail(
+        from_email=SENDGRID_FROM_EMAIL,
+        to_emails=to_email,
         subject=subject,
-        recipients=[to_email],
-        body=html_content,
-        subtype=MessageType.html
+        html_content=html_content
     )
 
-    fm = FastMail(conf)
     try:
-        await fm.send_message(message)
+        sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
+        response = sg.send(message)
         print(f"✅ Loan status email sent successfully to {to_email}")
         return True
     except Exception as e:

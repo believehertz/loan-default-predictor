@@ -3,7 +3,7 @@ import { Box, Grid, Paper, Typography, Button, CircularProgress, Alert, Chip } f
 import { Group, TrendingUp, Security, Assessment } from '@mui/icons-material';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 interface DashboardStats {
   total_users: number;
