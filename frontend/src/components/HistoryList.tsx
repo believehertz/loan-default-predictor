@@ -44,7 +44,7 @@ const HistoryList: React.FC<HistoryListProps> = ({
   const fetchHistory = async () => {
     setInternalLoading(true);
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
       const token = localStorage.getItem('token');
       const response = await axios.get(`${API_URL}/history`, {
         headers: { Authorization: `Bearer ${token}` }

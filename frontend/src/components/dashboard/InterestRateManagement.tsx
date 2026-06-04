@@ -24,7 +24,7 @@ import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon, ArrowBack } fro
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 interface InterestRate {
   id: number;

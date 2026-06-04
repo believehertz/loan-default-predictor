@@ -5,8 +5,8 @@ import axios from 'axios';
 import { useTheme } from '../context/ThemeContext';
 
 const API_URL = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL
-  : 'http://localhost:8000';
+  ? `${import.meta.env.VITE_API_URL}/api`
+  : 'http://localhost:8000/api';
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState('');
