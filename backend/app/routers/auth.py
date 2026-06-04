@@ -139,7 +139,7 @@ async def require_employee_or_admin(current_user: models.User = Depends(get_curr
 # Auth endpoints
 # ---------------------------------------------------------------------------
 
-@router.post("/signup", response_model=UserResponse)
+@router.post("/signup")
 def signup(user: UserCreate, db: Session = Depends(get_db)):
     db_user = db.query(models.User).filter(
         (models.User.email == user.email) | (models.User.username == user.username)
@@ -173,7 +173,23 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     db.add(audit)
     db.commit()
 
-    return db_user
+    # Generate access token and return in same format as login
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": db_user.username, "role": db_user.role.value},
+        expires_delta=access_token_expires
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": db_user.id,
+            "username": db_user.username,
+            "email": db_user.email,
+            "role": db_user.role.value
+        }
+    }
 
 
 @router.post("/login")
