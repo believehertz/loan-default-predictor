@@ -66,6 +66,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     // Employee & Admin menu items
     { text: 'Review Loans', icon: <AssessmentIcon />, onClick: () => navigate('/employee-review'), show: isEmployee || isAdmin },
     { text: 'New Prediction', icon: <AssessmentIcon />, onClick: () => navigate('/predict'), show: isEmployee || isAdmin },
+    { text: 'Bonus History', icon: <EmojiEvents />, onClick: () => navigate('/bonus-history'), show: isEmployee && !isAdmin },
     
     // Admin-only menu items
     { text: 'System Dashboard', icon: <TrendingUp />, onClick: () => navigate('/admin-dashboard'), show: isAdmin },
@@ -117,7 +118,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         ))}
       </Box>
 
-      <Box sx={{ p: 2, borderTop: 1, borderColor: 'rgba(255,255,255,0.1)', flexShrink: 0 }}>
+      <Box sx={{ mt: 'auto', pt: 2, borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <FormControlLabel
           control={<Switch checked={darkMode} onChange={toggleDarkMode} color="default" />}
           label={darkMode ? <DarkMode /> : <LightMode />}

@@ -22,6 +22,7 @@ import {
   Grid,
   Card,
   CardContent,
+  Snackbar,
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, ArrowBack, Calculate } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -77,6 +78,9 @@ const EmployeePerformance: React.FC = () => {
     period: new Date().toISOString().slice(0, 7) // YYYY-MM
   });
   const [calculatePeriod, setCalculatePeriod] = useState(new Date().toISOString().slice(0, 7));
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' as 'success' | 'error' });
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [bonusToDelete, setBonusToDelete] = useState<number | null>(null);
 
   const fetchPerformanceData = async () => {
     try {
@@ -145,24 +149,58 @@ const EmployeePerformance: React.FC = () => {
       );
 
       handleCloseDialog();
+      
+      // Add a small delay to ensure database commit is complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       await Promise.all([fetchPerformanceData(), fetchBonuses()]);
+      setSnackbar({
+        open: true,
+        message: `Bonus of $${parseFloat(formData.amount).toFixed(2)} awarded to ${selectedEmployee.username}`,
+        severity: 'success'
+      });
     } catch (err: any) {
-      setError('Failed to award bonus: ' + (err.response?.data?.detail || err.message));
+      setSnackbar({
+        open: true,
+        message: 'Failed to award bonus: ' + (err.response?.data?.detail || err.message),
+        severity: 'error'
+      });
     }
   };
 
-  const handleDeleteBonus = async (bonusId: number) => {
-    if (!confirm('Are you sure you want to delete this bonus?')) return;
+  const handleDeleteBonus = (bonusId: number) => {
+    setBonusToDelete(bonusId);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (bonusToDelete === null) return;
 
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API_URL}/admin/bonuses/${bonusId}`, {
+      await axios.delete(`${API_URL}/admin/bonuses/${bonusToDelete}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
+      // Add a small delay to ensure database commit is complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       await Promise.all([fetchPerformanceData(), fetchBonuses()]);
+      setSnackbar({
+        open: true,
+        message: 'Bonus deleted successfully',
+        severity: 'success'
+      });
+      setDeleteConfirmOpen(false);
+      setBonusToDelete(null);
     } catch (err: any) {
-      setError('Failed to delete bonus: ' + (err.response?.data?.detail || err.message));
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete bonus: ' + (err.response?.data?.detail || err.message),
+        severity: 'error'
+      });
+      setDeleteConfirmOpen(false);
+      setBonusToDelete(null);
     }
   };
 
@@ -176,15 +214,27 @@ const EmployeePerformance: React.FC = () => {
       );
 
       setCalculateDialogOpen(false);
+      
+      // Add a small delay to ensure database commit is complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       await Promise.all([fetchPerformanceData(), fetchBonuses()]);
       
       // Show summary
       const summary = response.data.results.map((r: any) => 
-        `${r.username}: $${r.total_bonus} (${r.status})`
-      ).join('\n');
-      alert(`Bonus calculation complete:\n${summary}`);
+        `${r.username}: $${r.total_bonus}`
+      ).join(', ');
+      setSnackbar({ 
+        open: true, 
+        message: `Bonus calculation complete: ${summary}`, 
+        severity: 'success' 
+      });
     } catch (err: any) {
-      setError('Failed to calculate bonuses: ' + (err.response?.data?.detail || err.message));
+      setSnackbar({
+        open: true,
+        message: 'Failed to calculate bonuses: ' + (err.response?.data?.detail || err.message),
+        severity: 'error'
+      });
     }
   };
 
@@ -420,6 +470,102 @@ const EmployeePerformance: React.FC = () => {
           <Button onClick={() => setCalculateDialogOpen(false)}>Cancel</Button>
           <Button onClick={handleCalculateBonuses} variant="contained">
             Calculate & Award
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Employee Bonus Details */}
+      {selectedEmployee && (
+        <Paper sx={{ bgcolor: paperBg, color: textColor, p: 3, mt: 3 }}>
+          <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
+            Bonuses for {selectedEmployee.username}
+          </Typography>
+          {bonuses.filter(b => b.employee_id === selectedEmployee.employee_id).length === 0 ? (
+            <Typography color="textSecondary">No bonuses awarded to this employee yet</Typography>
+          ) : (
+            <TableContainer>
+              <Table size="small">
+                <TableHead>
+                  <TableRow sx={{ backgroundColor: darkMode ? '#0f172a' : '#f8fafc' }}>
+                    <TableCell sx={{ color: textColor, fontWeight: 'bold' }}>Type</TableCell>
+                    <TableCell sx={{ color: textColor, fontWeight: 'bold' }}>Amount</TableCell>
+                    <TableCell sx={{ color: textColor, fontWeight: 'bold' }}>Reason</TableCell>
+                    <TableCell sx={{ color: textColor, fontWeight: 'bold' }}>Period</TableCell>
+                    <TableCell sx={{ color: textColor, fontWeight: 'bold' }}>Awarded At</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {bonuses.filter(b => b.employee_id === selectedEmployee.employee_id).map((bonus) => (
+                    <TableRow key={bonus.id}>
+                      <TableCell sx={{ color: textColor }}>
+                        <Chip label={bonus.bonus_type} size="small" />
+                      </TableCell>
+                      <TableCell sx={{ color: textColor, fontWeight: 'bold' }}>
+                        ${bonus.amount.toFixed(2)}
+                      </TableCell>
+                      <TableCell sx={{ color: textColor }}>{bonus.reason}</TableCell>
+                      <TableCell sx={{ color: textColor }}>{bonus.period || 'N/A'}</TableCell>
+                      <TableCell sx={{ color: textColor }}>
+                        {new Date(bonus.awarded_at + 'Z').toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Paper>
+      )}
+
+      {/* Snackbar Notification */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert 
+          onClose={() => setSnackbar({ ...snackbar, open: false })} 
+          severity={snackbar.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={deleteConfirmOpen}
+        onClose={() => {
+          setDeleteConfirmOpen(false);
+          setBonusToDelete(null);
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: 'bold', color: 'error.main' }}>
+          Delete Bonus?
+        </DialogTitle>
+        <DialogContent>
+          <Typography sx={{ mt: 2 }}>
+            Are you sure you want to delete this bonus? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setDeleteConfirmOpen(false);
+              setBonusToDelete(null);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+          >
+            Delete Bonus
           </Button>
         </DialogActions>
       </Dialog>

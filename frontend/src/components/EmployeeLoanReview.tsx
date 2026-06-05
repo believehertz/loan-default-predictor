@@ -55,7 +55,10 @@ interface Loan {
   gender: string;
   interest_rate: number;
   grade_subgrade: string;
+  loan_term_months?: number;
+  disbursement_date?: string;
   repayment_date?: string;
+  monthly_payment?: number;
 }
 
 interface Props {
@@ -78,6 +81,7 @@ const EmployeeLoanReview: React.FC<Props> = ({ darkMode: _ }) => {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [reviewNotes, setReviewNotes] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
+  const [customerRating, setCustomerRating] = useState<number | null>(null);
   const [reviewLoading, setReviewLoading] = useState(false);
 
   useEffect(() => {
@@ -125,12 +129,16 @@ const EmployeeLoanReview: React.FC<Props> = ({ darkMode: _ }) => {
       await axios.post(`${API_URL}/loans/${selectedLoan.id}/review`, {
         approval_status: status,
         notes: reviewNotes,
-        rejection_reason: status === 'REJECTED' ? rejectionReason : null
+        rejection_reason: status === 'REJECTED' ? rejectionReason : null,
+        customer_rating: customerRating
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       setReviewDialogOpen(false);
+      setCustomerRating(null);
+      setReviewNotes('');
+      setRejectionReason('');
       await fetchLoans();
     } catch (err: any) {
       setError('Failed to submit review: ' + (err.response?.data?.detail || err.message));
@@ -295,6 +303,14 @@ const EmployeeLoanReview: React.FC<Props> = ({ darkMode: _ }) => {
                       <Typography variant="subtitle2" color="textSecondary">Gender</Typography>
                       <Typography variant="body1" fontWeight="medium">{selectedLoan.gender || '—'}</Typography>
                     </Grid>
+                    <Grid item xs={6} sm={4}>
+                      <Typography variant="subtitle2" color="textSecondary">Loan Term</Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        {selectedLoan.loan_term_months 
+                          ? `${selectedLoan.loan_term_months} months`
+                          : '—'}
+                      </Typography>
+                    </Grid>
                     {selectedLoan.repayment_date && (
                       <Grid item xs={6} sm={4}>
                         <Typography variant="subtitle2" color="textSecondary">Repayment Date</Typography>
@@ -304,6 +320,14 @@ const EmployeeLoanReview: React.FC<Props> = ({ darkMode: _ }) => {
                             month: 'short',
                             day: 'numeric'
                           })}
+                        </Typography>
+                      </Grid>
+                    )}
+                    {selectedLoan.monthly_payment && (
+                      <Grid item xs={6} sm={4}>
+                        <Typography variant="subtitle2" color="textSecondary">Monthly Payment</Typography>
+                        <Typography variant="body1" fontWeight="medium">
+                          ${selectedLoan.monthly_payment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </Typography>
                       </Grid>
                     )}

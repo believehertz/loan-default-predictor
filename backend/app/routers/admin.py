@@ -1,7 +1,7 @@
 """
 Admin-only endpoints for system management, audit logs, and settings
 """
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
@@ -728,7 +728,7 @@ def delete_bonus(
 
 @router.post("/calculate-bonuses")
 def calculate_automated_bonuses(
-    period: str,  # Format: YYYY-MM
+    period: str = Query(..., description="Period in YYYY-MM format"),
     db: Session = Depends(get_db),
     current_user: models.User = Depends(require_admin)
 ):
@@ -799,6 +799,11 @@ def calculate_automated_bonuses(
         ).first()
 
         if existing_bonus:
+            # Update existing bonus with new calculation
+            existing_bonus.amount = total_bonus
+            existing_bonus.reason = f"Automated bonus for {period}: {total_loans} loans reviewed, {approved_loans} approved, rating bonus ${rating_bonus}"
+            db.commit()
+            
             results.append({
                 "employee_id": emp.id,
                 "username": emp.username,
@@ -808,7 +813,7 @@ def calculate_automated_bonuses(
                 "approval_bonus": approval_bonus,
                 "rating_bonus": rating_bonus,
                 "total_bonus": total_bonus,
-                "status": "already_awarded",
+                "status": "updated",
                 "existing_bonus_id": existing_bonus.id
             })
         else:

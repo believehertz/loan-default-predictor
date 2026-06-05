@@ -1,46 +1,82 @@
 // src/components/dashboard/SummaryCards.tsx
-import React from 'react';
+// src/components/dashboard/SummaryCards.tsx
+import React, { useState, useEffect } from 'react';
 import { Grid, Paper, Typography, Box, Avatar } from '@mui/material';
-import { TrendingUp, AttachMoney, CheckCircle, Warning } from '@mui/icons-material';
+import { TrendingUp, AttachMoney, CheckCircle, Warning, EmojiEvents } from '@mui/icons-material';
 import CountUp from 'react-countup';
+import axios from 'axios';
+
+const API_URL = (() => {
+  const base = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  return `${base.replace(/\/+$/, '')}/api`;
+})();
 
 interface SummaryCardsProps {
   darkMode: boolean;
 }
 
+interface StatsData {
+  total_reviewed: number;
+  approved: number;
+  rejected: number;
+  escalated: number;
+  approval_rate: string;
+  current_backlog: number;
+  total_bonus?: number;
+}
+
 const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
   const bgColor = darkMode ? '#1a1a2e' : '#ffffff';
   const textColor = darkMode ? '#ffffff' : '#1a1a2e';
+  const [stats, setStats] = useState<StatsData | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_URL}/loans/my-stats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setStats(response.data);
+      } catch (err) {
+        console.error('Failed to fetch stats:', err);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const cards = [
     {
-      title: 'Total Predictions',
-      value: 1247,
+      title: 'Total Loans Reviewed',
+      value: stats?.total_reviewed || 0,
       icon: <TrendingUp />,
       color: '#667eea',
       trend: 12.5
     },
     {
-      title: 'Total Value Analyzed',
-      value: 2450000,
-      suffix: ' USD',
-      icon: <AttachMoney />,
-      color: '#00e676',
-      trend: 8.2
-    },
-    {
-      title: 'Low Risk Loans',
-      value: 892,
+      title: 'Approved Loans',
+      value: stats?.approved || 0,
       icon: <CheckCircle />,
       color: '#29b6f6',
       trend: 15.3
     },
     {
-      title: 'High Risk Detected',
-      value: 34,
-      icon: <Warning />,
-      color: '#ff5252',
-      trend: -5.4
+      title: 'Approval Rate',
+      value: stats?.approval_rate ? parseFloat(stats.approval_rate) : 0,
+      suffix: '%',
+      icon: <TrendingUp />,
+      color: '#00e676',
+      trend: 8.2,
+      isPercentage: true
+    },
+    {
+      title: 'Total Bonuses Earned',
+      value: stats?.total_bonus || 0,
+      suffix: ' USD',
+      icon: <EmojiEvents />,
+      color: '#ffc107',
+      trend: 5.1,
+      isCurrency: true
     }
   ];
 
@@ -80,12 +116,13 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
                   {card.title}
                 </Typography>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: textColor, lineHeight: 1, textShadow: '0 0 12px rgba(255, 255, 255, 0.3)' }}>
+                  {card.isCurrency ? '$' : ''}
                   <CountUp 
                     end={card.value} 
                     duration={2} 
                     separator="," 
                     suffix={card.suffix || ''}
-                    prefix={card.title.includes('Value') ? '$' : ''}
+                    decimals={card.isCurrency ? 2 : card.isPercentage ? 1 : 0}
                   />
                 </Typography>
                 <Typography 

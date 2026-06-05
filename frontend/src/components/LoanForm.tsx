@@ -47,7 +47,7 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
     marital_status: 'Single',
     education_level: 'High School',
     employment_status: 'Employed',
-    loan_purpose: 'Debt consolidation',
+    loan_purpose: 'Debt Consolidation',
     grade_subgrade: 'C1'
   });
 
@@ -411,14 +411,14 @@ const LoanForm: React.FC<LoanFormProps> = ({ onResult }) => {
                 <InputLabel>Loan Purpose</InputLabel>
                 <Select name="loan_purpose" value={formData.loan_purpose} 
                   onChange={handleChange} label="Loan Purpose">
-                  <MenuItem value="Debt consolidation">Debt consolidation</MenuItem>
+                  <MenuItem value="Debt Consolidation">Debt Consolidation</MenuItem>
                   <MenuItem value="Home">Home</MenuItem>
-                  <MenuItem value="Car">Car</MenuItem>
+                  <MenuItem value="Auto">Auto</MenuItem>
                   <MenuItem value="Education">Education</MenuItem>
                   <MenuItem value="Business">Business</MenuItem>
                   <MenuItem value="Medical">Medical</MenuItem>
-                  <MenuItem value="Vacation">Vacation</MenuItem>
-                  <MenuItem value="Other">Other</MenuItem>
+                  <MenuItem value="Personal">Personal</MenuItem>
+                  <MenuItem value="Home Improvement">Home Improvement</MenuItem>
                 </Select>
               </FormControl>
             </Grid>

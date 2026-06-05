@@ -22,6 +22,7 @@ from app.routers.auth import (
 )
 import email_service
 from app.routers.predict import _run_prediction
+from loan_utils import estimate_loan_term, calculate_repayment_date
 
 
 def calculate_grade_subgrade(credit_score: int, debt_to_income_ratio: float, annual_income: float) -> str:
@@ -155,6 +156,24 @@ def submit_loan_application(
     loan_paid_back_probability = prediction_result["proba"]
     is_default_predicted = prediction_result["prediction"] == 0
 
+    # Calculate loan term dynamically based on borrower profile
+    disbursement_date = datetime.utcnow()
+    loan_term_months = estimate_loan_term(
+        loan_amount=loan_data.loan_amount,
+        annual_income=loan_data.annual_income,
+        credit_score=loan_data.credit_score,
+        dti_ratio=loan_data.debt_to_income_ratio,
+        loan_purpose=loan_data.loan_purpose
+    )
+    repayment_date = calculate_repayment_date(
+        disbursement_date=disbursement_date,
+        loan_amount=loan_data.loan_amount,
+        annual_income=loan_data.annual_income,
+        credit_score=loan_data.credit_score,
+        dti_ratio=loan_data.debt_to_income_ratio,
+        loan_purpose=loan_data.loan_purpose
+    )
+
     db_loan = models.LoanApplication(
         user_id=current_user.id,
         annual_income=loan_data.annual_income,
@@ -172,7 +191,10 @@ def submit_loan_application(
         is_default_predicted=is_default_predicted,
         status=models.LoanStatus.PENDING,
         approval_status=models.LoanApprovalStatus.PENDING_REVIEW,
-        documents_submitted=True
+        documents_submitted=True,
+        loan_term_months=loan_term_months,
+        disbursement_date=disbursement_date,
+        repayment_date=repayment_date
     )
 
     db.add(db_loan)
@@ -271,6 +293,11 @@ def get_my_stats(
         models.LoanApplication.approval_status == models.LoanApprovalStatus.PENDING_REVIEW
     ).scalar() or 0
 
+    # Calculate total bonuses
+    total_bonus = db.query(func.sum(models.EmployeeBonus.amount)).filter(
+        models.EmployeeBonus.employee_id == current_user.id
+    ).scalar() or 0
+
     return {
         "total_reviewed": total,
         "approved": approved,
@@ -278,7 +305,21 @@ def get_my_stats(
         "escalated": escalated,
         "approval_rate": f"{(approved / total * 100) if total > 0 else 0:.1f}%",
         "current_backlog": assigned_backlog,
+        "total_bonus": float(total_bonus),
     }
+
+
+@router.get("/my-bonuses")
+def get_my_bonuses(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(require_employee_or_admin)
+):
+    """Employee views their own bonus history."""
+    bonuses = db.query(models.EmployeeBonus).filter(
+        models.EmployeeBonus.employee_id == current_user.id
+    ).order_by(models.EmployeeBonus.awarded_at.desc()).all()
+    
+    return bonuses
 
 
 @router.get("/all", response_model=list[LoanApplicationResponse])
@@ -403,33 +444,38 @@ def review_loan_application(
     if (
         loan.assigned_employee_id == current_user.id
         and current_user.role != models.UserRole.ADMIN
-        and review.approval_status in ("APPROVED", "REJECTED")
     ):
-        # Create override request instead of blocking
-        override_request = models.OverrideRequest(
-            loan_id=loan_id,
-            employee_id=current_user.id,
-            requested_action=review.approval_status,
-            notes=f"{review.notes}. Rejection reason: {review.rejection_reason}" if review.approval_status == "REJECTED" and review.rejection_reason else review.notes
-        )
-        db.add(override_request)
-        db.commit()
+        try:
+            approval_status_enum = models.LoanApprovalStatus(review.approval_status)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid approval status")
+        
+        if approval_status_enum in (models.LoanApprovalStatus.APPROVED, models.LoanApprovalStatus.REJECTED):
+            # Create override request instead of blocking
+            override_request = models.OverrideRequest(
+                loan_id=loan_id,
+                employee_id=current_user.id,
+                requested_action=review.approval_status,
+                notes=f"{review.notes}. Rejection reason: {review.rejection_reason}" if approval_status_enum == models.LoanApprovalStatus.REJECTED and review.rejection_reason else review.notes
+            )
+            db.add(override_request)
+            db.commit()
 
-        # Audit log
-        audit = models.AuditLog(
-            user_id=current_user.id,
-            action="OVERRIDE_REQUESTED",
-            resource_type="LOAN",
-            resource_id=loan_id,
-            details=f"Employee {current_user.username} requested admin override to {review.approval_status} loan assigned to them"
-        )
-        db.add(audit)
-        db.commit()
+            # Audit log
+            audit = models.AuditLog(
+                user_id=current_user.id,
+                action="OVERRIDE_REQUESTED",
+                resource_type="LOAN",
+                resource_id=loan_id,
+                details=f"Employee {current_user.username} requested admin override to {review.approval_status} loan assigned to them"
+            )
+            db.add(audit)
+            db.commit()
 
-        raise HTTPException(
-            status_code=403,
-            detail="Override request submitted to admin for approval. You cannot approve or reject a loan you were assigned to."
-        )
+            raise HTTPException(
+                status_code=403,
+                detail="Override request submitted to admin for approval. You cannot approve or reject a loan you were assigned to."
+            )
 
     try:
         approval_status = models.LoanApprovalStatus(review.approval_status)
@@ -441,6 +487,10 @@ def review_loan_application(
 
     loan.approval_status = approval_status
     loan.employee_notes = review.notes
+    
+    # Set customer rating if provided
+    if review.customer_rating:
+        loan.customer_rating = review.customer_rating
 
     # Only set assigned_employee if not already set (first reviewer "claims" it)
     if loan.assigned_employee_id is None:
@@ -450,9 +500,8 @@ def review_loan_application(
         loan.status = models.LoanStatus.APPROVED
         loan.approved_by = current_user.id
         loan.approval_date = datetime.utcnow()
-        # Calculate repayment date (e.g., 12 months from approval)
-        from dateutil.relativedelta import relativedelta
-        loan.repayment_date = datetime.utcnow() + relativedelta(months=12)
+        # Repayment date was already calculated when loan was created
+        # No need to recalculate here
     elif approval_status == models.LoanApprovalStatus.REJECTED:
         loan.status = models.LoanStatus.REJECTED
         loan.rejection_reason = review.rejection_reason
@@ -490,6 +539,64 @@ def review_loan_application(
     return loan
 
 
+@router.post("/{loan_id}/rate-employee", response_model=LoanApplicationResponse)
+def rate_employee(
+    loan_id: int,
+    rating: int,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_active_user)
+):
+    """
+    Borrower rates the employee who reviewed their loan.
+    Only available after loan has been reviewed.
+    """
+    loan = db.query(models.LoanApplication).filter(
+        models.LoanApplication.id == loan_id
+    ).first()
+
+    if not loan:
+        raise HTTPException(status_code=404, detail="Loan not found")
+
+    # Only borrower of this loan can rate
+    if loan.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You can only rate loans you applied for"
+        )
+
+    # Validate rating is between 1 and 5
+    if not isinstance(rating, int) or rating < 1 or rating > 5:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Rating must be an integer between 1 and 5"
+        )
+
+    # Loan must have been reviewed
+    if loan.approval_status is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Loan must be reviewed before rating"
+        )
+
+    # Set the rating
+    loan.customer_rating = rating
+    db.commit()
+    db.refresh(loan)
+
+    # Audit
+    audit_log = models.AuditLog(
+        user_id=current_user.id,
+        action="RATE_EMPLOYEE",
+        resource_type="LOAN",
+        resource_id=loan_id,
+        details=f"Borrower {current_user.username} rated employee {loan.assigned_employee.username if loan.assigned_employee else 'Unknown'} with {rating} stars"
+    )
+    db.add(audit_log)
+    db.commit()
+
+    return loan
+
+
 @router.post("/{loan_id}/disburse", response_model=LoanApplicationResponse)
 def disburse_loan(
     loan_id: int,
@@ -511,6 +618,20 @@ def disburse_loan(
         )
 
     loan.status = models.LoanStatus.DISBURSED
+    
+    # Set disbursement date if not already set
+    if loan.disbursement_date is None:
+        loan.disbursement_date = datetime.utcnow()
+        # Recalculate repayment date based on actual disbursement date and borrower profile
+        loan.repayment_date = calculate_repayment_date(
+            disbursement_date=loan.disbursement_date,
+            loan_amount=loan.loan_amount,
+            annual_income=loan.annual_income,
+            credit_score=loan.credit_score,
+            dti_ratio=loan.debt_to_income_ratio,
+            loan_purpose=loan.loan_purpose
+        )
+    
     db.commit()
     db.refresh(loan)
 

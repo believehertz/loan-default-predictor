@@ -90,15 +90,21 @@ class LoanApplicationResponse(BaseModel):
     grade_subgrade: Optional[str]
     status: str
     approval_status: str
-    repayment_date: Optional[datetime]
+    
+    # Repayment Schedule
+    loan_term_months: Optional[int] = None
+    disbursement_date: Optional[datetime] = None
+    repayment_date: Optional[datetime] = None
+    monthly_payment: Optional[float] = None  # Calculated as loan_amount / loan_term_months
+    
     # Simplified user-facing status (maps internal workflow to plain English)
     user_facing_status: Optional[str] = None
-    loan_paid_back_probability: Optional[float]
-    is_default_predicted: Optional[bool]
-    employee_notes: Optional[str]
-    rejection_reason: Optional[str]
-    customer_feedback: Optional[str]
-    customer_rating: Optional[int]
+    loan_paid_back_probability: Optional[float] = None
+    is_default_predicted: Optional[bool] = None
+    employee_notes: Optional[str] = None
+    rejection_reason: Optional[str] = None
+    customer_feedback: Optional[str] = None
+    customer_rating: Optional[int] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
     approved_by: Optional[int] = None
@@ -119,11 +125,21 @@ class LoanApplicationResponse(BaseModel):
         raw = values.get("approval_status", "")
         return mapping.get(raw, "Under Review")
 
+    @validator("monthly_payment", always=True, pre=False)
+    def compute_monthly_payment(cls, v, values):
+        """Calculate monthly payment as loan_amount / loan_term_months"""
+        loan_amount = values.get("loan_amount")
+        loan_term = values.get("loan_term_months")
+        if loan_amount and loan_term and loan_term > 0:
+            return round(loan_amount / loan_term, 2)
+        return None
+
 class LoanReviewRequest(BaseModel):
     """Employee/Admin reviews and makes decision on loan"""
     approval_status: str  # "APPROVED", "REJECTED", "ESCALATED"
     notes: Optional[str] = None
     rejection_reason: Optional[str] = None
+    customer_rating: Optional[int] = None  # 1-5 star rating
 
 class SystemSettingResponse(BaseModel):
     id: int
@@ -175,8 +191,8 @@ class InterestRateSettingResponse(BaseModel):
     interest_rate: float
     is_active: bool
     created_at: datetime
-    updated_at: datetime
-    created_by: Optional[int]
+    updated_at: Optional[datetime] = None
+    created_by: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -197,11 +213,12 @@ class OverrideRequestResponse(BaseModel):
     loan_id: int
     employee_id: int
     requested_action: str
-    status: str
+    admin_response: Optional[str] = None  # "APPROVED", "DENIED"
+    notes: Optional[str] = None
+    response_notes: Optional[str] = None
+    reviewed_by: Optional[int] = None
     created_at: datetime
-    reviewed_at: Optional[datetime]
-    reviewed_by: Optional[int]
-    notes: Optional[str]
+    updated_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

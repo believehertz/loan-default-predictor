@@ -20,6 +20,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Rating,
 } from '@mui/material';
 import { ArrowBack, Info } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
@@ -44,7 +45,11 @@ interface Loan {
   is_default_predicted: boolean;
   created_at: string;
   approval_date?: string;
+  customer_rating?: number;
+  loan_term_months?: number;
+  disbursement_date?: string;
   repayment_date?: string;
+  monthly_payment?: number;
   rejection_reason?: string;
   employee_notes?: string;
   interest_rate: number;
@@ -68,6 +73,8 @@ const BorrowersLoanStatus: React.FC<Props> = ({ darkMode: _ }) => {
   const [selectedLoan, setSelectedLoan] = useState<Loan | null>(null);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [ratingValue, setRatingValue] = useState<number | null>(null);
+  const [ratingLoading, setRatingLoading] = useState(false);
 
   useEffect(() => {
     fetchLoans();
@@ -97,6 +104,34 @@ const BorrowersLoanStatus: React.FC<Props> = ({ darkMode: _ }) => {
     }
   };
 
+  const submitRating = async (loanId: number) => {
+    try {
+      setRatingLoading(true);
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `${API_URL}/loans/${loanId}/rate-employee?rating=${ratingValue}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      
+      // Update the selected loan with the new rating
+      if (selectedLoan) {
+        setSelectedLoan({ ...selectedLoan, customer_rating: ratingValue || undefined });
+      }
+      
+      // Update the loans list
+      setLoans(loans.map(l => 
+        l.id === loanId ? { ...l, customer_rating: ratingValue || undefined } : l
+      ));
+      
+      setRatingValue(null);
+    } catch (err: any) {
+      alert('Failed to submit rating: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setRatingLoading(false);
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'APPROVED': return 'success';
@@ -110,6 +145,7 @@ const BorrowersLoanStatus: React.FC<Props> = ({ darkMode: _ }) => {
 
   const handleViewDetails = (loan: Loan) => {
     setSelectedLoan(loan);
+    setRatingValue(loan.customer_rating || null);
     setDetailsDialogOpen(true);
   };
 
@@ -256,6 +292,34 @@ const BorrowersLoanStatus: React.FC<Props> = ({ darkMode: _ }) => {
                       <Typography variant="body2">{selectedLoan.loan_purpose}</Typography>
                     </Grid>
                     <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="textSecondary">Loan Term</Typography>
+                      <Typography variant="body2">
+                        {selectedLoan.loan_term_months 
+                          ? `${selectedLoan.loan_term_months} months (${(selectedLoan.loan_term_months / 12).toFixed(1)} years)`
+                          : '—'}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="textSecondary">Repayment Date</Typography>
+                      <Typography variant="body2">
+                        {selectedLoan.repayment_date
+                          ? new Date(selectedLoan.repayment_date + 'Z').toLocaleDateString('en-US', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })
+                          : '—'}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="subtitle2" color="textSecondary">Monthly Payment</Typography>
+                      <Typography variant="body2">
+                        {selectedLoan.monthly_payment
+                          ? `$${selectedLoan.monthly_payment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+                          : '—'}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
                       <Typography variant="subtitle2" color="textSecondary">Credit Score</Typography>
                       <Typography variant="body2">{selectedLoan.credit_score}</Typography>
                     </Grid>
@@ -263,18 +327,6 @@ const BorrowersLoanStatus: React.FC<Props> = ({ darkMode: _ }) => {
                       <Typography variant="subtitle2" color="textSecondary">Employment Status</Typography>
                       <Typography variant="body2">{selectedLoan.employment_status}</Typography>
                     </Grid>
-                    {selectedLoan.repayment_date && (
-                      <Grid item xs={6}>
-                        <Typography variant="subtitle2" color="textSecondary">Repayment Date</Typography>
-                        <Typography variant="body2">
-                          {new Date(selectedLoan.repayment_date + 'Z').toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </Typography>
-                      </Grid>
-                    )}
                     <Grid item xs={12}>
                       <Typography variant="subtitle2" color="textSecondary">Submitted On</Typography>
                       <Typography variant="body2">
@@ -301,6 +353,39 @@ const BorrowersLoanStatus: React.FC<Props> = ({ darkMode: _ }) => {
                           <Typography variant="subtitle2">Rejection Reason</Typography>
                           <Typography variant="body2">{selectedLoan.rejection_reason}</Typography>
                         </Alert>
+                      </Grid>
+                    )}
+                    {selectedLoan.approval_status && ['APPROVED', 'REJECTED', 'ESCALATED'].includes(selectedLoan.approval_status) && (
+                      <Grid item xs={12}>
+                        <Box sx={{ pt: 2, borderTop: 1, borderColor: 'divider' }}>
+                          <Typography variant="subtitle2" color="textSecondary" sx={{ mb: 1 }}>
+                            Rate the Employee's Service
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Rating
+                              value={selectedLoan.customer_rating || ratingValue}
+                              onChange={(_, newValue) => setRatingValue(newValue)}
+                              size="large"
+                              disabled={ratingLoading || !!selectedLoan.customer_rating}
+                            />
+                            {(selectedLoan.customer_rating || ratingValue) && (
+                              <Typography variant="body2" color="primary">
+                                {selectedLoan.customer_rating || ratingValue} / 5 stars
+                              </Typography>
+                            )}
+                            {!selectedLoan.customer_rating && ratingValue && (
+                              <Button
+                                size="small"
+                                variant="contained"
+                                onClick={() => submitRating(selectedLoan.id)}
+                                disabled={ratingLoading}
+                                sx={{ ml: 1 }}
+                              >
+                                {ratingLoading ? <CircularProgress size={20} /> : 'Submit Rating'}
+                              </Button>
+                            )}
+                          </Box>
+                        </Box>
                       </Grid>
                     )}
                   </Grid>

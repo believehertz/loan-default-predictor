@@ -23,6 +23,7 @@ import EmployeeLoanReview from './components/EmployeeLoanReview';
 import AdminSystemDashboard from './components/AdminSystemDashboard';
 import InterestRateManagement from './components/dashboard/InterestRateManagement';
 import EmployeePerformance from './components/dashboard/EmployeePerformance';
+import BonusHistoryPage from './components/BonusHistoryPage';
 
 const createAppTheme = (darkMode: boolean) => createTheme({
   palette: {
@@ -180,6 +181,7 @@ const AppRoutes: React.FC = () => {
       {/* Admin / Employee specific routes */}
       <Route path="/users" element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLOYEE']}><Users /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+      <Route path="/bonus-history" element={<ProtectedRoute allowedRoles={['EMPLOYEE']}><BonusHistoryPage /></ProtectedRoute>} />
       <Route path="/reports" element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLOYEE']}><Reports /></ProtectedRoute>} />
       <Route path="/risk-analysis" element={<ProtectedRoute allowedRoles={['ADMIN', 'EMPLOYEE']}><RiskAnalysis /></ProtectedRoute>} />
       <Route path="/employee-performance" element={<ProtectedRoute allowedRoles={['ADMIN']}><EmployeePerformance /></ProtectedRoute>} />
