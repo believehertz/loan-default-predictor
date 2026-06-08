@@ -176,7 +176,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       </Box>
 
       {/* Main Content Area */}
-      <Box sx={{ flexGrow: 1, ml: { md: `${drawerWidth}px` }, display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ flexGrow: 1, ml: { md: `${drawerWidth}px` }, display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
         {/* Top App Bar */}
         <Paper sx={{ 
           p: 2, 
@@ -211,7 +211,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         </Paper>
 
         {/* Dynamic Role-Based Content */}
-        {renderDashboardContent()}
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+          {renderDashboardContent()}
+        </Box>
       </Box>
     </Box>
   );

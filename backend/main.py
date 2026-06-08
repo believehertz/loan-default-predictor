@@ -48,6 +48,7 @@ app.add_middleware(
     allow_origins=[
         "https://loan-default-predictor-snowy.vercel.app",  # YOUR FRONTEND
         "https://loan-default-predictor.vercel.app",     # Alternative
+        "https://loan-default-predictor-q8ne.onrender.com", # Backend for development
         "http://localhost:5173",
         "http://localhost:3000",
     ],

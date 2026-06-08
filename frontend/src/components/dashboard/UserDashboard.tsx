@@ -4,7 +4,7 @@ import SummaryCards from './SummaryCards';
 import ChartSection from './ChartSection';
 import QuickActions from './QuickActions';
 import ActivityTable from './ActivityTable';
-import BonusHistory from './BonusHistory';
+
 
 interface Props {
   darkMode: boolean;
@@ -12,7 +12,7 @@ interface Props {
 
 const UserDashboard: React.FC<Props> = ({ darkMode }) => {
   return (
-    <Box sx={{ flexGrow: 1, p: 2, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 3 }}>
+    <Box sx={{ flexGrow: 1, p: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
       <SummaryCards darkMode={darkMode} />
       
       <Grid container spacing={3} sx={{ flexGrow: 0 }}>
@@ -26,7 +26,7 @@ const UserDashboard: React.FC<Props> = ({ darkMode }) => {
 
       <ActivityTable darkMode={darkMode} />
 
-      <BonusHistory darkMode={darkMode} />
+
     </Box>
   );
 };

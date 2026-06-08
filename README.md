@@ -1,7 +1,7 @@
 # 🏦 Loan Default Predictor
 
 [![Vercel](https://img.shields.io/badge/Vercel-Live-success?style=for-the-badge&logo=vercel)](https://loan-default-predictor-one.vercel.app/)
-[![Railway](https://img.shields.io/badge/Railay-Deployed-0B0D0E?style=for-the-badge&logo=railway)](https://loan-default-predictor-production-a3ad.up.railway.app)
+[![Render](https://img.shields.io/badge/Render-Deployed-46E3B7?style=for-the-badge&logo=render)](https://loan-default-predictor-q8ne.onrender.com/docs)
 [![Python](https://img.shields.io/badge/Python-3.11-blue?style=for-the-badge&logo=python)](https://python.org)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org)
 
@@ -24,7 +24,7 @@
 ## 🚀 Live Demo
 
 - **Frontend (Vercel):** [https://loan-default-predictor-one.vercel.app/](https://loan-default-predictor-one.vercel.app/)
-- **Backend API (Railway):** [https://loan-default-predictor-production-a3ad.up.railway.app/docs](https://loan-default-predictor-production-a3ad.up.railway.app/docs)
+- **Backend API (Render):** [https://loan-default-predictor-q8ne.onrender.com/docs](https://loan-default-predictor-q8ne.onrender.com/docs)
 
 ## ✨ Features
 
@@ -59,8 +59,8 @@
 
 ### Infrastructure
 - **Frontend Hosting:** Vercel (Edge Network)
-- **Backend Hosting:** Railway (Docker)
-- **Database:** Railway PostgreSQL
+- **Backend Hosting:** Render (Docker)
+- **Database:** Render PostgreSQL
 - **CI/CD:** GitHub → Auto-deploy
 
 ## 📋 Prerequisites

@@ -2,7 +2,7 @@
 // src/components/dashboard/SummaryCards.tsx
 import React, { useState, useEffect } from 'react';
 import { Grid, Paper, Typography, Box, Avatar } from '@mui/material';
-import { TrendingUp, AttachMoney, CheckCircle, Warning, EmojiEvents } from '@mui/icons-material';
+import { TrendingUp, CheckCircle, HourglassEmpty } from '@mui/icons-material';
 import CountUp from 'react-countup';
 import axios from 'axios';
 
@@ -70,13 +70,11 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
       isPercentage: true
     },
     {
-      title: 'Total Bonuses Earned',
-      value: stats?.total_bonus || 0,
-      suffix: ' USD',
-      icon: <EmojiEvents />,
+      title: 'Pending Reviews',
+      value: stats?.current_backlog || 0,
+      icon: <HourglassEmpty />,
       color: '#ffc107',
-      trend: 5.1,
-      isCurrency: true
+      trend: -3.2
     }
   ];
 
@@ -116,13 +114,12 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ darkMode }) => {
                   {card.title}
                 </Typography>
                 <Typography variant="h6" fontWeight="bold" sx={{ color: textColor, lineHeight: 1, textShadow: '0 0 12px rgba(255, 255, 255, 0.3)' }}>
-                  {card.isCurrency ? '$' : ''}
                   <CountUp 
                     end={card.value} 
                     duration={2} 
                     separator="," 
                     suffix={card.suffix || ''}
-                    decimals={card.isCurrency ? 2 : card.isPercentage ? 1 : 0}
+                    decimals={card.suffix === '%' ? 1 : 0}
                   />
                 </Typography>
                 <Typography 
