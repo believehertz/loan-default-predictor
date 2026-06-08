@@ -334,6 +334,7 @@ def update_user_role(user_id: int, role: str, db: Session = Depends(get_db), cur
 async def forgot_password(
     request: Request,
     data: ForgotPasswordRequest,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db)
 ):
     # Rate limit: 5 attempts per minute per IP
@@ -353,19 +354,28 @@ async def forgot_password(
     user.reset_token_expires = expires
     db.commit()
 
-    reset_link = f"https://loan-default-predictor-snowy.vercel.app/reset-password?token={reset_token}"
+    # Use frontend URL from environment variable if available, fallback to production URL
+    frontend_url = os.getenv("FRONTEND_URL", "https://loan-default-predictor-snowy.vercel.app")
+    reset_link = f"{frontend_url}/reset-password?token={reset_token}"
 
-    # Send email synchronously to catch errors
-    email_sent = await send_reset_email(
+    # Send email asynchronously in the background so it doesn't block the API response
+    background_tasks.add_task(
+        send_reset_email,
         to_email=email,
         reset_link=reset_link,
         username=user.username
     )
 
-    if not email_sent:
-        print(f"⚠️ Failed to send reset email to {email}")
+    response_data = {
+        "message": "If this email is registered, you will receive reset instructions.", 
+        "email_queued": True
+    }
+    
+    # If in local development, return the link in the response for easier testing
+    if os.getenv("ENVIRONMENT") == "development" or os.getenv("FRONTEND_URL") == "http://localhost:5173":
+        response_data["reset_link"] = reset_link
 
-    return {"message": "If this email is registered, you will receive reset instructions.", "email_queued": email_sent}
+    return response_data
 
 
 @router.post("/reset-password")

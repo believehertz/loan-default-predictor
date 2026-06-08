@@ -1,20 +1,43 @@
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, Email, To, Content
-from pydantic import EmailStr
+import smtplib
+from email.message import EmailMessage
 
-SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
-SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "believehertz867@gmail.com")
+def _get_mail_config():
+    return {
+        "username": os.getenv("MAIL_USERNAME"),
+        "password": os.getenv("MAIL_PASSWORD"),
+        "from": os.getenv("MAIL_FROM", os.getenv("MAIL_USERNAME")),
+        "server": os.getenv("MAIL_SERVER", "smtp.gmail.com"),
+        "port": int(os.getenv("MAIL_PORT", "587")),
+    }
+
+def send_email_smtp(to_email: str, subject: str, html_content: str):
+    cfg = _get_mail_config()
+    if not cfg["username"] or not cfg["password"]:
+        print("Warning: MAIL_USERNAME or MAIL_PASSWORD not properly set. Check .env")
+        return False
+        
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = cfg["from"]
+    msg['To'] = to_email
+    msg.set_content("Please enable HTML to view this email.")
+    msg.add_alternative(html_content, subtype='html')
+
+    try:
+        with smtplib.SMTP(cfg["server"], cfg["port"]) as server:
+            server.starttls()
+            server.login(cfg["username"], cfg["password"])
+            server.send_message(msg)
+        return True
+    except Exception as e:
+        print(f"Failed to send email via SMTP: {str(e)}")
+        return False
 
 async def send_reset_email(to_email: str, reset_link: str, username: str = ""):
     """
-    Send password reset email via SendGrid
+    Send password reset email via Gmail SMTP
     """
-    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "your_sendgrid_api_key":
-        print("⚠️ Warning: SENDGRID_API_KEY not properly set. Check .env")
-        print(f"Reset link for {to_email}: {reset_link}")
-        return False
-
     html_content = f"""
     <html>
     <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -59,37 +82,22 @@ async def send_reset_email(to_email: str, reset_link: str, username: str = ""):
     </body>
     </html>
     """
-
-    message = Mail(
-        from_email=SENDGRID_FROM_EMAIL,
-        to_emails=to_email,
-        subject="Password Reset - LoanGuard",
-        html_content=html_content
-    )
-
-    try:
-        sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
-        response = sg.send(message)
-        print(f"✅ Email sent successfully to {to_email}")
-        return True
-    except Exception as e:
-        print(f"❌ Failed to send email: {str(e)}")
+    
+    success = send_email_smtp(to_email, "Password Reset - LoanGuard", html_content)
+    if success:
+        print(f"Email sent successfully to {to_email}")
+    else:
         print(f"Fallback link: {reset_link}")
-        return False
+    return success
 
 
 async def send_loan_status_email(to_email: str, username: str, loan_id: int, status: str, rejection_reason: str = None):
     """
-    Send loan status update email to borrower via SendGrid
+    Send loan status update email to borrower via Gmail SMTP
     """
-    if not SENDGRID_API_KEY or SENDGRID_API_KEY == "your_sendgrid_api_key":
-        print("⚠️ Warning: SENDGRID_API_KEY not properly set. Check .env")
-        print(f"Loan status update for {to_email}: Loan #{loan_id} - {status}")
-        return False
-
     # Determine email content based on status
     if status == "APPROVED":
-        subject = "🎉 Your Loan Application Has Been Approved!"
+        subject = "Your Loan Application Has Been Approved!"
         status_color = "#10b981"
         status_text = "APPROVED"
         message_body = """
@@ -143,18 +151,7 @@ async def send_loan_status_email(to_email: str, username: str, loan_id: int, sta
     </html>
     """
 
-    message = Mail(
-        from_email=SENDGRID_FROM_EMAIL,
-        to_emails=to_email,
-        subject=subject,
-        html_content=html_content
-    )
-
-    try:
-        sg = SendGridAPIClient(api_key=SENDGRID_API_KEY)
-        response = sg.send(message)
-        print(f"✅ Loan status email sent successfully to {to_email}")
-        return True
-    except Exception as e:
-        print(f"❌ Failed to send loan status email: {str(e)}")
-        return False
+    success = send_email_smtp(to_email, subject, html_content)
+    if success:
+        print(f"Loan status email sent successfully to {to_email}")
+    return success

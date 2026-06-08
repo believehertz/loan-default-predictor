@@ -1,4 +1,4 @@
-﻿# DESIGN AND IMPLEMENTATION OF A LOAN DEFAULT PREDICTION SYSTEM WITH EMPLOYEE WORKFLOW MANAGEMENT FOR SACCOS
+# DESIGN AND IMPLEMENTATION OF A LOAN DEFAULT PREDICTION SYSTEM WITH EMPLOYEE WORKFLOW MANAGEMENT FOR SACCOS
 
 BY
 
@@ -1731,6 +1731,38 @@ VITE_API_URL=https://loan-default-predictor-q8ne.onrender.com/
 - `frontend/src/config/api.ts` - API configuration and endpoints
 - `frontend/src/components/` - React components (12+ UI modules)
 - `database_schema.sql` - Complete PostgreSQL schema
+
+## 6.7 BUSINESS CASE AND IMPLEMENTATION BUDGET
+
+The architecture of the Loan Default Prediction System was specifically chosen to minimize capital expenditure (CapEx) for SACCOs. By leveraging modern open-source technologies and managed cloud platforms, a SACCO can implement this enterprise-grade machine learning system at a fraction of the cost of proprietary SaaS licenses (which often exceed $10,000/month).
+
+Table 6.1 outlines the estimated implementation and operational costs for a mid-sized SACCO in Uganda to adopt the system.
+
+**Table 6.1: Business Case - Implementation Costs**
+
+| Cost Category | Item Description | Estimated Cost (USD) |
+|---------------|------------------|----------------------|
+| **Initial Implementation (One-Time CapEx)** | | |
+| System Customization | Developer/Consultant fee to customize system rules, branding, and deploy to production | $1,500.00 |
+| Change Management | Staff training on the new AI workflows and transparent bonus structures | $350.00 |
+| Domain Registration | Custom domain name (e.g., .co.ug or .com) for 1 year | $25.00 |
+| *Subtotal (One-Time)* | | *$1,875.00* |
+| **Recurring Operational Costs (Monthly OpEx)** | | |
+| Frontend Hosting | Vercel Pro Tier (Guarantees high availability and performance) | $20.00 / mo |
+| Backend API | Render Pro Web Service (Supports auto-scaling under load) | $25.00 / mo |
+| Database | Render PostgreSQL (Automated backups, persistent storage) | $20.00 / mo |
+| Email Service | SendGrid Essentials (Reliable delivery of loan notifications and password resets) | $20.00 / mo |
+| *Subtotal (Monthly)* | | *$85.00 / mo* |
+| **Annual Operating Total** | *(Monthly OpEx × 12)* | *$1,020.00 / yr* |
+
+**Table 6.2: Business Case - Expected Benefits and ROI**
+
+| Benefit Category | Expected Impact | Estimated Annual Value |
+|------------------|-----------------|------------------------|
+| **Risk Reduction** | 15% reduction in non-performing loans (NPLs) through accurate default prediction | High (Variable by SACCO portfolio) |
+| **Operational Efficiency** | Loan processing time reduced from 7-10 days to 2-3 days, increasing loan volume capacity | Increased Interest Revenue |
+| **Employee Productivity** | Structured workflows and transparent bonuses improve output and morale | Lower HR Turnover Costs |
+| **Return on Investment (ROI)** | System pays for itself if it prevents even 1-2 major defaults per year | Positive ROI in Year 1 |
 
 ---
 

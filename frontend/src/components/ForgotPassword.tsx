@@ -25,8 +25,10 @@ const ForgotPassword: React.FC = () => {
         `${API_URL}/auth/forgot-password`,
         { email }
       );
-      setMessage('Reset link sent! Check console.');
-      console.log(response.data.reset_link);
+      setMessage('Reset link sent! Please check your email.');
+      if (response.data.reset_link) {
+        console.log("Development Mode Reset Link:", response.data.reset_link);
+      }
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Failed');
     } finally {

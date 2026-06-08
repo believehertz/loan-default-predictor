@@ -107,7 +107,7 @@ const ResetPassword: React.FC = () => {
             type="submit" 
             variant="contained" 
             fullWidth 
-            disabled={loading || password.length < 6}
+            disabled={loading || password.length < 8}
           >
             {loading ? <CircularProgress size={20} /> : 'Reset Password'}
           </Button>
